@@ -1,0 +1,82 @@
+<!doctype html>
+
+<html>
+	
+	<head>
+		<title>Debug Log</title>
+		<style>
+			body {
+				margin: 0;
+				background: #202021;
+				overflow-y: scroll;
+			}
+
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			td {
+				border: 1px solid #333333;
+				background: #282828;
+				color: #A0A0A0;
+				padding: 4px 8px 4px 8px;
+				font-family: Monospace;
+			}
+
+			.colhead td {
+				background: #0A0A0A;
+				border: 2px solid #222222;
+			}
+
+			.warning td {
+				border-left: 2px solid #FFFF00;
+				border-right: 2px solid #FFFF00;
+			}
+
+			.critical td {
+				border-left: 2px solid #FF0000;
+				border-right: 2px solid #FF0000;
+			}
+
+			.info td {
+				border-left: 2px solid rgba(20, 200, 200, 0.9);
+				border-right: 2px solid rgba(20, 200, 200, 0.9);
+			}
+
+			tr td:nth-child(1) {
+				width: 150px;
+			}
+
+			tr td:nth-child(3) {
+				width: 200px;
+			}
+
+			tr td:nth-child(4) {
+				width: 50px;
+			}
+
+			::-webkit-scrollbar {
+				width: 10px;
+			}
+
+			::-webkit-scrollbar-track {
+				background: #333333;
+			}
+
+			::-webkit-scrollbar-thumb {
+				width: 10px;
+				background: #0A0A0A;
+			}
+		</style>
+	</head>
+
+	<body>
+		<table>
+			<tr class="colhead">
+				<td>Time</td>
+				<td>Message</td>
+				<td>File</td>
+				<td>Line</td>
+			</tr>
+			<!-- DEBUG OUTPUT AFTER THIS LINE -->
