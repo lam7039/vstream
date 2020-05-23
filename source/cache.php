@@ -28,18 +28,24 @@ class file_cache {
     }
 
     public function get_cached_file($key) : file_buffer {
-        if (!isset($this->files[$key])) {
-            LOG_WARNING('Key does not exist in array');
-            return null;
+        if ($this->file_exists($key)) {
+            return $this->files[$key];
         }
-        return $this->files[$key];
+        return null;
     }
 
     public function remove_cached_file($key) : void {
-        if (!isset($this->files[$key])) {
-            LOG_WARNING('Key does not exist in array');
+        if ($this->file_exists($key)) {
+            unset($this->files[$key]);
         }
-        unset($this->files[$key]);
+    }
+
+    public function file_exists($key) : bool {
+        if (!isset($this->files[$key])) {
+            LOG_WARNING("The given key does not exist: $key");
+            return false;
+        }
+        return true;
     }
 
     public function clear_cache() : void {
