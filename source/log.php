@@ -3,14 +3,14 @@
 namespace library;
 
 class log {
-    private static $template = 'templates/debug.html';
-    private static $debug_file = 'debug.html';
+    private $template = 'templates/debug.html';
+    private $debug_file = 'debug.html';
 
     private function __construct() {}
 
     private static function create_debug_file() : void {
-        $template_contents = file_get_contents(self::$template);
-        file_put_contents(self::$debug_file, $template_contents);
+        $template_contents = file_get_contents($this->template);
+        file_put_contents($this->debug_file, $template_contents);
     }
 
     private static function generate_debug(string $string = '', string $error_type) : string {
@@ -29,12 +29,12 @@ class log {
     }
 
     private static function append(string $string, string $error_type) : void {
-        if (!is_file(self::$debug_file)) {
+        if (!is_file($this->debug_file)) {
             self::create_debug_file();
         }
 
         $content = self::generate_debug($string, $error_type);
-        file_put_contents(self::$debug_file, $content, FILE_APPEND | LOCK_EX);
+        file_put_contents($this->debug_file, $content, FILE_APPEND | LOCK_EX);
     }
 
     //TODO: maybe remove the functions below and use append in the global functions

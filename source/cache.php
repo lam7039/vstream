@@ -7,10 +7,10 @@ class file_buffer {
     public string $body;
     public int $size;
 
-    public function __construct(string $path, string $body, int $size) {
+    public function __construct(string $path) {
         $this->path = $path;
-        $this->body = $body;
-        $this->size = $size;
+        $this->body = file_get_contents($path);
+        $this->size = strlen($this->body);
     }
 }
 
@@ -28,19 +28,19 @@ class file_cache {
     }
 
     public function get_cached_file($key) : file_buffer {
-        if ($this->file_exists($key)) {
+        if ($this->key_exists($key)) {
             return $this->files[$key];
         }
         return null;
     }
 
     public function remove_cached_file($key) : void {
-        if ($this->file_exists($key)) {
+        if ($this->key_exists($key)) {
             unset($this->files[$key]);
         }
     }
 
-    public function file_exists($key) : bool {
+    public function key_exists($key) : bool {
         if (!isset($this->files[$key])) {
             LOG_WARNING("The given key does not exist: $key");
             return false;

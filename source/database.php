@@ -110,14 +110,15 @@ class database {
         return false;
     }
 
-    public function fetch(string $sql, array $variables = [], PDOStatement $fetch_mode = PDO::FETCH_OBJ) {
+    public function fetch(string $sql, array $variables = []) : object {
         try {
             $query = $this->query($sql, $variables);
             if ($query->execute()) {
-                return $query->fetch($fetch_mode);
+                return $query->fetch(PDO::FETCH_OBJ);
             }
         } catch (PDOException $e) {
             LOG_WARNING($e->getMessage());
         }
+        return null;
     }
 }

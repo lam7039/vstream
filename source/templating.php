@@ -3,6 +3,7 @@
 namespace library;
 
 use library\file_cache;
+use library\file_buffer;
 
 class templating {
     private $file_cache = null;
@@ -10,7 +11,7 @@ class templating {
 
     public function __construct(file_cache &$file_cache, $default_template = 'templates/layout.html') {
         $this->file_cache = $file_cache;
-        $this->file_cache->cache_file(basename($default_template), file::create_buffer($default_template));
+        $this->file_cache->cache_file(basename($default_template), new file_buffer($default_template));
         $this->file_buffer_template = $this->file_cache->get_cached_file(basename($default_template));
     }
 
