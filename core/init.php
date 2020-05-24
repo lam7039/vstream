@@ -1,4 +1,7 @@
 <?php
+
+use library\log;
+
 session_start();
 
 function directory_files(string $directory) : array {
@@ -15,14 +18,19 @@ foreach ($source_files as $source_file) {
 function CONFIG(string $string) {
     return library\config::get($string);
 }
+
+$log = new log;
 function LOG_INFO(string $string) : void {
-    library\log::info($string);
+    global $log;
+    $log->append($string, 'info');
 }
 function LOG_WARNING(string $string) : void {
-    library\log::warning($string);
+    global $log;
+    $log->append($string, 'warning');
 }
 function LOG_CRITICAL(string $string) : void {
-    library\log::critical($string);
+    global $log;
+    $log->append($string, 'critical');
 }
 
 date_default_timezone_set(CONFIG('timezone'));

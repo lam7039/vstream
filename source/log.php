@@ -3,18 +3,16 @@
 namespace library;
 
 class log {
-    private $template = 'templates/debug.html';
+    private $template_path = 'templates/debug.html';
     private $debug_file = 'debug.html';
 
-    private function __construct() {}
-
-    private static function create_debug_file() : void {
-        $template_contents = file_get_contents($this->template);
+    private function create_debug_file() : void {
+        $template_contents = file_get_contents($this->template_path);
         file_put_contents($this->debug_file, $template_contents);
     }
 
-    private static function generate_debug(string $string = '', string $error_type) : string {
-        $stacktrace = debug_backtrace()[3];
+    private function generate_debug(string $string = '', string $error_type) : string {
+        $stacktrace = debug_backtrace()[2];
         $timestamp = date('d/m/Y H:i:s', time());
         $file = explode('\\', $stacktrace['file']);
         $file = array_pop($file);
@@ -28,26 +26,12 @@ class log {
                 </tr>";
     }
 
-    private static function append(string $string, string $error_type) : void {
+    public function append(string $string, string $error_type) : void {
         if (!is_file($this->debug_file)) {
             self::create_debug_file();
         }
 
         $content = self::generate_debug($string, $error_type);
         file_put_contents($this->debug_file, $content, FILE_APPEND | LOCK_EX);
-    }
-
-    //TODO: maybe remove the functions below and use append in the global functions
-
-    public static function info(string $string) : void {
-        self::append($string, 'info');
-    }
-
-    public static function warning(string $string) : void {
-        self::append($string, 'warning');
-    }
-
-    public static function critical(string $string) : void {
-        self::append($string, 'critical');
     }
 }
