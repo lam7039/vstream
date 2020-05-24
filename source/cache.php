@@ -28,20 +28,20 @@ class file_cache {
     }
 
     public function get_cached_file($key) : ?file_buffer {
-        if ($this->key_exists($key)) {
+        if ($this->exists($key)) {
             return $this->files[$key];
         }
         return null;
     }
 
     public function remove_cached_file($key) : void {
-        if ($this->key_exists($key)) {
+        if ($this->exists($key)) {
             unset($this->files[$key]);
         }
     }
 
-    public function key_exists($key) : bool {
-        return array_key_exists($key, $this->files) ? true : false;
+    public function exists($key) : bool {
+        return isset($this->files[$key]) ? true : false;
     }
 
     public function clear_cache() : void {
