@@ -1,5 +1,6 @@
 <?php
 
+use library\config;
 use library\log;
 
 session_start();
@@ -15,8 +16,10 @@ foreach ($source_files as $source_file) {
     require "source/$source_file";
 }
 
-function CONFIG(string $string) {
-    return library\config::get($string);
+$config = new config;
+function CONFIG(string $key) {
+    global $config;
+    return $config->get($key);
 }
 
 $log = new log;
@@ -33,7 +36,7 @@ function LOG_CRITICAL(string $string) : void {
     $log->append($string, 'critical');
 }
 
-date_default_timezone_set(CONFIG('timezone'));
+date_default_timezone_set(CONFIG('TIMEZONE'));
 
 function dump($x) : void {
     var_dump($x);

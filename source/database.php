@@ -10,11 +10,11 @@ class database {
     private $connection = null;
 
     public function __construct() {
-        $host = CONFIG('mysql/host');
-        $dbname = CONFIG('mysql/db');
-        $charset = CONFIG('mysql/charset');
-        $username = CONFIG('mysql/username');
-        $password = CONFIG('mysql/password');
+        $host = CONFIG('DB_HOST');
+        $dbname = CONFIG('DB_DATABASE');
+        $charset = CONFIG('DB_CHARSET');
+        $username = CONFIG('DB_USERNAME');
+        $password = CONFIG('DB_PASSWORD');
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         ];
