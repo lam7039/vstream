@@ -2,10 +2,6 @@
 
 namespace library;
 
-use function library\session\session_get;
-use function library\session\session_remove;
-use function library\session\session_set;
-
 function token_generate() : string {
     $token = bin2hex(openssl_random_pseudo_bytes(64));
     session_set(CONFIG('session/csrf_token'), $token);

@@ -1,6 +1,6 @@
 <?php
 
-namespace library\session;
+namespace library;
 
 function session_exists($key) : bool {
     return isset($_SESSION[$key]) ? true : false;
