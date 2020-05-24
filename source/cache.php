@@ -27,7 +27,7 @@ class file_cache {
         return $this->count;
     }
 
-    public function get_cached_file($key) : file_buffer {
+    public function get_cached_file($key) : ?file_buffer {
         if ($this->key_exists($key)) {
             return $this->files[$key];
         }
@@ -41,11 +41,7 @@ class file_cache {
     }
 
     public function key_exists($key) : bool {
-        if (!isset($this->files[$key])) {
-            LOG_WARNING("The given key does not exist: $key");
-            return false;
-        }
-        return true;
+        return array_key_exists($key, $this->files) ? true : false;
     }
 
     public function clear_cache() : void {

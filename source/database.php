@@ -7,7 +7,7 @@ use PDOException;
 use PDOStatement;
 
 class database {
-    private $connection = NULL;
+    private $connection = null;
 
     public function __construct() {
         $host = CONFIG('mysql/host');
@@ -110,7 +110,7 @@ class database {
         return false;
     }
 
-    public function fetch(string $sql, array $variables = []) : object {
+    public function fetch(string $sql, array $variables = []) : ?object {
         try {
             $query = $this->query($sql, $variables);
             if ($query->execute()) {
