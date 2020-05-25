@@ -2,7 +2,7 @@
 
 namespace library;
 
-class templating {
+class template {
     private file_cache $file_cache;
     private ?file_buffer $file_buffer_template;
 
