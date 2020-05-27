@@ -27,8 +27,10 @@ class template {
     }
 
     public function render(string $buffer_key) : string {
-        $buffer_body = $this->file_cache->get_cached_file($buffer_key)->body;
-        $buffer_body = str_replace('{{{yield}}}', $buffer_body, $this->file_buffer_template->body);
-        return $buffer_body;
+        if ($buffer = $this->file_cache->get_cached_file($buffer_key)) {
+            $buffer_body = str_replace('{{{yield}}}', $buffer->body, $this->file_buffer_template->body);
+            return $buffer_body;
+        }
+        return 404;
     }
 }

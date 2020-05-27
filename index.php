@@ -5,6 +5,7 @@ require('core/init.php');
 
 use library\file_buffer;
 use library\file_cache;
+use library\route;
 use library\template;
 
 $file_cache = new file_cache;
@@ -13,8 +14,16 @@ foreach ($html_files as $html_file) {
     $file_cache->cache_file(basename($html_file), new file_buffer('html/' . $html_file));
 }
 
+$route = new route;
+$route->set('/home', 'login.html');
+
 $templating = new template($file_cache);
 $templating->set_parameter('layout.html', 'page_title', 'Home');
 $templating->set_parameter('layout.html', 'page_style', 'layout.css');
 $templating->set_parameter('login.html', 'test', 'login');
-echo $templating->render('login.html');
+
+if ($destination = $route->get('/home')) {
+    echo $templating->render($destination);
+} else {
+    echo 'no page';
+}

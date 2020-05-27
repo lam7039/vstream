@@ -2,33 +2,51 @@
 
 namespace library;
 
+class route_buffer {
+    public string $path;
+    public string $file_key;
+    public $class; //TODO: type hint class as controller
+    public string $method;
+    public array $params;
+
+    public function __construct(string $path, string $destination, array $params = []) {
+        $this->path = $path;
+        if (strpos($destination, '->') !== false) {
+            $class_method = explode('->', $destination);
+            $this->class = new $class_method[0];
+            $this->method = $class_method[1];
+            $this->params = $params;
+            return;
+        }
+        $this->file_key = $destination;
+    }
+}
+
 class route {
     private array $routes = [];
 
-    //TODO: Finish routing
-    public function to (string $path, Callable $to, array $params = []) {
-        if (is_callable($to)) {
-            $to = $to();
-        }
-        $this->routes[$path] = $to;
+    public function set(string $path, $destination, array $params = []) : void {
+        $this->routes[$path] = new route_buffer($path, $destination, $params);
     }
 
-    public function get(string $path) : void {
+    public function get(string $path) : ?string {
         if (!isset($this->routes[$path])) {
-            LOG_WARNING("Route '$path' does not exist");
             http_response_code(404);
-            return;
+            return null;
         }
-        if ($this->routes[$path] instanceof template) {
-            echo $this->routes[$path]->render('cached_file_key');
-            return;
-        }
-        if (!file_exists($this->routes[$path])) {
 
-            return;
+        $route = $this->routes[$path];
+        if ($route->file_key) {
+            return $route->file_key;
         }
-        if (http_response_code() != 200) {
+        if ($route->class && $route->method) {
+            if (!$route->params) {
+                call_user_func([$route->class, $route->method]);
+            } else {
+                call_user_func([$route->class, $route->method], $route->params);
+            }
+        }
 
-        }
+        return null;
     }
 }

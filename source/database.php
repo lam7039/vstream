@@ -12,6 +12,7 @@ class database {
     public function __construct() {
         $host = CONFIG('DB_HOST');
         $dbname = CONFIG('DB_DATABASE');
+        $port = CONFIG('DB_PORT');
         $charset = CONFIG('DB_CHARSET');
         $username = CONFIG('DB_USERNAME');
         $password = CONFIG('DB_PASSWORD');
@@ -19,7 +20,7 @@ class database {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         ];
         try {
-            $this->connection = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $username, $password, $options);
+            $this->connection = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
         } catch (PDOException $e) {
             LOG_CRITICAL($e->getMessage());
         }
