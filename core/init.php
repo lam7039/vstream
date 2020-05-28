@@ -3,8 +3,6 @@
 use library\config;
 use library\log;
 
-session_start();
-
 function directory_files(string $directory) : array {
     return array_filter(array_diff(scandir($directory), ['..', '.']), function ($item) {
         return !is_dir($item);
@@ -15,6 +13,8 @@ $source_files = directory_files('source');
 foreach ($source_files as $source_file) {
     require "source/$source_file";
 }
+
+session_start();
 
 $config = new config;
 function CONFIG(string $key) {
