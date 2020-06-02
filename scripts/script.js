@@ -1,18 +1,15 @@
 function server_request(url, method) {
-    let ajax = new XMLHttpRequest();
-    ajax.open(method, url, true);
-    ajax.send();
-    ajax.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            alert(this.response);
-            return JSON.parse(this.responseText);
-        }
-    }
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.send();
+    return xhr;
 }
 
-var buttons = document.getElementsByClassName('button');
-for (var i = 0; i < buttons.length; i++) {
-    buttons[i].onclick = function() {
-        console.log(server_request('/vstream/test', 'GET'));
-    };
-}
+document.getElementsByClassName('button')[0].onclick = function() {
+    let button = server_request('/vstream/test', 'GET');
+    button.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+        }
+    }
+};
