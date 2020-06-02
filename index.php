@@ -28,6 +28,7 @@ $layout_buffer = session_get('file_cache')->get_cached_file('layout.html');
 
 $url_page = $_GET['request'] ?? 'browse';
 $templating->set_parameter($layout_buffer, 'page_title', 'vstream | ' . $url_page);
+$templating->set_parameter($layout_buffer, 'page_favicon', 'favicon-32x32.png');
 $templating->set_parameter($layout_buffer, 'page_style', 'layout.css');
 $templating->set_parameter($layout_buffer, 'page_script', 'script.js');
 
