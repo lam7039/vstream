@@ -1,6 +1,8 @@
 <?php
 
-namespace library;
+namespace controllers;
+
+use library\database;
 
 class authentication {
 	private $database;

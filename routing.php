@@ -10,4 +10,4 @@ $route->set('register', 'register.html');
 $route->set('login', 'login.html');
 $route->set('account', 'account.html');
 
-$route->set('test', 'controller->test');
+$route->set('test', '\controllers\controller->test');
