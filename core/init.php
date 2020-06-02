@@ -48,3 +48,8 @@ function dd() : void {
     }, func_get_args());
     die;
 }
+
+$controller_files = directory_files('controllers');
+foreach ($controller_files as $controller_file) {
+    require "controllers/$controller_file";
+}

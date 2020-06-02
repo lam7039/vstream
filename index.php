@@ -8,10 +8,12 @@ require('routing.php');
 use library\file_buffer;
 use library\file_cache;
 use library\template;
-
 use function library\session_exists;
 use function library\session_get;
+use function library\session_remove;
 use function library\session_set;
+
+session_remove('file_cache');
 
 if (!session_exists('file_cache')) {
     session_set('file_cache', new file_cache);
@@ -23,15 +25,21 @@ if (!session_exists('file_cache')) {
 
 $templating = new template;
 $layout_buffer = session_get('file_cache')->get_cached_file('layout.html');
-$templating->set_parameter($layout_buffer, 'page_title', 'vstream');
-$templating->set_parameter($layout_buffer, 'page_style', 'layout.css');
 
-$url = isset($_GET['request']) ? $_GET['request'] : 'browse.html';
-$file = $route->get($url);
+$url_page = $_GET['request'] ?? 'browse';
+$templating->set_parameter($layout_buffer, 'page_title', 'vstream | ' . $url_page);
+$templating->set_parameter($layout_buffer, 'page_style', 'layout.css');
+$templating->set_parameter($layout_buffer, 'page_script', 'script.js');
+
+$file = $route->get($url_page);
 $file_buffer = session_get('file_cache')->get_cached_file($file);
 
-if ($file == 'login.html') {
-    $templating->set_parameter($file_buffer, 'test', 'login');
+switch($file) {
+    case 'login.html':
+        $templating->set_parameter($file_buffer, 'test', 'login');
+    break;
 }
 
-echo $templating->render($file_buffer);
+if (is_file("html/$file")) {
+    echo $templating->render($file_buffer);
+}

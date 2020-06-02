@@ -36,14 +36,18 @@ class route {
         }
 
         $route = $this->routes[$path];
-        if ($route->file_key) {
+        if (isset($route->file_key)) {
             return $route->file_key;
         }
         if ($route->class && $route->method) {
             if (!$route->params) {
-                call_user_func([$route->class, $route->method]);
+                if ($response = call_user_func([$route->class, $route->method])) {
+                    return $response;
+                }
             } else {
-                call_user_func([$route->class, $route->method], $route->params);
+                if ($response = call_user_func([$route->class, $route->method], $route->params)) {
+                    return $response;
+                }
             }
         }
 
