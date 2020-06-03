@@ -11,3 +11,4 @@ $route->set('login', 'login.html');
 $route->set('account', 'account.html');
 
 $route->set('test', '\controllers\controller->test');
+$route->set('page', '\controllers\controller->get_browse');

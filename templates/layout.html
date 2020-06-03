@@ -6,9 +6,20 @@
 		<link rel="stylesheet" type="text/css" href="styles/{{page_style}}" />
 	</head>
 	<body>
-		<button class='button'>Test</button>
-
-		{{{yield}}}
+		<aside>
+			<ul>
+				<li><a href="#">browse</a></li>
+				<li><a href="/vstream/register">register</a></li>
+				<li><a href="/vstream/login">login</a></li>
+				<li><a href="/vstream/account">account</a></li>
+			</ul>
+		</aside>
+		<section>
+			<button class='button'>Test</button>
+	
+			{{{yield}}}
+	
+		</section>
 
 		<script src="scripts/{{page_script}}"></script>
     </body>

@@ -7,3 +7,39 @@ body {
     font-family: Monospace;
     color: #A0A0A0;
 }
+
+aside {
+    float: left;
+    background: #565658;
+    width: 10%;
+    height: 100vh;
+}
+
+aside ul {
+    padding: 0px;
+    float: left;
+    width: 100%;
+}
+
+aside ul li {
+    list-style: none;
+}
+
+aside ul li a {
+    float: left;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-decoration: none;
+    text-align: center;
+    background: #38383a;
+    color: white;
+}
+
+aside ul li a:hover {
+    background: #4d4d50;
+}
+
+section {
+    float: left;
+}
