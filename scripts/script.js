@@ -1,14 +1,17 @@
 document.getElementsByClassName('button')[0].onclick = function() {
-    fetch('/vstream/test')
+    fetch('/test')
         .then(response => response.text())
         .then(result => console.log(result));
 };
 
-document.getElementsByTagName('a')[0].onclick = function() {
-    section = document.getElementsByTagName('section')[0];
-    fetch('/vstream/page')
-        .then(response => response.text())
-        .then(result => {
-            section.innerHTML = result;
-        });
-}
+//var links = document.getElementsByTagName('a');
+//for (let i = 0; i < links.length; i++) {
+//    links[i].onclick = function() {
+//        section = document.getElementsByTagName('section')[0];
+//        fetch('/content_' + links[i].innerHTML)
+//            .then(response => response.text())
+//            .then(result => {
+//                section.innerHTML = result;
+//            });
+//    }
+//}
