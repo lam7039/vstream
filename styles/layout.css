@@ -15,17 +15,17 @@ aside {
     height: 100vh;
 }
 
-aside ul {
+aside nav ul {
     padding: 0px;
     float: left;
     width: 100%;
 }
 
-aside ul li {
+aside nav ul li {
     list-style: none;
 }
 
-aside ul li a {
+aside nav ul li a {
     float: left;
     width: 100%;
     padding-top: 5px;
@@ -36,10 +36,36 @@ aside ul li a {
     color: white;
 }
 
-aside ul li a:hover {
+aside nav ul li a:hover {
     background: #4d4d50;
 }
 
-section {
+aside nav ul li ul li {
+    width: 50%;
+    float: left;
+}
+
+aside section.video-controls button {
+    outline: none;
+    border-style: none;
+    float: left;
+    width: 50px;
+    height: 50px;
+    background: #97979c;
+}
+
+section.content {
+    float: left;
+    width: 90%;
+}
+
+section.content video {
+    float: left;
+    width: 100%;
+    height: 100vh;
+    display: none;
+}
+
+section.content .yielded_content {
     float: left;
 }

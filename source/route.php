@@ -2,10 +2,12 @@
 
 namespace library;
 
+use controllers\controller;
+
 class route_buffer {
     public string $path;
     public string $file_key;
-    public $class; //TODO: type hint class as controller
+    public controller $class;
     public string $method;
     public array $params;
 

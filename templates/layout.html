@@ -7,17 +7,31 @@
 	</head>
 	<body>
 		<aside>
-			<ul>
-				<li><a href="/browse">browse</a></li>
-				<li><a href="/register">register</a></li>
-				<li><a href="/login">login</a></li>
-				<li><a href="/account">account</a></li>
-			</ul>
+			<nav>
+				<ul>
+					<li>
+						<ul>
+							<li><a href="/login">login</a></li>
+							<li><a href="/register">register</a></li>
+						</ul>
+					</li>
+					<li><a href="/browse">browse</a></li>
+					<li><a href="/account">account</a></li>
+				</ul>
+			</nav>
+			<section class="video-controls">
+				<button class="playpause"></button>
+			</section>
 		</aside>
-		<section>
-			<button class='button'>Test</button>
-	
-			{{{yield}}}
+		<section class="content">
+			<video>
+				<source src="" type="video/mp4" style="background: green;">
+				Your browser does not support the video tag.
+			</video>
+
+			<section class="yielded_content">
+				{{{yield}}}
+			</section>
 	
 		</section>
 

@@ -1,7 +1,22 @@
-document.getElementsByClassName('button')[0].onclick = function() {
+var video_displayed = false;
+document.getElementsByClassName('playpause')[0].onclick = function() {
     fetch('/test')
-        .then(response => response.text())
+        .then(response => response.json())
         .then(result => console.log(result));
+
+    let video = document.getElementsByTagName('video')[0];
+    let content = document.getElementsByClassName('yielded_content')[0];
+    if (video_displayed) {
+        video.style.display = "none";
+        content.style.display = "block";
+        video_displayed = false;
+        this.style.background = "#97979c";
+        return;
+    }
+    video.style.display = "block";
+    content.style.display = "none";
+    this.style.background = "#73737c";
+    video_displayed = true;
 };
 
 //var links = document.getElementsByTagName('a');

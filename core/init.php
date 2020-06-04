@@ -1,7 +1,5 @@
 <?php
-
-use library\config;
-use library\log;
+session_start();
 
 function directory_files(string $directory) : array {
     return array_filter(array_diff(scandir($directory), ['..', '.']), function ($item) {
@@ -14,7 +12,13 @@ foreach ($source_files as $source_file) {
     require "source/$source_file";
 }
 
-session_start();
+$controller_files = directory_files('controllers');
+foreach ($controller_files as $controller_file) {
+    require "controllers/$controller_file";
+}
+
+use library\config;
+use library\log;
 
 $config = new config;
 function CONFIG(string $key) {
@@ -47,9 +51,4 @@ function dd() : void {
         dump($x); 
     }, func_get_args());
     die;
-}
-
-$controller_files = directory_files('controllers');
-foreach ($controller_files as $controller_file) {
-    require "controllers/$controller_file";
 }
