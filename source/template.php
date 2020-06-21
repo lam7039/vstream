@@ -19,8 +19,9 @@ class template {
 
     public function __construct(array $parameters = [], string $template_path = 'templates/layout.html') {
         $this->layout = new file_buffer($template_path);
-        foreach ($parameters as $key => $value) {
-            $this->layout->body = str_replace("{{{$key}}}", $value, $this->layout->body);
+        
+        if ($parameters) {
+            $this->layout = $this->set_parameters($this->layout, $parameters);
         }
     }
 
@@ -31,6 +32,14 @@ class template {
         }
         
         $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
+        return $buffer;
+    }
+
+    public function set_parameters(file_buffer $buffer, array $parameters) : file_buffer {
+        foreach ($parameters as $key => $value) {
+            $buffer = $this->set_parameter($buffer, $key, $value);
+        }
+
         return $buffer;
     }
 
