@@ -7,26 +7,18 @@ require('routing.php');
 use library\file_buffer;
 use library\template;
 
+use function library\session_exists;
+
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
 
 if (is_file($file_path)) {
 
-    $parameters = [];
-    switch($url_page) {
-        case 'login':
-            $parameters = ['test' => 'login'];
-        break;
-        case 'register':
-
-        break;
-        case 'account':
-
-        break;
-        case 'browse':
-
-        break;
-    }
+    $parameters = [
+        'login' => [
+            'test' => 'login'
+        ],
+    ];
     
     $templating = new template([
         'page_title' => "vstream | $url_page",
@@ -35,6 +27,10 @@ if (is_file($file_path)) {
         'page_script' => 'script.js'
     ]);
 
-    $file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters);
+    $file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters[$url_page] ?? []);
     echo $templating->render($file_buffer);
+}
+
+if (session_exists(CONFIG('SESSION_AUTH'))) {
+    echo $database->fetch('select * from users where id = 3')->username;
 }

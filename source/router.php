@@ -11,11 +11,15 @@ class route_buffer {
     public string $method;
     public array $params;
 
-    public function __construct(string $path, string $destination, array $params = []) {
+    public function __construct(string $path, string $destination, array $params = [], array $constructor_params = []) {
         $this->path = $path;
         if (strpos($destination, '->') !== false) {
             $class_method = explode('->', $destination);
-            $this->class = new $class_method[0];
+            if ($constructor_params) {
+                $this->class = new $class_method[0](...$constructor_params);
+            } else {
+                $this->class = new $class_method[0];
+            }
             $this->method = $class_method[1];
             $this->params = $params;
             return;
@@ -27,8 +31,8 @@ class route_buffer {
 class router {
     private array $routes = [];
 
-    public function bind(string $path, $destination, array $params = []) : void {
-        $this->routes[$path] = new route_buffer($path, $destination, $params);
+    public function bind(string $path, $destination, array $params = [], array $constructor_params = []) : void {
+        $this->routes[$path] = new route_buffer($path, $destination, $params, $constructor_params);
     }
 
     public function get(string $path) : ?string {
@@ -47,7 +51,7 @@ class router {
                     return $response;
                 }
             } else {
-                if ($response = call_user_func([$route->class, $route->method], $route->params)) {
+                if ($response = call_user_func_array([$route->class, $route->method], $route->params)) {
                     return $response;
                 }
             }

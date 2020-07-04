@@ -13,7 +13,11 @@ foreach ($source_files as $source_file) {
 }
 
 $controller_files = directory_files('controllers');
+require 'controllers/controller.php';
 foreach ($controller_files as $controller_file) {
+    if ($controller_file === 'controller.php') {
+        continue;
+    }
     require "controllers/$controller_file";
 }
 

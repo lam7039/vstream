@@ -115,8 +115,8 @@ class database {
     public function fetch(string $sql, array $variables = []) : ?object {
         try {
             $query = $this->query($sql, $variables);
-            if ($query->execute()) {
-                return $query->fetch(PDO::FETCH_OBJ);
+            if ($query->execute() && $response = $query->fetch(PDO::FETCH_OBJ)) {
+                return $response;
             }
         } catch (PDOException $e) {
             LOG_WARNING($e->getMessage());
