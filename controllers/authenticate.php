@@ -10,11 +10,16 @@ use function library\session_set;
 class authentication implements controller {
 	private $database;
 
-	public function __construct(database $database) {
+	public function __construct(database $database = null) {
 		$this->database = $database;
 	}
 
 	public function register(string $username, string $password) : bool {
+		if (!$this->database) {
+			LOG_CRITICAL('Database is set to null');
+			return false;
+		}
+
 		$salt = bin2hex(openssl_random_pseudo_bytes(11));
 		return $this->database->execute(
 			'insert into users (username, password, salt) values (:username, :password, :salt)', 
@@ -23,6 +28,11 @@ class authentication implements controller {
 	}
 
 	public function login(string $username, string $password) : bool {
+		if (!$this->database) {
+			LOG_CRITICAL('Database is set to null');
+			return false;
+		}
+
 		$user = $this->find_user($username);
 		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
 			session_set(CONFIG('SESSION_AUTH'), $user->id);

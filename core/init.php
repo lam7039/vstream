@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-function directory_files(string $directory) : array {
-    return array_filter(array_diff(scandir($directory), ['..', '.']), function ($item) {
+function directory_files(string $directory, array $except = []) : array {
+    return array_filter(array_diff(scandir($directory), array_merge(['..', '.'], $except)), function ($item) {
         return !is_dir($item);
     });
 }
@@ -12,12 +12,9 @@ foreach ($source_files as $source_file) {
     require "source/$source_file";
 }
 
-$controller_files = directory_files('controllers');
 require 'controllers/controller.php';
+$controller_files = directory_files('controllers', ['controller.php']);
 foreach ($controller_files as $controller_file) {
-    if ($controller_file === 'controller.php') {
-        continue;
-    }
     require "controllers/$controller_file";
 }
 
