@@ -14,31 +14,31 @@ class authentication implements controller {
 		$this->database = $database;
 	}
 
-	public function register(string $username, string $password) : bool {
+	public function register(string $username, string $password) : void {
 		if (!$this->database) {
 			LOG_CRITICAL('Database is set to null');
-			return false;
 		}
 
 		$salt = bin2hex(openssl_random_pseudo_bytes(11));
-		return $this->database->execute(
+		if ($this->database->execute(
 			'insert into users (username, password, salt) values (:username, :password, :salt)', 
 			['username' => $username, 'password' => hash('sha256', $salt . $password), 'salt' => $salt]
-		);
+		)) {
+			redirect('/');
+		}
 	}
 
-	public function login(string $username, string $password) : bool {
+	public function login(string $username, string $password) : void {
 		if (!$this->database) {
 			LOG_CRITICAL('Database is set to null');
-			return false;
+			redirect('/');
 		}
 
 		$user = $this->find_user($username);
 		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
 			session_set(CONFIG('SESSION_AUTH'), $user->id);
-			return true;
+			redirect('/');
 		}
-		return false;
 	}
 
 	private function find_user($username) : ?object {
@@ -49,6 +49,7 @@ class authentication implements controller {
 
 	public function logout() : void {
 		session_remove(CONFIG('SESSION_AUTH'));
+		redirect('/');
 	}
 
 }

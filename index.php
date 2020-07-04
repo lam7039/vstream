@@ -8,6 +8,7 @@ use library\file_buffer;
 use library\template;
 
 use function library\session_exists;
+use function library\session_get;
 
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
@@ -32,5 +33,5 @@ if (is_file($file_path)) {
 }
 
 if (session_exists(CONFIG('SESSION_AUTH'))) {
-    echo $database->fetch('select * from users where id = 3')->username;
+    echo $database->fetch('select * from users where id = ' . session_get(CONFIG('SESSION_AUTH')))->username;
 }

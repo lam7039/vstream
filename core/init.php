@@ -53,3 +53,7 @@ function dd() : void {
     }, func_get_args());
     die;
 }
+
+function redirect(string $to) {
+    header('Location: ' . $to);
+}
