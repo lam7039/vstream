@@ -4,6 +4,9 @@ namespace controllers;
 
 use library\database;
 
+use function library\session_remove;
+use function library\session_set;
+
 class authentication {
 	private $database;
 
@@ -11,42 +14,31 @@ class authentication {
 		$this->database = $database;
 	}
 
-	public function register(string $username, string $password, string $salt) : bool {
-		//TODO: create proper registration, also with salt & pepper
-		$sql = [
-			true,
-			'insert into users (username, password, salt) values (:username3, :password3, :salt3)',
-			'insert into users (username, password, salt) values (:username4, :password4, :salt4)'
-		];
-		$variables = [
-			['username3' => 'username3', 'password3' => $password, 'salt3' => $salt],
-			['username4' => 'username4', 'password4' => $password, 'salt4' => $salt]
-		];
-		return $this->database->execute_multiple($sql, $variables);
+	public function register(string $username, string $password) : bool {
+		$salt = uniqid(mt_rand(), true);
+		return $this->database->execute(
+			'insert into users (username, password, salt, pepper) values (:username, :password, :salt)', 
+			['username' => $username, 'password' => hash('sha256', $salt . $password), 'salt' => $salt]
+		);
 	}
 
-	private function find_user($username, $password) : bool {
-		$sql = 'select username from users where username = :username and password = :password';
-		return $this->database->fetch($sql, ['username' => $username, 'password' => $password])->count() === 1;
+	private function find_user($username) : ?object {
+		$sql = 'select username from users where username = :username';
+		$user = $this->database->fetch($sql, ['username' => $username]);
+		return $user->count() === 1 ? $user : null;
 	}
 
 	public function login(string $username, string $password) : bool {
-		//TODO: create proper authentication
-		if (!$this->find_user($username, $password)) {
-			return false;
+		$user = $this->find_user($username);
+		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
+			session_set('auth', $user->id);
+			return true;
 		}
-		//TODO: create session
-		return true;
+		return false;
 	}
 
-	public function logout() : bool {
-		//TODO: remove session if logged in
-		return true;
-	}
-
-	public function details() : array {
-		//TODO: check if logged in, then find details for current user
-		return ['account data'];
+	public function logout() : void {
+		session_remove('auth');
 	}
 
 }

@@ -1,12 +1,12 @@
 <?php
 
-use library\route;
+use library\router;
 
-$route = new route;
+$route = new router;
 
-$route->set('browse', 'html/browse.html');
-$route->set('register', 'html/register.html');
-$route->set('login', 'html/login.html');
-$route->set('account', 'html/account.html');
+$pages = ['browse', 'register', 'login', 'account'];
+foreach ($pages as $page) {
+    $route->bind($page, "html/$page.html");
+}
 
-$route->set('test', '\controllers\test_class->test');
+$route->bind('test', '\controllers\test_class->test');

@@ -12,7 +12,22 @@ $file_path = $route->get($url_page);
 
 if (is_file($file_path)) {
 
-    $file_buffer = new file_buffer($file_path);
+    $parameters = [];
+    switch($url_page) {
+        case 'login':
+            $parameters = ['test' => 'login'];
+        break;
+        case 'register':
+
+        break;
+        case 'account':
+
+        break;
+        case 'browse':
+
+        break;
+    }
+    
     $templating = new template([
         'page_title' => "vstream | $url_page",
         'page_favicon' => 'favicon-32x32.png',
@@ -20,11 +35,6 @@ if (is_file($file_path)) {
         'page_script' => 'script.js'
     ]);
 
-    switch($url_page) {
-        case 'login':
-            $file_buffer = $templating->set_parameter($file_buffer, 'test', 'login');
-        break;
-    }
-    
+    $file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters);
     echo $templating->render($file_buffer);
 }

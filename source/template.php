@@ -21,11 +21,11 @@ class template {
         $this->layout = new file_buffer($template_path);
         
         if ($parameters) {
-            $this->layout = $this->set_parameters($this->layout, $parameters);
+            $this->layout = $this->bind_parameters($this->layout, $parameters);
         }
     }
 
-    public function set_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
+    public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
         if (strpos($buffer->body, "{{{$key}}}") === false) {
             LOG_INFO("Parameter {{{$key}}} does not exist");
             return $buffer;
@@ -35,9 +35,9 @@ class template {
         return $buffer;
     }
 
-    public function set_parameters(file_buffer $buffer, array $parameters) : file_buffer {
+    public function bind_parameters(file_buffer $buffer, array $parameters) : file_buffer {
         foreach ($parameters as $key => $value) {
-            $buffer = $this->set_parameter($buffer, $key, $value);
+            $buffer = $this->bind_parameter($buffer, $key, $value);
         }
 
         return $buffer;

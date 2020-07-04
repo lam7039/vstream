@@ -24,10 +24,10 @@ class route_buffer {
     }
 }
 
-class route {
+class router {
     private array $routes = [];
 
-    public function set(string $path, $destination, array $params = []) : void {
+    public function bind(string $path, $destination, array $params = []) : void {
         $this->routes[$path] = new route_buffer($path, $destination, $params);
     }
 
