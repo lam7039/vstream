@@ -16,7 +16,7 @@ class route_buffer {
         if (strpos($destination, '->') !== false) {
             $class_method = explode('->', $destination);
             if ($constructor_params) {
-                $this->class = new $class_method[0](...$constructor_params);
+                $this->class = new $class_method[0](...array_values($constructor_params));
             } else {
                 $this->class = new $class_method[0];
             }

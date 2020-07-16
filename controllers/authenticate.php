@@ -4,6 +4,7 @@ namespace controllers;
 
 use library\database;
 
+use function library\session_once;
 use function library\session_remove;
 use function library\session_set;
 
@@ -12,13 +13,12 @@ class authentication implements controller {
 
 	public function __construct(database $database = null) {
 		$this->database = $database;
+		if (!$this->database) {
+			LOG_WARNING('Database is set to null');
+		}
 	}
 
 	public function register(string $username, string $password) : void {
-		if (!$this->database) {
-			LOG_CRITICAL('Database is set to null');
-		}
-
 		$salt = bin2hex(openssl_random_pseudo_bytes(11));
 		if ($this->database->execute(
 			'insert into users (username, password, salt) values (:username, :password, :salt)', 
@@ -29,16 +29,14 @@ class authentication implements controller {
 	}
 
 	public function login(string $username, string $password) : void {
-		if (!$this->database) {
-			LOG_CRITICAL('Database is set to null');
-			redirect('/');
-		}
-
 		$user = $this->find_user($username);
 		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
 			session_set(CONFIG('SESSION_AUTH'), $user->id);
 			redirect('/');
 		}
+
+		session_once('incorrect_login', 'Wrong username/password');
+		redirect('/');
 	}
 
 	private function find_user($username) : ?object {

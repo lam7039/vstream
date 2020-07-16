@@ -15,17 +15,8 @@ class config {
                 continue;
             }
 
-            $env_config = explode('=', $line);
-
-            //Get complete value after the first '='
-            $env_config_value = '';
-            foreach ($env_config as $key => $value) {
-                if ($key) {
-                    $env_config_value .= $value;
-                }
-            }
-
-            $this->config[$env_config[0]] = trim($env_config_value);
+            $env_config = explode('=', $line, 2);
+            $this->config[$env_config[0]] = trim($env_config[1]);
         }
     }
 

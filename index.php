@@ -9,6 +9,7 @@ use library\template;
 
 use function library\session_exists;
 use function library\session_get;
+use function library\session_remove;
 
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
@@ -34,4 +35,15 @@ if (is_file($file_path)) {
 
 if (session_exists(CONFIG('SESSION_AUTH'))) {
     echo $database->fetch('select * from users where id = ' . session_get(CONFIG('SESSION_AUTH')))->username;
+}
+
+//TODO: fix session_once so this test works
+if (session_exists('incorrect_login')) {
+    echo session_get('incorrect_login');
+}
+
+if ($url_page === 'browse') {
+    foreach ($temp_sessions as $temp_session) {
+        session_remove($temp_session);
+    }
 }
