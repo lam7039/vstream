@@ -1,4 +1,5 @@
 <?php
+$start = microtime(true);
 set_include_path(__DIR__);
 
 require('core/init.php');
@@ -6,6 +7,7 @@ require('routing.php');
 
 use library\file_buffer;
 use library\template;
+use models\user;
 
 use function library\session_exists;
 use function library\session_get;
@@ -33,8 +35,9 @@ if (is_file($file_path)) {
     echo $templating->render($file_buffer);
 }
 
-if (session_exists(CONFIG('SESSION_AUTH'))) {
-    echo $database->fetch('select * from users where id = ' . session_get(CONFIG('SESSION_AUTH')))->username;
+if (session_exists(env('SESSION_AUTH'))) {
+    $user = new user($database);
+    echo $user->access_user_data(session_get(env('SESSION_AUTH')))->username;
 }
 
 //TODO: fix session_once so this test works
@@ -47,3 +50,5 @@ if ($url_page === 'browse') {
         session_remove($temp_session);
     }
 }
+
+echo '<br />' . (microtime(true) - $start);

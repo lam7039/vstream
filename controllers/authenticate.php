@@ -3,19 +3,19 @@
 namespace controllers;
 
 use library\database;
+use models\user;
 
+use function library\session_get;
 use function library\session_once;
 use function library\session_remove;
 use function library\session_set;
 
+//TODO: create an access table and store the access id into the session instead of the user id
 class authentication implements controller {
 	private $database;
 
-	public function __construct(database $database = null) {
+	public function __construct(database $database) {
 		$this->database = $database;
-		if (!$this->database) {
-			LOG_WARNING('Database is set to null');
-		}
 	}
 
 	public function register(string $username, string $password) : void {
@@ -29,9 +29,11 @@ class authentication implements controller {
 	}
 
 	public function login(string $username, string $password) : void {
-		$user = $this->find_user($username);
+		$user = new user($this->database);
+		$user = $user->find(['username' => $username]);
 		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
-			session_set(CONFIG('SESSION_AUTH'), $user->id);
+			$this->database->execute('insert into access (user_id) values (:user_id)', ['user_id' => $user->id]);
+			session_set(env('SESSION_AUTH'), $this->database->last_inserted_id);
 			redirect('/');
 		}
 
@@ -39,14 +41,9 @@ class authentication implements controller {
 		redirect('/');
 	}
 
-	private function find_user($username) : ?object {
-		$sql = 'select * from users where username = :username';
-		$user = $this->database->fetch($sql, ['username' => $username]);
-		return $user ?? null;
-	}
-
 	public function logout() : void {
-		session_remove(CONFIG('SESSION_AUTH'));
+		$this->database->execute('delete from access where id = :id', ['id' => session_get(env('SESSION_AUTH'))]);
+		session_remove(env('SESSION_AUTH'));
 		redirect('/');
 	}
 

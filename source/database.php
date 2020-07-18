@@ -7,15 +7,16 @@ use PDOException;
 use PDOStatement;
 
 class database {
-    private $connection = null;
+    private PDO $connection;
+    public int $last_inserted_id = 0;
 
     public function __construct() {
-        $host = CONFIG('DB_HOST');
-        $dbname = CONFIG('DB_DATABASE');
-        $port = CONFIG('DB_PORT');
-        $charset = CONFIG('DB_CHARSET');
-        $username = CONFIG('DB_USERNAME');
-        $password = CONFIG('DB_PASSWORD');
+        $host = env('DB_HOST');
+        $dbname = env('DB_DATABASE');
+        $port = env('DB_PORT');
+        $charset = env('DB_CHARSET');
+        $username = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -64,6 +65,7 @@ class database {
 
     public function commit() : bool {
         try {
+            $this->last_inserted_id = $this->connection->lastInsertId();
             return $this->connection->commit();
         } catch (PDOException $e) {
             LOG_WARNING($e->getMessage());
@@ -82,7 +84,9 @@ class database {
 
     public function execute(string $sql, array $variables = []) : bool {
         try {
-            return $this->query($sql, $variables)->execute();
+            $executed = $this->query($sql, $variables)->execute();
+            $this->last_inserted_id = $this->connection->lastInsertId();
+            return $executed;
         } catch (PDOException $e) {
             LOG_WARNING($e->getMessage());
         }

@@ -13,4 +13,4 @@ foreach ($pages as $page) {
 
 $route->bind('do_register', '\controllers\authentication->register', ['lamram', 'password'], [$database]);
 $route->bind('do_login', '\controllers\authentication->login', ['lamram', 'password'], [$database]);
-$route->bind('do_logout', '\controllers\authentication->logout');
+$route->bind('do_logout', '\controllers\authentication->logout', [], [$database]);
