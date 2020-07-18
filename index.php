@@ -1,5 +1,4 @@
 <?php
-$start = microtime(true);
 set_include_path(__DIR__);
 
 require('core/init.php');
@@ -50,5 +49,3 @@ if ($url_page === 'browse') {
         session_remove($temp_session);
     }
 }
-
-echo '<br />' . (microtime(true) - $start);

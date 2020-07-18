@@ -12,22 +12,28 @@ class model {
         $this->database = $database;
     }
 
-    //TODO: fix/improve this, otherwise check if this is actually necessary/useful
 	public function find(array $where = [], array $columns = ['*']) : ?object {
-        $select_str = $where_str = '';
+        $select_str = $this->sql_columns($columns);
+        $sql = "select $select_str from {$this->table}";
+        if ($where) {
+            $sql .= ' ' . $this->sql_where($where);
+        }
+		return $this->database->fetch($sql, $where) ?? null;
+    }
+
+    protected function sql_columns(array $columns) : string {
+        $select_str = '';
         foreach ($columns as $column) {
             $select_str .= $column . ', ';
         }
-        $select_str = substr($select_str, 0, -2);
+        return substr($select_str, 0, -2);
+    }
 
-        if ($where) {
-            foreach (array_keys($where) as $column) {
-                $where_str .= "where $column = :$column and ";
-            }
-            $where_str = substr($where_str, 0, -4);
+    protected function sql_where(array $where, string $operator = 'and') : string {
+        $where_str = '';
+        foreach (array_keys($where) as $column) {
+            $where_str .= "where $column = :$column $operator ";
         }
-
-        $sql = trim("select $select_str from {$this->table} $where_str");
-		return $this->database->fetch($sql, $where) ?? null;
+        return substr($where_str, 0, -(strlen($operator) + 2));
     }
 }
