@@ -3,7 +3,7 @@
 namespace controllers;
 
 use library\database;
-use models\access;
+use models\user_access;
 use models\user;
 
 use function library\session_exists;
@@ -14,11 +14,11 @@ use function library\session_set;
 
 class authentication implements controller {
 	private user $user;
-	private access $access;
+	private user_access $user_access;
 
 	public function __construct(database $database) {
 		$this->user = new user($database);
-		$this->access = new access($database);
+		$this->user_access = new user_access($database);
 	}
 
 	public function register(string $username, string $password) : void {
@@ -36,8 +36,8 @@ class authentication implements controller {
 		$user = $this->user->find(['username' => $username]);
 		if ($user && password_verify($password, $user->password)) {
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
-			$access_id = $this->access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
-			session_set(env('SESSION_AUTH'), $access_id);
+			$user_access_id = $this->user_access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
+			session_set(env('SESSION_AUTH'), $user_access_id);
 			redirect('/');
 		}
 
@@ -46,18 +46,18 @@ class authentication implements controller {
 	}
 
 	public function logout() : void {
-		$this->access->delete(session_get(env('SESSION_AUTH')) ?? 0);
+		$this->user_access->delete(session_get(env('SESSION_AUTH')) ?? 0);
 		session_remove(env('SESSION_AUTH'));
 		redirect('/');
 	}
 
-	//public function find_access() : void {
-	//	$access = $this->access->find(['ip_address' => ip2long($_SERVER['REMOTE_ADDR'])], ['id']);
-	//	if ($access) {
-	//		session_set('access', true);
-	//		session_set(env('SESSION_AUTH'), $access->id);
+	//public function find_user_access() : void {
+	//	$user_access = $this->user_access->find(['ip_address' => ip2long($_SERVER['REMOTE_ADDR'])], ['id']);
+	//	if ($user_access) {
+	//		session_set('user_access', true);
+	//		session_set(env('SESSION_AUTH'), $user_access->id);
 	//	} else {
-	//		session_set('access', false);
+	//		session_set('user_access', false);
 	//	}
 	//	redirect('/');
 	//}

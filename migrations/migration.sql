@@ -7,7 +7,7 @@ create table if not exists `vstream`.`users` (
     constraint `users_pk` primary key (`id`)
 );
 
-create table if not exists `vstream`.`access` (
+create table if not exists `vstream`.`users_access` (
     `id` int unsigned not null auto_increment,
     `user_id` int unsigned not null,
     `ip_address` int(45) unsigned not null unique,
@@ -31,7 +31,7 @@ create table if not exists `vstream`.`transcode_list` (
     constraint `videos_fk` foreign key (`video_id`) references `vstream`.`videos`(`id`) on delete cascade
 );
 
-create trigger `access_expiry`
-    before insert on `vstream`.`access`
+create trigger `users_access_expiry`
+    before insert on `vstream`.`users_access`
     for each row
     set new.`expiry` = adddate(now(), interval 10 day);

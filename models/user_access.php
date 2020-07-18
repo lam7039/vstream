@@ -4,10 +4,10 @@ namespace models;
 
 use library\database;
 
-class access extends model {
+class user_access extends model {
 
     public function __construct(database $database) {
         parent::__construct($database);
-        $this->table = 'access';
+        $this->table = 'users_access';
     }
 }
