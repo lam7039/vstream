@@ -21,17 +21,27 @@ class model {
 		return $this->database->fetch($sql, $where) ?? null;
     }
 
-    public function insert(array $columns, array $values) : int {
-        $columns_str = $this->sql_columns($columns);
-        $values_str = $this->sql_columns($columns, true);
-        if ($this->database->execute("insert into {$this->table} ($columns_str) values ($values_str)", array_combine($columns, $values))) {
+    public function insert(array $columns) : int {
+        $columns_str = $this->sql_columns(array_keys($columns));
+        $values_str = $this->sql_columns(array_keys($columns), true);
+        $sql = "insert into {$this->table} ($columns_str) values ($values_str)";
+        if ($this->database->execute($sql, $columns)) {
             return $this->database->last_inserted_id;
         }
+        LOG_WARNING('Insert query failed: ' . $sql);
         return -1;
     }
 
     public function delete(int $id) : bool {
-        return $this->database->execute("delete from {$this->table} where id = :id", ['id' => $id]);
+        if (!$id) {
+            return false;
+        }
+        $sql = "delete from {$this->table} where id = :id";
+        $deleted = $this->database->execute($sql, ['id' => $id]);
+        if (!$deleted) {
+            LOG_WARNING('Delete query failed: ' . $sql);
+        }
+        return $deleted;
     }
 
     protected function sql_columns(array $columns, bool $colon = false) : string {
