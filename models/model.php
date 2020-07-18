@@ -4,7 +4,7 @@ namespace models;
 
 use library\database;
 
-class model {
+abstract class model {
     protected database $database;
     protected string $table;
 
