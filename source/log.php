@@ -28,10 +28,10 @@ class log {
 
     public function append(string $string, string $error_type) : void {
         if (!is_file($this->debug_file)) {
-            self::create_debug_file();
+            $this->create_debug_file();
         }
 
-        $content = self::generate_debug($string, $error_type);
+        $content = $this->generate_debug($string, $error_type);
         file_put_contents($this->debug_file, $content, FILE_APPEND | LOCK_EX);
     }
 }
