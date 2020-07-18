@@ -18,7 +18,7 @@ abstract class model {
         if ($where) {
             $sql .= ' ' . $this->sql_where($where);
         }
-		return $this->database->fetch($sql, $where) ?? null;
+        return $this->database->fetch($sql, $where) ?? null;
     }
 
     public function insert(array $columns) : int {
