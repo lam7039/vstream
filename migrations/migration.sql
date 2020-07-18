@@ -12,7 +12,7 @@ create table if not exists `vstream`.`access` (
     `id` int unsigned not null auto_increment,
     `user_id` int unsigned not null,
     `ip_address` int(45) unsigned not null unique,
-    `expiry` datetime not null,
+    `expiry` timestamp not null,
     constraint `access_pk` primary key (`id`),
     constraint `users_fk` foreign key (`user_id`) references `vstream`.`users`(`id`)
 );
@@ -32,11 +32,7 @@ create table if not exists `vstream`.`transcode_list` (
     constraint `videos_fk` foreign key (`video_id`) references `vstream`.`videos`(`id`)
 );
 
-/*TODO: fix trigger*/
-/*create trigger access_expiry 
-    before insert 
-    on `vstream`.`access`
+create trigger `access_expiry`
+    before insert on `vstream`.`access`
     for each row
-begin
-    set new.`expiry` = adddate(now(), interval 14 day);
-end;*/
+    set new.`expiry` = adddate(now(), interval 10 day);
