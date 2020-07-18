@@ -22,9 +22,8 @@ class authentication implements controller {
 	}
 
 	public function register(string $username, string $password) : void {
-		$salt = bin2hex(openssl_random_pseudo_bytes(11));
-		$password = hash('sha256', $salt . $password);
-		$this->user->insert(['username' => $username, 'password' => $password, 'salt' => $salt]);
+		$password = password_hash($password, PASSWORD_DEFAULT);
+		$this->user->insert(['username' => $username, 'password' => $password]);
 		redirect('/');
 	}
 
@@ -35,7 +34,7 @@ class authentication implements controller {
 		}
 
 		$user = $this->user->find(['username' => $username]);
-		if ($user && $user->password === hash('sha256', $user->salt . $password)) {
+		if ($user && password_verify($password, $user->password)) {
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 			$access_id = $this->access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
 			session_set(env('SESSION_AUTH'), $access_id);

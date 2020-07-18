@@ -2,9 +2,8 @@ create database if not exists `vstream`;
 
 create table if not exists `vstream`.`users` (
     `id` int unsigned not null auto_increment,
-    `username` varchar(255) not null unique,
-    `password` varchar (256) not null,
-    `salt` varchar(22) not null unique,
+    `username` varchar(60) not null unique,
+    `password` varchar (60) not null,
     constraint `users_pk` primary key (`id`)
 );
 
@@ -14,7 +13,7 @@ create table if not exists `vstream`.`access` (
     `ip_address` int(45) unsigned not null unique,
     `expiry` datetime not null,
     constraint `access_pk` primary key (`id`),
-    constraint `users_fk` foreign key (`user_id`) references `vstream`.`users`(`id`)
+    constraint `users_fk` foreign key (`user_id`) references `vstream`.`users`(`id`) on delete cascade
 );
 
 create table if not exists `vstream`.`videos` (
@@ -29,7 +28,7 @@ create table if not exists `vstream`.`transcode_list` (
     `video_id` int unsigned,
     `interrupted_time` int unsigned not null,
     constraint `transcode_list_pk` primary key (`id`),
-    constraint `videos_fk` foreign key (`video_id`) references `vstream`.`videos`(`id`)
+    constraint `videos_fk` foreign key (`video_id`) references `vstream`.`videos`(`id`) on delete cascade
 );
 
 create trigger `access_expiry`
