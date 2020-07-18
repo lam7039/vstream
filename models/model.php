@@ -21,9 +21,25 @@ class model {
 		return $this->database->fetch($sql, $where) ?? null;
     }
 
-    protected function sql_columns(array $columns) : string {
+    public function insert(array $columns, array $values) : int {
+        $columns_str = $this->sql_columns($columns);
+        $values_str = $this->sql_columns($columns, true);
+        if ($this->database->execute("insert into {$this->table} ($columns_str) values ($values_str)", array_combine($columns, $values))) {
+            return $this->database->last_inserted_id;
+        }
+        return -1;
+    }
+
+    public function delete(int $id) : bool {
+        return $this->database->execute("delete from {$this->table} where id = :id", ['id' => $id]);
+    }
+
+    protected function sql_columns(array $columns, bool $colon = false) : string {
         $select_str = '';
         foreach ($columns as $column) {
+            if ($colon) {
+                $select_str .= ':';
+            }
             $select_str .= $column . ', ';
         }
         return substr($select_str, 0, -2);

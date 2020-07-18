@@ -36,7 +36,8 @@ if (is_file($file_path)) {
 
 if (session_exists(env('SESSION_AUTH'))) {
     $user = new user($database);
-    echo $user->access_user_data(session_get(env('SESSION_AUTH')))->username;
+    $user = $user->access_user_data(session_get(env('SESSION_AUTH')), ['username', 'ip_address']);
+    echo $user->username . ' (' . long2ip($user->ip_address) . ')';
 }
 
 //TODO: fix session_once so this test works

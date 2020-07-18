@@ -10,7 +10,8 @@ create table if not exists `vstream`.`users` (
 
 create table if not exists `vstream`.`access` (
     `id` int unsigned not null auto_increment,
-    `user_id` int unsigned not null unique,
+    `user_id` int unsigned not null,
+    `ip_address` int(45) unsigned not null unique,
     `expiry` datetime not null,
     constraint `access_pk` primary key (`id`),
     constraint `users_fk` foreign key (`user_id`) references `vstream`.`users`(`id`)
@@ -32,10 +33,10 @@ create table if not exists `vstream`.`transcode_list` (
 );
 
 /*TODO: fix trigger*/
-create trigger access_expiry 
+/*create trigger access_expiry 
     before insert 
     on `vstream`.`access`
     for each row
 begin
     set new.`expiry` = adddate(now(), interval 14 day);
-end;
+end;*/
