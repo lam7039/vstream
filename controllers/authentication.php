@@ -35,6 +35,10 @@ class authentication implements controller {
 
 		$user = $this->user->find(['username' => $username]);
 		if ($user && password_verify($password, $user->password)) {
+			if (password_needs_rehash($password, PASSWORD_DEFAULT)) {
+				$password = password_hash($password, PASSWORD_DEFAULT);
+				$this->user->update(['password' => $password], ['id' => $user->id]);
+			}
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 			$user_access_id = $this->user_access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
 			session_set(env('SESSION_AUTH'), $user_access_id);
@@ -46,7 +50,7 @@ class authentication implements controller {
 	}
 
 	public function logout() : void {
-		$this->user_access->delete(session_get(env('SESSION_AUTH')) ?? 0);
+		$this->user_access->delete(['id' => session_get(env('SESSION_AUTH')) ?? 0]);
 		session_remove(env('SESSION_AUTH'));
 		redirect('/');
 	}

@@ -28,20 +28,25 @@ abstract class model {
         if ($this->database->execute($sql, $columns)) {
             return $this->database->last_inserted_id;
         }
-        LOG_WARNING('Insert query failed: ' . $sql);
         return -1;
     }
 
-    public function delete(int $id) : bool {
-        if (!$id) {
-            return false;
+    //TODO: test update
+    public function update(array $columns, array $where = []) : bool {
+        $sql = "update {$this->table} set {$this->sql_set($columns)}";
+        if ($where) {
+            $sql .= ' ' . $this->sql_where($where);
         }
-        $sql = "delete from {$this->table} where id = :id";
-        $deleted = $this->database->execute($sql, ['id' => $id]);
-        if (!$deleted) {
-            LOG_WARNING('Delete query failed: ' . $sql);
+        return $this->database->execute($sql, $columns);
+    }
+
+    //TODO: test new delete
+    public function delete(array $where) : bool {
+        $sql = "delete from {$this->table}";
+        if ($where) {
+            $sql .= ' ' . $this->sql_where($where);
         }
-        return $deleted;
+        return $this->database->execute($sql, $where);
     }
 
     protected function sql_columns(array $columns, bool $colon = false) : string {
@@ -61,5 +66,13 @@ abstract class model {
             $where_str .= "where $column = :$column $operator ";
         }
         return substr($where_str, 0, -(strlen($operator) + 2));
+    }
+
+    protected function sql_set(array $set) : string {
+        $set_str = '';
+        foreach (array_keys($set) as $column) {
+            $set_str .= " $column = :$column,";
+        }
+        return substr($set_str, 0, -1);
     }
 }
