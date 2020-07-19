@@ -21,7 +21,10 @@ class authentication implements controller {
 		$this->user_access = new user_access($database);
 	}
 
-	public function register(string $username, string $password) : void {
+	public function register(string $username, string $password, string $verification) : void {
+		if ($password !== $verification) {
+			return;
+		}
 		$password = password_hash($password, PASSWORD_DEFAULT);
 		$this->user->insert(['username' => $username, 'password' => $password]);
 		redirect('/');
