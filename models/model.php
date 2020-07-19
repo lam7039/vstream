@@ -28,7 +28,7 @@ abstract class model {
         if ($this->database->execute($sql, $columns)) {
             return $this->database->last_inserted_id;
         }
-        return -1;
+        return 0;
     }
 
     //TODO: test update
@@ -40,7 +40,6 @@ abstract class model {
         return $this->database->execute($sql, $columns);
     }
 
-    //TODO: test new delete
     public function delete(array $where) : bool {
         $sql = "delete from {$this->table}";
         if ($where) {

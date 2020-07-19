@@ -35,7 +35,7 @@ class authentication implements controller {
 
 		$user = $this->user->find(['username' => $username]);
 		if ($user && password_verify($password, $user->password)) {
-			if (password_needs_rehash($password, PASSWORD_DEFAULT)) {
+			if (password_needs_rehash($password, $user->password)) {
 				$password = password_hash($password, PASSWORD_DEFAULT);
 				$this->user->update(['password' => $password], ['id' => $user->id]);
 			}
