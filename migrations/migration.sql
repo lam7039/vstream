@@ -3,7 +3,7 @@ create database if not exists `vstream`;
 create table if not exists `vstream`.`users` (
     `id` int unsigned not null auto_increment,
     `username` varchar(60) not null unique,
-    `password` varchar (60) not null,
+    `password` varchar (255) not null,
     constraint `users_pk` primary key (`id`)
 );
 
