@@ -43,6 +43,7 @@ class authentication implements controller {
 			$user_access_id = $this->user_access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
 			session_set(env('SESSION_AUTH'), $user_access_id);
 			redirect('/');
+			return;
 		}
 
 		session_once('incorrect_login', 'Wrong username/password');
