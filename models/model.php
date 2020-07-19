@@ -31,13 +31,12 @@ abstract class model {
         return 0;
     }
 
-    //TODO: test update
     public function update(array $columns, array $where = []) : bool {
         $sql = "update {$this->table} set {$this->sql_set($columns)}";
         if ($where) {
             $sql .= ' ' . $this->sql_where($where);
         }
-        return $this->database->execute($sql, $columns);
+        return $this->database->execute($sql, array_merge($columns, $where));
     }
 
     public function delete(array $where) : bool {
