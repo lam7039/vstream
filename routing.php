@@ -8,7 +8,7 @@ $database = new database;
 
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {
-    $route->bind($page, "html/$page.html");
+    $route->bind($page, "public/html/$page.html");
 }
 
 $route->bind('do_register', '\controllers\authentication->register', ['lamram', 'password', 'password'], [$database]);

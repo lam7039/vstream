@@ -3,7 +3,7 @@
 namespace library;
 
 class log {
-    private $template_path = 'templates/debug.html';
+    private $template_path = 'public/templates/debug.html';
     private $debug_file = 'debug.html';
 
     private function create_debug_file() : void {

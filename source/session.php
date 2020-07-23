@@ -2,10 +2,8 @@
 
 namespace library;
 
-$temp_sessions = [];
-
 function session_exists(string $key) : bool {
-    return isset($_SESSION[$key]) ? true : false;
+    return isset($_SESSION[$key]);
 }
 
 function session_get(string $key) {
@@ -22,9 +20,22 @@ function session_remove(string $key) : void {
     }
 }
 
+//TODO: fix session once and clear
 function session_once(string $key, $value) : void {
-    $temp_sessions[] = $key;
-    if (!in_array($key, $temp_sessions)) {
+    if (!session_exists(env('SESSION_TEMP'))) {
+        session_set(env('SESSION_TEMP'), []);
+    }
+    if (!in_array($key, session_get(env('SESSION_TEMP')))) {
+        session_get(env('SESSION_TEMP'))[] = $key;
         session_set($key, $value);
+    }
+}
+
+function session_clear_temp() : void {
+    foreach (session_get(env('SESSION_TEMP')) ?? [] as $temp_session) {
+        session_remove($temp_session);
+    }
+    if (!session_get(env('SESSION_TEMP')) ?? []) {
+        session_set(env('SESSION_TEMP'), []);
     }
 }

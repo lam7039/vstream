@@ -1,5 +1,5 @@
-var video_displayed = false;
-document.getElementsByClassName('playpause')[0].onclick = function() {
+let video_displayed = false;
+document.getElementsByClassName('playpause')[0].onclick = () => {
     fetch('/test')
         .then(response => response.json())
         .then(result => console.log(result));
@@ -19,7 +19,7 @@ document.getElementsByClassName('playpause')[0].onclick = function() {
     video_displayed = true;
 };
 
-//var links = document.getElementsByTagName('a');
+//let links = document.getElementsByTagName('a');
 //for (let i = 0; i < links.length; i++) {
 //    links[i].onclick = function() {
 //        section = document.getElementsByTagName('section')[0];

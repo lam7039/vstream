@@ -17,7 +17,7 @@ class file_buffer {
 class template {
     private file_buffer $layout;
 
-    public function __construct(array $parameters = [], string $template_path = 'templates/layout.html') {
+    public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
         
         if ($parameters) {
