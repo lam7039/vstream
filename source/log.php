@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 class log {
     private $template_path = 'public/templates/debug.html';

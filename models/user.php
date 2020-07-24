@@ -2,7 +2,7 @@
 
 namespace models;
 
-use library\database;
+use source\database;
 
 class user extends model {
     protected string $table = 'users';

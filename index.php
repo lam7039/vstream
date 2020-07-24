@@ -4,16 +4,25 @@ set_include_path(__DIR__);
 require('core/init.php');
 require('routing.php');
 
-use library\file_buffer;
-use library\template;
+use source\file_buffer;
+use source\template;
 use models\user;
 
-use function library\session_isset;
-use function library\session_get;
-use function library\session_clear_temp;
+use function source\session_isset;
+use function source\session_get;
+use function source\session_clear_temp;
+use function source\session_set;
+use function source\crsf_token;
 
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
+
+// if (!hash_equals(session_get('token'), $_POST['token'])) {
+//     LOG_WARNING('CRSF Token mismatch');
+//     return;
+// }
+
+// session_set('token', crsf_token());
 
 if (is_file($file_path)) {
     $user = null;
@@ -21,6 +30,8 @@ if (is_file($file_path)) {
         $user = new user($database);
         $user = $user->access_user_data(session_get(env('SESSION_AUTH')), ['username', 'ip_address']);
     }
+
+    //TODO: XSS and CSRF protection
 
     $parameters = [
         'login' => [

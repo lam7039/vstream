@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;

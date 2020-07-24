@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 class file_buffer {
     public string $path;

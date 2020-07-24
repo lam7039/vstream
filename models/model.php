@@ -2,9 +2,9 @@
 
 namespace models;
 
-use library\database;
-use library\sql_builder;
-use library\builder;
+use source\database;
+use source\sql_builder;
+use source\builder;
 
 abstract class model implements sql_builder {
     protected string $table;

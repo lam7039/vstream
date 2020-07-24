@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 function session_isset(string $key) : bool {
     return isset($_SESSION[$key]);

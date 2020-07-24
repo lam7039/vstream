@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 function token_generate() : string {
     $token = bin2hex(openssl_random_pseudo_bytes(64));

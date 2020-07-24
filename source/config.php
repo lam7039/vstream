@@ -1,6 +1,6 @@
 <?php
 
-namespace library;
+namespace source;
 
 class config {
     private array $config = [];

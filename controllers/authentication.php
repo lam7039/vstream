@@ -2,15 +2,15 @@
 
 namespace controllers;
 
-use library\database;
+use source\database;
 use models\user_access;
 use models\user;
 
-use function library\session_isset;
-use function library\session_get;
-use function library\session_once;
-use function library\session_remove;
-use function library\session_set;
+use function source\session_isset;
+use function source\session_get;
+use function source\session_once;
+use function source\session_remove;
+use function source\session_set;
 
 class authentication implements controller {
 	private user $user;

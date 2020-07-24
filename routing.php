@@ -1,7 +1,7 @@
 <?php
 
-use library\database;
-use library\router;
+use source\database;
+use source\router;
 
 $route = new router;
 $database = new database;

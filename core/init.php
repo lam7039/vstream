@@ -24,8 +24,8 @@ foreach ($controller_files as $controller_file) {
     require "controllers/$controller_file";
 }
 
-use library\config;
-use library\log;
+use source\config;
+use source\log;
 
 $log = new log;
 function LOG_INFO(string $string) : void {
