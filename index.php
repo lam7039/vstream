@@ -8,7 +8,7 @@ use library\file_buffer;
 use library\template;
 use models\user;
 
-use function library\session_exists;
+use function library\session_isset;
 use function library\session_get;
 use function library\session_clear_temp;
 
@@ -17,7 +17,7 @@ $file_path = $route->get($url_page);
 
 if (is_file($file_path)) {
     $user = null;
-    if (session_exists(env('SESSION_AUTH'))) {
+    if (session_isset(env('SESSION_AUTH'))) {
         $user = new user($database);
         $user = $user->access_user_data(session_get(env('SESSION_AUTH')), ['username', 'ip_address']);
     }

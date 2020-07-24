@@ -10,7 +10,7 @@ interface sql_builder {
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
-    
+
     public function sql_columns(array $columns, bool $colon = false) : string;
 }
 

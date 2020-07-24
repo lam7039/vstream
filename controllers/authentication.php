@@ -6,7 +6,7 @@ use library\database;
 use models\user_access;
 use models\user;
 
-use function library\session_exists;
+use function library\session_isset;
 use function library\session_get;
 use function library\session_once;
 use function library\session_remove;
@@ -31,7 +31,7 @@ class authentication implements controller {
 	}
 
 	public function login(string $username, string $password) : void {
-		if (session_exists(env('SESSION_AUTH'))) {
+		if (session_isset(env('SESSION_AUTH'))) {
 			redirect('/');
 			return;
 		}
