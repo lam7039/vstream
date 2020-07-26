@@ -1,3 +1,20 @@
 <section>
-    <p>{{test}}</p>
+    <p>{{error}}</p>
+    <form action='/do_login' method='post'>
+        <input type='hidden' name='token' value='{{token}}' />
+        <table>
+            <tr>
+                <td>Username</td>
+                <td><input type='text' name='username' /></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type='password' name='password' /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type='submit' /></td>
+            </tr>
+        </table>
+    </form>
 </section>

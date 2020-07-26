@@ -8,21 +8,19 @@ use source\file_buffer;
 use source\template;
 use models\user;
 
+use function source\csrf_check;
+use function source\csrf_create;
 use function source\session_isset;
 use function source\session_get;
 use function source\session_clear_temp;
-use function source\session_set;
-use function source\crsf_token;
 
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
 
-// if (!hash_equals(session_get('token'), $_POST['token'])) {
-//     LOG_WARNING('CRSF Token mismatch');
-//     return;
-// }
-
-// session_set('token', crsf_token());
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_check()) {
+    redirect('/error/500');
+    return;
+}
 
 if (is_file($file_path)) {
     $user = null;
@@ -31,14 +29,16 @@ if (is_file($file_path)) {
         $user = $user->access_user_data(session_get(env('SESSION_AUTH')), ['username', 'ip_address']);
     }
 
-    //TODO: XSS and CSRF protection
+    //TODO: XSS protection
 
     $parameters = [
         'login' => [
-            'test' => 'login'
+            'error' => session_get('incorrect_login') ?? '',
+            'token' => csrf_create()
         ],
-        'browse' => [
-            'error' => session_get('incorrect_login') ?? ''
+        'register' => [
+            'error' => session_get('password_mismatch') ?? '',
+            'token' => csrf_create()
         ],
         'account' => [
             'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : ''
