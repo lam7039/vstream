@@ -15,42 +15,34 @@ use function source\session_set;
 class authentication implements controller {
 	private user $user;
 	private user_access $user_access;
-	private string $username;
-	private string $password;
-	private string $password_verification;
 
 	public function __construct(database $database) {
 		$this->user = new user($database);
 		$this->user_access = new user_access($database);
-
-		//TODO: retrieve post variables somewhere else
-		$this->username = $_POST['username'] ?? '';
-		$this->password = $_POST['password'] ?? '';
-		$this->password_verification = $_POST['password_verification'] ?? '';
 	}
 
-	public function register() : void {
-		if ($this->password !== $this->password_verification) {
+	public function register(string $username, string $password, string $verification) : void {
+		if ($password !== $verification) {
 			session_once('password_mismatch', 'Password mismatch');
 			redirect('/register');
 			return;
 		}
-		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
-		$this->user->insert(['username' => $this->username, 'password' => $this->password]);
+		$password = password_hash($password, PASSWORD_DEFAULT);
+		$this->user->insert(['username' => $username, 'password' => $password]);
 		redirect('/');
 	}
 
-	public function login() : void {
+	public function login(string $username, string $password) : void {
 		if (session_isset(env('SESSION_AUTH'))) {
 			redirect('/');
 			return;
 		}
 
-		$user = $this->user->find(['username' => $this->username]);
-		if ($user && password_verify($this->password, $user->password)) {
-			if (password_needs_rehash($this->password, $user->password)) {
-				$this->password = password_hash($this->password, PASSWORD_DEFAULT);
-				$this->user->update(['password' => $this->password], ['id' => $user->id]);
+		$user = $this->user->find(['username' => $username]);
+		if ($user && password_verify($password, $user->password)) {
+			if (password_needs_rehash($password, $user->password)) {
+				$password = password_hash($password, PASSWORD_DEFAULT);
+				$this->user->update(['password' => $password], ['id' => $user->id]);
 			}
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 			$user_access_id = $this->user_access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
