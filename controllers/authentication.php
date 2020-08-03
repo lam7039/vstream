@@ -3,22 +3,18 @@
 namespace controllers;
 
 use source\database;
-use models\user_access;
 use models\user;
 
 use function source\session_isset;
-use function source\session_get;
 use function source\session_once;
 use function source\session_remove;
 use function source\session_set;
 
 class authentication implements controller {
 	private user $user;
-	private user_access $user_access;
 
 	public function __construct(database $database) {
 		$this->user = new user($database);
-		$this->user_access = new user_access($database);
 	}
 
 	public function register(string $username, string $password, string $verification) : void {
@@ -27,9 +23,10 @@ class authentication implements controller {
 			redirect('/register');
 			return;
 		}
-		$password = password_hash($password, PASSWORD_DEFAULT);
-		$this->user->insert(['username' => $username, 'password' => $password]);
-		redirect('/');
+		$password_hash = password_hash($password, PASSWORD_DEFAULT);
+		$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
+		$this->user->insert(['username' => $username, 'password' => $password_hash, 'ip_address' => $ip_address]);
+		$this->login($username, $password);
 	}
 
 	public function login(string $username, string $password) : void {
@@ -45,8 +42,9 @@ class authentication implements controller {
 				$this->user->update(['password' => $password], ['id' => $user->id]);
 			}
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
-			$user_access_id = $this->user_access->insert(['user_id' => $user->id, 'ip_address' => $ip_address]);
-			session_set(env('SESSION_AUTH'), $user_access_id);
+			$this->user->update(['ip_address' => $ip_address], ['id' => $user->id]);
+			session_set(env('SESSION_AUTH'), $user->id);
+
 			redirect('/');
 			return;
 		}
@@ -56,20 +54,7 @@ class authentication implements controller {
 	}
 
 	public function logout() : void {
-		$this->user_access->delete(['id' => session_get(env('SESSION_AUTH')) ?? 0]);
 		session_remove(env('SESSION_AUTH'));
 		redirect('/');
 	}
-
-	//public function find_user_access() : void {
-	//	$user_access = $this->user_access->find(['ip_address' => ip2long($_SERVER['REMOTE_ADDR'])], ['id']);
-	//	if ($user_access) {
-	//		session_set('user_access', true);
-	//		session_set(env('SESSION_AUTH'), $user_access->id);
-	//	} else {
-	//		session_set('user_access', false);
-	//	}
-	//	redirect('/');
-	//}
-
 }

@@ -26,7 +26,7 @@ if (is_file($file_path)) {
     $user = null;
     if (session_isset(env('SESSION_AUTH'))) {
         $user = new user($database);
-        $user = $user->access_user_data(session_get(env('SESSION_AUTH')), ['username', 'ip_address']);
+        $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
     }
 
     //TODO: XSS protection
@@ -34,14 +34,14 @@ if (is_file($file_path)) {
     $parameters = [
         'login' => [
             'error' => session_get('incorrect_login') ?? '',
-            'token' => csrf_create()
+            'token' => csrf_create(),
         ],
         'register' => [
             'error' => session_get('password_mismatch') ?? '',
-            'token' => csrf_create()
+            'token' => csrf_create(),
         ],
         'account' => [
-            'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : ''
+            'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
         ]
     ];
     
@@ -50,7 +50,7 @@ if (is_file($file_path)) {
         'page_title' => "vstream | $url_page",
         'page_favicon' => 'favicon-32x32.png',
         'page_style' => 'layout.css',
-        'page_script' => 'script.js'
+        'page_script' => 'script.js',
     ]);
 
     $file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters[$url_page] ?? []);

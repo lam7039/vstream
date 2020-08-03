@@ -10,8 +10,6 @@ interface sql_builder {
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
-
-    public function sql_columns(array $columns, bool $colon = false) : string;
 }
 
 class builder implements sql_builder {
@@ -66,7 +64,7 @@ class builder implements sql_builder {
         return $this->database->execute($sql, $where);
     }
 
-    public function sql_columns(array $columns, bool $colon = false) : string {
+    private function sql_columns(array $columns, bool $colon = false) : string {
         $select_str = '';
         foreach ($columns as $column) {
             if ($colon) {

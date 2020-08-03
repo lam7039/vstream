@@ -37,8 +37,4 @@ abstract class model implements sql_builder {
     public function delete(array $where) : bool {
         return $this->builder->delete($where);
     }
-
-    public function sql_columns(array $columns, bool $colon = false) : string {
-        return $this->builder->sql_columns($columns, $colon);
-    }
 }
