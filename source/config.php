@@ -15,8 +15,8 @@ class config {
                 continue;
             }
 
-            $env_config = explode('=', $line, 2);
-            $this->config[$env_config[0]] = trim($env_config[1]);
+            [$key, $value] = explode('=', $line, 2);
+            $this->config[$key] = trim($value);
         }
     }
 
