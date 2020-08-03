@@ -14,7 +14,7 @@ class route_buffer {
     public function __construct(string $path, string $destination, array $params = [], array $constructor_params = []) {
         $this->path = $path;
         if (strpos($destination, '->') !== false) {
-            [$class, $method] = explode('->', $destination);
+            [$class, $method] = explode('->', $destination, 2);
             if ($constructor_params) {
                 $this->class = new $class(...array_values($constructor_params));
             } else {
