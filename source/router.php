@@ -14,13 +14,13 @@ class route_buffer {
     public function __construct(string $path, string $destination, array $params = [], array $constructor_params = []) {
         $this->path = $path;
         if (strpos($destination, '->') !== false) {
-            $class_method = explode('->', $destination);
+            [$class, $method] = explode('->', $destination);
             if ($constructor_params) {
-                $this->class = new $class_method[0](...array_values($constructor_params));
+                $this->class = new $class(...array_values($constructor_params));
             } else {
-                $this->class = new $class_method[0];
+                $this->class = new $class;
             }
-            $this->method = $class_method[1];
+            $this->method = $method;
             $this->params = $params;
             return;
         }
