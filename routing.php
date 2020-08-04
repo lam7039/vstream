@@ -15,7 +15,7 @@ $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 $verification = $_POST['verification'] ?? '';
 
-$route->bind('do_register', '\controllers\authentication->register', [$username, $password, $verification], [$database]);
-$route->bind('do_login', '\controllers\authentication->login', [$username, $password], [$database]);
-$route->bind('do_logout', '\controllers\authentication->logout', [], [$database]);
+$route->bind('do_register', '\controllers\authentication@register', [$username, $password, $verification], [$database]);
+$route->bind('do_login', '\controllers\authentication@login', [$username, $password], [$database]);
+$route->bind('do_logout', '\controllers\authentication@logout', [], [$database]);
 //$route->bind('find_access', '\controllers\authentication->find_access', [], [$database]);
