@@ -44,6 +44,9 @@ class transcode {
     //TODO: figure out interrupting and continuing transcoding at selected time without redoing the transcode, also multistream encoding
     //TODO: maybe do fully encoding and display which have and which haven't been encoded in the interface
     //TODO: follow file system for path
+    //TODO: transcode 360 -> 480 -> 720
+    //TODO: use adaptive bit rate format streaming
+    //TODO: use queue/pipelines for transcoding
 
     private database $database;
 
