@@ -18,20 +18,14 @@ class route_buffer {
 
         [$class, $this->method] = explode('@', $destination, 2);
         $this->params = $params;
-
-        if ($constructor_params) {
-            $this->class = new $class(...$constructor_params);
-            return;
-        }
-
-        $this->class = new $class;
+        $this->class = new $class(...$constructor_params);
     }
 }
 
 class router {
     private array $routes = [];
 
-    public function bind(string $page, $destination, array $params = [], array $constructor_params = []) : void {
+    public function bind(string $page, string $destination, array $params = [], array $constructor_params = []) : void {
         $this->routes[$page] = new route_buffer($destination, $params, $constructor_params);
     }
 
@@ -47,10 +41,7 @@ class router {
         }
         
         if ($route->class && $route->method) {
-            if ($route->params) {
-                return $route->class->{$route->method}(...$route->params);
-            }
-            return $route->class->{$route->method}();
+            return $route->class->{$route->method}(...$route->params);
         }
 
         return null;
