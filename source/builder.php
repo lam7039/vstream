@@ -53,7 +53,7 @@ class builder implements sql_builder {
         if ($where) {
             $sql .= ' ' . $this->sql_where($where);
         }
-        return $this->database->execute($sql, array_merge($columns, $where));
+        return $this->database->execute($sql, [...$columns, ...$where]);
     }
 
     public function delete(array $where) : bool {
