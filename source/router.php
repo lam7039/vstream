@@ -16,7 +16,7 @@ class route_buffer {
         if (strpos($destination, '->') !== false) {
             [$class, $method] = explode('->', $destination, 2);
             if ($constructor_params) {
-                $this->class = new $class(...array_values($constructor_params));
+                $this->class = new $class(...$constructor_params);
             } else {
                 $this->class = new $class;
             }
@@ -45,16 +45,12 @@ class router {
         if (isset($route->file_key)) {
             return $route->file_key;
         }
+        
         if ($route->class && $route->method) {
-            if (!$route->params) {
-                if ($response = call_user_func([$route->class, $route->method])) {
-                    return $response;
-                }
-            } else {
-                if ($response = call_user_func_array([$route->class, $route->method], $route->params)) {
-                    return $response;
-                }
-            }
+            if ($route->params) {
+                return call_user_func_array([$route->class, $route->method], $route->params);
+            } 
+            return call_user_func([$route->class, $route->method]);
         }
 
         return null;
