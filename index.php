@@ -18,7 +18,7 @@ $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_check()) {
-    redirect('/error/500');
+    http_response_code(500);
     return;
 }
 
