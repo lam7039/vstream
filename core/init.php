@@ -2,7 +2,7 @@
 session_start();
 
 function directory_files(string $directory, array $except = []) : array {
-    return array_filter(array_diff(scandir($directory), array_merge(['..', '.'], $except)), function ($item) use ($directory) {
+    return array_filter(array_diff(scandir($directory), ['..', '.', ...$except], function ($item) use ($directory) {
         return !is_dir($directory . '/' . $item);
     });
 }
