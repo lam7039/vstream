@@ -10,7 +10,7 @@ class route_buffer {
     public string $method;
     public array $params;
 
-    public function __construct(string $destination, array $params = [], array $constructor_params = []) {
+    public function __construct(string $destination, array $params = [], array $constructor = []) {
         if (strpos($destination, '@') === false) {
             $this->path = $destination;
             return;
@@ -18,16 +18,15 @@ class route_buffer {
 
         [$class, $this->method] = explode('@', $destination, 2);
         $this->params = $params;
-        $this->class = new $class(...$constructor_params);
+        $this->class = new $class(...$constructor);
     }
 }
 
-//TODO: save single class instead creating a class with every function
 class router {
     private array $routes = [];
 
-    public function bind(string $page, string $destination, array $params = [], array $constructor_params = []) : void {
-        $this->routes[$page] = new route_buffer($destination, $params, $constructor_params);
+    public function bind(string $page, string $destination, array $params = [], array $constructor = []) : void {
+        $this->routes[$page] = new route_buffer($destination, $params, $constructor);
     }
 
     public function get(string $page) : ?string {

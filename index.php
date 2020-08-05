@@ -29,8 +29,6 @@ if (is_file($file_path)) {
         $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
     }
 
-    //TODO: XSS protection
-
     $parameters = [
         'login' => [
             'error' => session_get('incorrect_login') ?? '',

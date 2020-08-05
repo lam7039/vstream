@@ -6,9 +6,9 @@ use source\database;
 use models\user;
 
 use function source\session_isset;
-use function source\session_once;
-use function source\session_remove;
 use function source\session_set;
+use function source\session_remove;
+use function source\session_once;
 
 class authentication implements controller {
 	private user $user;

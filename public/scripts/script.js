@@ -30,3 +30,5 @@ document.getElementsByClassName('playpause')[0].onclick = () => {
 //            });
 //    }
 //}
+
+//TODO: use ajax calls instead of redirects

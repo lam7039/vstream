@@ -2,6 +2,7 @@
 
 use source\database;
 use source\router;
+use source\transcoder;
 
 $route = new router;
 $database = new database;
@@ -18,4 +19,4 @@ $verification = $_POST['verification'] ?? '';
 $route->bind('do_register', '\controllers\authentication@register', [$username, $password, $verification], [$database]);
 $route->bind('do_login', '\controllers\authentication@login', [$username, $password], [$database]);
 $route->bind('do_logout', '\controllers\authentication@logout', [], [$database]);
-//$route->bind('find_access', '\controllers\authentication->find_access', [], [$database]);
+$route->bind('do_transcode', '\controllers\transcode@run', [], [$database]);
