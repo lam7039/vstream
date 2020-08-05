@@ -22,6 +22,7 @@ class route_buffer {
     }
 }
 
+//TODO: save single class instead creating a class with every function
 class router {
     private array $routes = [];
 
