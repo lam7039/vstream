@@ -49,6 +49,8 @@ class transcoder {
     //TODO: use queue/pipelines for transcoding
 
     private database $database;
+    private string $codec = 'libx265';
+
 
     public function __construct(database $database) {
         $this->database = $database;
@@ -59,7 +61,11 @@ class transcoder {
         // $interrupted_time = $this->databse->fetch("select interrupted_time from transcode_list where video_id = '$buffer->id'")->interrupted_time;
 
         // if ($interrupted_time) {
-        //     shell_exec("ffmpeg -i {$buffer->source_path} -c:v libx264 -preset ultrafast -crf 0 {$buffer->output_path}");
+            //Preview encode
+            // shell_exec("ffmpeg -i {$buffer->source_path} -f image2 -c:v mjpeg public/media/images{$buffer->id}.jpg");
+
+            //Video transcoding
+            shell_exec("ffmpeg -i {$buffer->source_path} -c:v {$this->codec} -preset ultrafast -crf 0 {$buffer->output_path}");
         //     $current_time = '00:00';
         //     if ($current_time > $interrupted_time) {
         //         $this->database->execute("update transcode_list set current_time = '$current_time'");
