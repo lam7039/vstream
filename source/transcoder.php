@@ -68,9 +68,10 @@ class transcoder {
     }
     
     public function ffmpeg(media_buffer $buffer, bool $silent = true) : void {
+        $silence = $silent ? $this->silence : '';
+        
         // video encoding
         $options = implode(' ', $this->options);
-        $silence = $silent ? $this->silence : '';
         $command = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_path}" . $silence;
         dd($command);
         shell_exec($command);
