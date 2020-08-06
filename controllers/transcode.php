@@ -15,6 +15,7 @@ class transcode implements controller {
 
     public function run() {
         $buffer = new video_buffer('video.mkv', 10);
+        // $this->transcoder->option_set('codec', '-c:v libx265');
         $this->transcoder->ffmpeg($buffer);
     }
 }
