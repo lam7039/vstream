@@ -66,6 +66,7 @@ class transcoder {
 
             //Video transcoding
             shell_exec("ffmpeg -i {$buffer->source_path} -c:v {$this->codec} -preset ultrafast -crf 0 {$buffer->output_path}");
+        //     shell_exec("ffmpeg -i {$buffer->source_path} -c:v libx264 -threads 6 -preset ultrafast -crf 0 {$buffer->output_path}");
         //     $current_time = '00:00';
         //     if ($current_time > $interrupted_time) {
         //         $this->database->execute("update transcode_list set current_time = '$current_time'");
