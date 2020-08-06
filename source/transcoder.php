@@ -40,38 +40,33 @@ class music_buffer extends media_buffer {
 }
 
 class transcoder {
-    //TODO: make this work
     //TODO: figure out interrupting and continuing transcoding at selected time without redoing the transcode, also multistream encoding
     //TODO: maybe do fully encoding and display which have and which haven't been encoded in the interface
-    //TODO: follow file system for path
-    //TODO: transcode 360 -> 480 -> 720
+    //TODO: if on the fly transcoding won't work, transcode 360 -> 480 -> 720
     //TODO: use adaptive bit rate format streaming
     //TODO: use queue/pipelines for transcoding
 
-    private database $database;
-    private string $codec = 'libx265';
+    // -c:v stands for -codec:video
+    // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
+    private array $options = [
+        '-c:v libx264',
+        '-threads 6',
+        '-preset ultrafast',
+        '-crf 16',
+    ];
 
-
-    public function __construct(database $database) {
-        $this->database = $database;
-    }
+    // skip waiting, but also removes stdio and stderr
+    private string $silence = ' > /dev/null 2>/dev/null &';
     
-    public function ffmpeg(media_buffer $buffer) : void {
-        dd($buffer);
-        // $interrupted_time = $this->databse->fetch("select interrupted_time from transcode_list where video_id = '$buffer->id'")->interrupted_time;
+    public function ffmpeg(media_buffer $buffer, bool $silent = true) : void {
 
-        // if ($interrupted_time) {
-            //Preview encode
-            // shell_exec("ffmpeg -i {$buffer->source_path} -f image2 -c:v mjpeg public/media/images{$buffer->id}.jpg");
-
-            //Video transcoding
-            shell_exec("ffmpeg -i {$buffer->source_path} -c:v {$this->codec} -preset ultrafast -crf 0 {$buffer->output_path}");
-        //     shell_exec("ffmpeg -i {$buffer->source_path} -c:v libx264 -threads 6 -preset ultrafast -crf 0 {$buffer->output_path}");
-        //     $current_time = '00:00';
-        //     if ($current_time > $interrupted_time) {
-        //         $this->database->execute("update transcode_list set current_time = '$current_time'");
-        //     }
-        // }
+        // preview image encoding
+        // shell_exec("ffmpeg -i {$buffer->source_path} -f image2 -c:v mjpeg public/media/images{$buffer->id}.jpg");
+        
+        $options = implode(' ', $this->options);
+        $silence = $silent ? $this->silence : '';
+        $command = "ffmpeg -i {$buffer->source_path} {$options} {$buffer->output_path} {$silence}";
+        dd($command);
+        shell_exec($command);
     }
-    
 }
