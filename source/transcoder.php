@@ -59,7 +59,7 @@ class transcoder {
         // $interrupted_time = $this->databse->fetch("select interrupted_time from transcode_list where video_id = '$buffer->id'")->interrupted_time;
 
         // if ($interrupted_time) {
-        //     shell_exec("ffmpeg -i {$buffer->source_path} -c:v libx264 -preset ultrafast -crf 0 {$buffer->output_path}");
+        //     shell_exec("ffmpeg -i {$buffer->source_path} -c:v libx264 -threads 6 -preset ultrafast -crf 0 {$buffer->output_path}");
         //     $current_time = '00:00';
         //     if ($current_time > $interrupted_time) {
         //         $this->database->execute("update transcode_list set current_time = '$current_time'");
