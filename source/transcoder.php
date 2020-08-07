@@ -63,6 +63,7 @@ class transcoder {
 
     // skip waiting, but also removes stdio and stderr
     private string $silence = ' > /dev/null 2>/dev/null &';
+    // private string $out = ' > out.log 2>&1';
 
     public function option_set(string $key, string $option) : void {
         $this->options[$key] = $option;
