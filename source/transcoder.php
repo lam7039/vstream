@@ -45,6 +45,7 @@ class transcoder {
     //TODO: if on the fly transcoding won't work, transcode 360 -> 480 -> 720
     //TODO: use adaptive bit rate format streaming
     //TODO: use queue/pipelines for transcoding
+    //TODO: use temporary queue, detect if script is running, if so, add to temporary queue (queue in database?)
 
     // -c:v stands for -codec:video
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
