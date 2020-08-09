@@ -7,6 +7,7 @@ interface sql_builder {
     public function fetch(string $sql, array $variables = []) : ?object;
 
     public function find(array $where = [], array $columns = ['*']) : ?object;
+    public function find_limit(int $limit = 1, array $where = [], array $columns = ['*']) : ?object;
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
@@ -32,6 +33,15 @@ class builder implements sql_builder {
     public function find(array $where = [], array $columns = ['*']) : ?object {
         $select_str = $this->sql_columns($columns);
         $sql = "select $select_str from {$this->table}";
+        if ($where) {
+            $sql .= ' ' . $this->sql_where($where);
+        }
+        return $this->database->fetch($sql, $where) ?? null;
+    }
+
+    public function find_limit(int $limit = 1, array $where = [], array $columns = ['*']) : ?object {
+        $select_str = $this->sql_columns($columns);
+        $sql = "select $select_str from {$this->table} limit $limit";
         if ($where) {
             $sql .= ' ' . $this->sql_where($where);
         }

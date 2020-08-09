@@ -2,20 +2,36 @@
 
 namespace controllers;
 
+use source\builder;
 use source\database;
 use source\transcoder;
 use source\video_buffer;
 
 class transcode implements controller {
-    public transcoder $transcoder;
+    private database $database;
+    private transcoder $transcoder;
 
     public function __construct(database $database) {
-        $this->transcoder = new transcoder($database);
+        $this->database = $database;
+        $this->transcoder = new transcoder;
     }
 
-    public function run() {
-        $buffer = new video_buffer('video.mkv', 10);
-        // $this->transcoder->option_set('codec', '-c:v libx265');
-        $this->transcoder->ffmpeg($buffer);
+    public function run() : void {
+        $media_builder = new builder($this->database, 'media');
+        $jobs_builder = new builder($this->database, 'scheduled_jobs');
+        // $jobs_builder->insert();
+        $jobs = $jobs_builder->find([], ['*']);
+
+        while ($jobs->count() /* && !$script_already_running */) {
+            // $this->transcoder->option_set('codec', '-c:v libx265');
+            $job = $jobs_builder->find_limit();
+            $item = $media_builder->find(['id' => $job->id]);
+
+            $buffer = new video_buffer($item->filename, 10);
+            $this->transcoder->ffmpeg($buffer);
+
+            $jobs_builder->delete(['id' => $job->id]);
+            $jobs = $jobs_builder->find([], ['*']);
+        }
     }
 }
