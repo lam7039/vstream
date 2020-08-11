@@ -24,7 +24,7 @@ class transcode implements controller {
 
         while ($jobs->count() /* && !$script_already_running */) {
             // $this->transcoder->option_set('codec', '-c:v libx265');
-            $job = $jobs_builder->find_limit();
+            $job = $jobs_builder->find([], ['*'], 1);
             $item = $media_builder->find(['id' => $job->id]);
 
             $buffer = new video_buffer($item->filename, 10);
