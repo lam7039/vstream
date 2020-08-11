@@ -6,7 +6,7 @@ interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;
     public function fetch(string $sql, array $variables = []) : ?object;
 
-    public function find(array $where = [], array $columns = ['*']) : ?object;
+    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object;
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
