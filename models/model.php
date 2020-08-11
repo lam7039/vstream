@@ -22,12 +22,8 @@ abstract class model implements sql_builder {
         return $this->builder->fetch($sql, $variables);
     }
 
-    public function find(array $where = [], array $columns = ['*']) : ?object {
-        return $this->builder->find($where, $columns);
-    }
-    
-    public function find_limit(int $limit = 1, array $where = [], array $columns = ['*']) : ?object {
-        return $this->builder->find_limit($limit, $where, $columns);
+    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object {
+        return $this->builder->find($where, $columns, $limit);
     }
 
     public function insert(array $columns) : int {
