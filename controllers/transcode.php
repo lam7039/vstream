@@ -22,6 +22,11 @@ class transcode implements controller {
         // $jobs_builder->insert();
         $jobs = $jobs_builder->find([], ['*']);
 
+        // returns 0 if there are one or more processes running
+        if (!($command_is_running = shell_exec('pgrep ffmpeg'))) {
+            return;
+        }
+        
         while ($jobs->count() /* && !$script_already_running */) {
             // $this->transcoder->option_set('codec', '-c:v libx265');
             $job = $jobs_builder->find([], ['*'], 1);
