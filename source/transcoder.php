@@ -47,7 +47,7 @@ class transcoder {
     //TODO: use queue/pipelines for transcoding
     //TODO: use temporary queue, detect if script is running, if so, add to temporary queue (queue in database?)
     //TODO: check if database queue has jobs, if not run the job, if a job is running, add to database queue, if the job is done processing, check in database queue if another job has to be run 
-
+    //TODO: if queue has multiple jobs, run queries with execute_multiple
 
     // -c:v stands for -codec:video
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
