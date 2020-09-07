@@ -23,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_check()) {
 }
 
 if (is_file($file_path)) {
+    $crsf_token = csrf_create();
+
     $user = null;
     if (session_isset(env('SESSION_AUTH'))) {
         $user = new user($database);
@@ -32,11 +34,11 @@ if (is_file($file_path)) {
     $parameters = [
         'login' => [
             'error' => session_get('incorrect_login') ?? '',
-            'token' => csrf_create(),
+            'token' => $crsf_token,
         ],
         'register' => [
             'error' => session_get('password_mismatch') ?? '',
-            'token' => csrf_create(),
+            'token' => $crsf_token,
         ],
         'account' => [
             'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
