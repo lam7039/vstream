@@ -26,14 +26,14 @@ abstract class media_buffer {
 class video_buffer extends media_buffer {
     public int $duration;
     public string $duration_time;
-    public string $subtitle_path_full;
+    public string $output_subtitle_path_full;
 
     public function __construct(string $source_path, int $duration) {
         $this->output_extension = 'mp4';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
         parent::__construct($source_path, 'videos');
-        $this->subtitle_path_full = "{$this->output_path}/{$this->output_filename}.vtt";
+        $this->output_subtitle_path_full = "{$this->output_path}/{$this->output_filename}.vtt";
     }
 }
 
@@ -55,6 +55,7 @@ class transcoder {
     //TODO: if queue has multiple jobs, run queries with execute_multiple
     //TODO: separate selected subtitles and dynamically load them
     //TODO: use cover instead of extracting thumbnail from video
+    //TODO: add option to upload subtitle for video
 
     // -c:v stands for -codec:video
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
@@ -95,14 +96,14 @@ class transcoder {
         // subtitle extraction
         // shell_exec("ffmpeg -i video -c copy -map 0:s -f null - -v 0 -hide_banner && echo $? || echo $?"); // check if any subtitle exists
         if ($buffer->output_extension === 'mp4') {
-            $this->subtitles($buffer, $silence);
+            $this->extract_subtitles($buffer, $silence);
         }
     }
 
-    public function subtitles(video_buffer $buffer, string $silence) : void {
-        $subtitle_options = implode(' ', $this->subtitle_options);
-        $subtitle_command  = "ffmpeg -i {$buffer->source_path} $subtitle_options {$buffer->subtitle_path_full}" . $silence;
-        dd($subtitle_command);
-        shell_exec($subtitle_command);
+    private function extract_subtitles(video_buffer $buffer, string $silence) : void {
+        $options = implode(' ', $this->subtitle_options);
+        $command  = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_subtitle_path_full}" . $silence;
+        dd($command);
+        shell_exec($command);
     }
 }
