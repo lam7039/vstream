@@ -87,7 +87,7 @@ class transcoder {
     private string $silence = ' > /dev/null 2>/dev/null &';
     // private string $out = ' > out.log 2>&1';
 
-    public function option_set(string $type, string $key, string $option) : void {
+    public function option_set(option_type $type, string $key, string $option) : void {
         $this->options[$type][$key] = $option;
     }
     
