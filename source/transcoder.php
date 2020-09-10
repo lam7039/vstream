@@ -4,6 +4,8 @@ namespace source;
 
 abstract class media_buffer {
     public int $id = 0;
+    public string $type;
+
     public string $source_path;
     public string $source_filename;
     public string $source_extension;
@@ -29,16 +31,18 @@ class video_buffer extends media_buffer {
     public string $output_subtitle_path_full;
 
     public function __construct(string $source_path, int $duration) {
+        $this->type = 'video';
         $this->output_extension = 'mp4';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
-        parent::__construct($source_path, 'videos');
+        parent::__construct($source_path, 'video');
         $this->output_subtitle_path_full = "{$this->output_path}/{$this->output_filename}.vtt";
     }
 }
 
 class music_buffer extends media_buffer {
     public function __construct (string $source_path) {
+        $this->type = 'music';
         $this->output_extension = 'mp3';
         parent::__construct($source_path, 'music');
     }
@@ -58,37 +62,34 @@ class transcoder {
     //TODO: add option to upload subtitle for video
 
     // -c:v stands for -codec:video
+    // -c:s stands for -codec:subtitle
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
     private array $options = [
-        'codec'     => '-c:v libx264',
-        'threads'   => '-threads 6',
-        'preset'    => '-preset ultrafast',
-        'rate'      => '-crf 16',
-    ];
-
-    // -c:v stands for -codec:subtitle
-    private array $subtitle_options = [
-        'map'       => '-map 0:m:language:eng',
-        'codec'     => '-c:s copy',
+        'video' => [
+            'codec'     => '-c:v libx264',
+            'threads'   => '-threads 6',
+            'preset'    => '-preset ultrafast',
+            'rate'      => '-crf 16',
+        ],
+        'subtitles' => [
+            'map'       => '-map 0:m:language:eng',
+            'codec'     => '-c:s copy',
+        ],
     ];
 
     // skip waiting, but also removes stdio and stderr
     private string $silence = ' > /dev/null 2>/dev/null &';
     // private string $out = ' > out.log 2>&1';
 
-    public function option_set(string $key, string $option) : void {
-        $this->options[$key] = $option;
-    }
-
-    public function subtitle_option_set(string $key, string $option) : void {
-        $this->subtitle_options[$key] = $option;
+    public function option_set(string $type, string $key, string $option) : void {
+        $this->options[$type][$key] = $option;
     }
     
     public function ffmpeg(media_buffer $buffer, bool $silent = true) : void {
         $silence = $silent ? $this->silence : '';
         
         // video encoding
-        $options = implode(' ', $this->options);
+        $options = implode(' ', $this->options[$buffer->type]);
         $command = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_path_full}" . $silence;
         dd($command);
         shell_exec($command);
@@ -101,7 +102,7 @@ class transcoder {
     }
 
     private function extract_subtitles(video_buffer $buffer, string $silence) : void {
-        $options = implode(' ', $this->subtitle_options);
+        $options = implode(' ', $this->options['subtitles']);
         $command  = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_subtitle_path_full}" . $silence;
         dd($command);
         shell_exec($command);
