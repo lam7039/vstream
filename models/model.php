@@ -14,16 +14,16 @@ abstract class model implements sql_builder {
         $this->builder = new builder($database, $this->table);
     }
 
+    public function fetch(string $sql, array $variables = []) : ?object {
+        return $this->builder->fetch($sql, $variables);
+    }
+
     public function execute(string $sql, array $variables = []) : bool {
         return $this->builder->execute($sql, $variables);
     }
 
     public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         return $this->builder->execute_multiple($sql_queries, $variables);
-    }
-
-    public function fetch(string $sql, array $variables = []) : ?object {
-        return $this->builder->fetch($sql, $variables);
     }
 
     public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object {
