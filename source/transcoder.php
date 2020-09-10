@@ -10,7 +10,7 @@ abstract class option_type {
 
 abstract class media_buffer {
     public int $id = 0;
-    public option_type $type;
+    public string $type;
 
     public string $source_path;
     public string $source_filename;
@@ -68,7 +68,8 @@ class transcoder {
     //TODO: add option to upload subtitle for video
 
     // -c:v stands for -codec:video
-    // -c:s stands for -codec:subtitle
+    // -c:s copy stands for -codec:subtitle, copy is there so no decoding-filtering-encoding operations will, or can occur.
+    // -map 3:m:language:eng choose stream, 0 is all, 1 is video, 2 is audio, 3 is subtitles
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
     private array $options = [
         'video' => [
