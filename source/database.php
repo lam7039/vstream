@@ -94,10 +94,10 @@ class database {
     }
 
     //TODO: improve this
-    public function execute_multiple(array $sql_queryies, array $variables = []) : bool {
+    public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         $this->transaction();
         try {
-            foreach ($sql_queryies as $key => $sql) {
+            foreach ($sql_queries as $key => $sql) {
                 if (!is_string($sql)) {
                     LOG_WARNING("Invalid type in \$sql_queries: " . gettype($sql) . "($sql)");
                     continue;

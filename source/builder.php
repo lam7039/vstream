@@ -4,6 +4,7 @@ namespace source;
 
 interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;
+    public function execute_multiple(array $sql_queries, array $variables = []) : bool;
     public function fetch(string $sql, array $variables = []) : ?object;
 
     public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object;
@@ -23,6 +24,10 @@ class builder implements sql_builder {
     
     public function execute(string $sql, array $variables = []) : bool {
         return $this->database->execute($sql, $variables);
+    }
+
+    public function execute_multiple(array $sql_queries, array $variables = []) : bool {
+        return $this->database->execute_multiple($sql_queries, $variables);
     }
     
     public function fetch(string $sql, array $variables = []) : ?object {

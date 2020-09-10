@@ -18,6 +18,10 @@ abstract class model implements sql_builder {
         return $this->builder->execute($sql, $variables);
     }
 
+    public function execute_multiple(array $sql_queries, array $variables = []) : bool {
+        return $this->builder->execute_multiple($sql_queries, $variables);
+    }
+
     public function fetch(string $sql, array $variables = []) : ?object {
         return $this->builder->fetch($sql, $variables);
     }
