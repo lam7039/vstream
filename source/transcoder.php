@@ -4,7 +4,7 @@ namespace source;
 
 abstract class option_type {
     const video = 'video';
-    const music = 'music';
+    const audio = 'audio';
     const subtitles = 'subtitles';
 }
 
@@ -46,11 +46,11 @@ class video_buffer extends media_buffer {
     }
 }
 
-class music_buffer extends media_buffer {
+class audio_buffer extends media_buffer {
     public function __construct (string $source_path) {
-        $this->type = option_type::music;
+        $this->type = option_type::audio;
         $this->output_extension = 'mp3';
-        parent::__construct($source_path, 'music');
+        parent::__construct($source_path, 'audio');
     }
 }
 
