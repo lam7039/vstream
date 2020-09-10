@@ -2,9 +2,15 @@
 
 namespace source;
 
+abstract class option_type {
+    const video = 'video';
+    const music = 'music';
+    const subtitles = 'subtitles';
+}
+
 abstract class media_buffer {
     public int $id = 0;
-    public string $type;
+    public option_type $type;
 
     public string $source_path;
     public string $source_filename;
@@ -31,7 +37,7 @@ class video_buffer extends media_buffer {
     public string $output_subtitle_path_full;
 
     public function __construct(string $source_path, int $duration) {
-        $this->type = 'video';
+        $this->type = option_type::video;
         $this->output_extension = 'mp4';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
@@ -42,7 +48,7 @@ class video_buffer extends media_buffer {
 
 class music_buffer extends media_buffer {
     public function __construct (string $source_path) {
-        $this->type = 'music';
+        $this->type = option_type::music;
         $this->output_extension = 'mp3';
         parent::__construct($source_path, 'music');
     }
@@ -102,7 +108,7 @@ class transcoder {
     }
 
     private function extract_subtitles(video_buffer $buffer, string $silence) : void {
-        $options = implode(' ', $this->options['subtitles']);
+        $options = implode(' ', $this->options[option_type::subtitles]);
         $command  = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_subtitle_path_full}" . $silence;
         dd($command);
         shell_exec($command);
