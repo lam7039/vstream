@@ -75,8 +75,9 @@ class transcoder {
         'video' => [
             'codec'     => '-c:v libx264',
             'threads'   => '-threads 6',
-            'preset'    => '-preset ultrafast',
-            'rate'      => '-crf 16',
+            'preset'    => '-preset fast',
+            'rate'      => '-crf 18',
+            'faststart' => '-movflags +faststart',
         ],
         'subtitles' => [
             'map'       => '-map 0:m:language:eng',
