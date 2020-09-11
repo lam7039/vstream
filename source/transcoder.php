@@ -32,7 +32,7 @@ class video_buffer extends media_buffer {
 
     public function __construct(string $source_path, int $duration) {
         $this->type = 'video';
-        $this->output_extension = 'mp4';
+        $this->output_extension = 'webm';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
         parent::__construct($source_path, 'video');
@@ -43,7 +43,7 @@ class video_buffer extends media_buffer {
 class audio_buffer extends media_buffer {
     public function __construct(string $source_path) {
         $this->type = 'audio';
-        $this->output_extension = 'mp3';
+        $this->output_extension = 'ogg';
         parent::__construct($source_path, 'audio');
     }
 }
@@ -68,20 +68,22 @@ class transcoder {
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
     private array $options = [
         'video' => [
-            'codec'     => '-c:v libx264',
-            'audio'     => '-c:a aac',
-            'jpnaudio'  => '-map 0:m:language:jpn?',
-            // 'chiaudio'  => '-map 0:m:language:chi?',
-            // 'engaudio'  => '-map 0:m:language:eng?',
-            // 'rusaudio'  => '-map 0:m:language:rus?',
-            'threads'   => '-threads 6',
-            'preset'    => '-preset fast',
-            'rate'      => '-crf 18',
-            'faststart' => '-movflags faststart',
+            'codec'         => '-c:v libvpx-vp9',
+            'jpnaudio'      => '-map 0:m:language:jpn?',
+            // 'chiaudio'   => '-map 0:m:language:chi?',
+            // 'engaudio'   => '-map 0:m:language:eng?',
+            // 'rusaudio'   => '-map 0:m:language:rus?',
+            'threads'       => '-threads 6',
+            'preset'        => '-preset fast',
+            'bitratelimit'  => '-b:v 0',
+            'bitratefactor' => '-crf 18',
+        ],
+        'audio' => [
+            'codec'         => '-c:a libopus',
         ],
         'subtitles' => [
-            'map'       => '-map 0:m:language:eng',
-            'codec'     => '-c:s copy',
+            'map'           => '-map 0:m:language:eng',
+            'codec'         => '-c:s copy',
         ],
     ];
 
