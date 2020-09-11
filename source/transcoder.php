@@ -101,18 +101,24 @@ class transcoder {
         $command = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_path_full}" . $silence;
         dd($command);
         shell_exec($command);
-
-        // subtitle extraction
-        shell_exec("ffmpeg -i video -c copy -map 0:s -f null - -v 0 -hide_banner && echo $? || echo $?"); // check if any subtitle exists
-        if ($buffer->output_extension === 'mp4') {
+        
+        if ($buffer->type === 'video') {
             $this->extract_subtitles($buffer, $silence);
         }
     }
 
     private function extract_subtitles(video_buffer $buffer, string $silence) : void {
+        if ($this->has_subtitles($buffer->source_path)) {
+            LOG_INFO('No subtitles found');
+            return;
+        }
         $options = implode(' ', $this->options['subtitles']);
         $command  = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_subtitle_path_full}" . $silence;
         dd($command);
         shell_exec($command);
+    }
+
+    private function has_subtitles(string $path) : bool {
+        return !boolval(shell_exec("ffmpeg -i $path -c copy -map 0:s -f null - -v 0 -hide_banner && echo $? || echo $?"));
     }
 }
