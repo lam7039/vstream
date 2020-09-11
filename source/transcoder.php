@@ -68,11 +68,12 @@ class transcoder {
     // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
     private array $options = [
         'video' => [
-            'codec'         => '-c:v libvpx-vp9',
+            'codecvideo'    => '-c:v libvpx-vp9',
+            'audioaudio'    => '-c:a libopus',
             'jpnaudio'      => '-map 0:m:language:jpn?',
-            // 'chiaudio'   => '-map 0:m:language:chi?',
-            // 'engaudio'   => '-map 0:m:language:eng?',
-            // 'rusaudio'   => '-map 0:m:language:rus?',
+            // 'chiaudio'      => '-map 0:m:language:chi?',
+            // 'engaudio'      => '-map 0:m:language:eng?',
+            // 'rusaudio'      => '-map 0:m:language:rus?',
             'threads'       => '-threads 6',
             'preset'        => '-preset fast',
             'bitratelimit'  => '-b:v 0',
