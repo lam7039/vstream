@@ -55,7 +55,7 @@ class audio_buffer extends media_buffer {
 
     public function __construct(string $source_path, bool $visualize = false, bool $silent = false) {
         $this->type = 'audio';
-        $this->output_extension = 'webm';
+        $this->output_extension = $visualize ? 'webm' : 'ogg';
         $this->visualize = $visualize;
         parent::__construct($source_path, 'audio', $silent);
     }
