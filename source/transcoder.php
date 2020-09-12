@@ -51,9 +51,12 @@ class video_buffer extends media_buffer {
 }
 
 class audio_buffer extends media_buffer {
-    public function __construct(string $source_path, bool $silent = false) {
+    public string $visualize;
+
+    public function __construct(string $source_path, bool $visualize = false, bool $silent = false) {
         $this->type = 'audio';
         $this->output_extension = 'webm';
+        $this->visualize = $visualize;
         parent::__construct($source_path, 'audio', $silent);
     }
 }
@@ -81,16 +84,9 @@ class transcoder {
             'threading'     => '-row-mt 1',
         ],
         'audio' => [
-            'codecvideo'    => '-c:v libvpx-vp9',
             'codecaudio'    => '-c:a libopus',
-            'filter'        => '-filter_complex "showwaves=s=1280x720:mode=line:colors=white:rate=30,format=yuv420p[vid]"',
-            'mapto'         => '-map "[vid]"',
             'stream'        => '-map 0:a',
-            'speed'         => '-speed 4',
-            'quality'       => '-quality good',
-            'bitratefactor' => '-crf 24',
             'bitrateaudio'  => '-b:a 300k',
-            'bitratevideo'  => '-b:v 2000k',
         ],
     ];
 
@@ -102,17 +98,20 @@ class transcoder {
     public function option_set(string $type, string $key, string $option) : void {
         $this->options[$type][$key] = $option;
     }
+
+    public function visualize_audio() : void {
+        $this->option_set('audio', 'codecvideo', '-c:v libvpx-vp9');
+        $this->option_set('audio', 'filter', '-filter_complex "showwaves=s=1280x720:mode=line:colors=white:rate=30,format=yuv420p[vid]"');
+        $this->option_set('audio', 'destination', '-map "[vid]"');
+        $this->option_set('audio', 'speed', '-speed 4');
+        $this->option_set('audio', 'quality', '-quality good');
+        $this->option_set('audio', 'bitratefactor', '-crf 24');
+        $this->option_set('audio', 'bitratevideo', '-b:v 2000k');
+    }
     
     public function ffmpeg(media_buffer $buffer) : void {
         $buffer->options = implode(' ', $this->options[$buffer->type]);
-        
-        $command = '';
-        if ($buffer->type === 'audio') {
-            $command = $this->transcode_audio_command($buffer);
-        }
-        if ($buffer->type === 'video') {
-            $command = $this->transcode_video_command($buffer);
-        }
+        $command = $this->{"build_{$buffer->type}_command"}($buffer);
         dd($command);
         
         set_time_limit(10800);
@@ -124,11 +123,14 @@ class transcoder {
         $this->start_process_windows($command);
     }
 
-    public function transcode_audio_command(audio_buffer $buffer) : string {
+    public function build_audio_command(audio_buffer $buffer) : string {
+        if ($buffer->visualize) {
+            $this->visualize_audio();
+        }
         return "ffmpeg -i {$buffer->source_path} {$buffer->options} {$buffer->output_path_full}";
     }
 
-    public function transcode_video_command(video_buffer $buffer) : string {
+    public function build_video_command(video_buffer $buffer) : string {
         $command = "ffmpeg -i {$buffer->source_path} ";
         $subtitles = $buffer->subtitles_type === 'soft' ? $this->extract_subtitles($buffer) : '';
         if ($buffer->subtitles_type === 'hard') {
@@ -142,7 +144,6 @@ class transcoder {
 
     private function extract_subtitles(video_buffer $buffer) : string {
         // if (!$this->has_subtitles($buffer->source_path)) {
-        //     LOG_INFO('No subtitles found');
         //     return '';
         // }
         return " && ffmpeg -i {$buffer->source_path} {$buffer->output_subtitle_path_full}";
