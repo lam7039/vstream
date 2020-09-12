@@ -3,8 +3,11 @@
 namespace source;
 
 abstract class media_buffer {
+    protected string $silence;
+
     public int $id = 0;
     public string $type;
+    public string $options;
 
     public string $source_path;
     public string $source_filename;
@@ -15,28 +18,35 @@ abstract class media_buffer {
     public string $output_extension;
     public string $output_path_full;
 
-    public function __construct(string $source_path, string $folder) {
+    public function __construct(string $source_path, string $folder, bool $silent = false) {
+        $this->silence = $silent ? ' > /dev/null 2> /dev/null &' : '';
         $this->source_path = "\"$source_path\"";
         $this->source_filename = pathinfo($source_path, PATHINFO_FILENAME);
         $this->source_extension = pathinfo($source_path, PATHINFO_EXTENSION);
         $this->output_path = "public/media/{$folder}";
         $this->output_filename = $this->source_filename; //TODO: create proper filename with regex
-        $this->output_path_full = "\"{$this->output_path}/{$this->output_filename}.{$this->output_extension}\"";
+        $this->output_path_full = "\"{$this->output_path}/{$this->output_filename}.{$this->output_extension}\"" . $this->silence;
     }
 }
 
 class video_buffer extends media_buffer {
     public int $duration;
     public string $duration_time;
+    public string $audio_language;
+    public string $subtitles_type;
+    public string $subtitles_language;
     public string $output_subtitle_path_full;
 
-    public function __construct(string $source_path, int $duration) {
+    public function __construct(string $source_path, int $duration, bool $silent = false) {
         $this->type = 'video';
         $this->output_extension = 'webm';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
-        parent::__construct($source_path, 'video');
-        $this->output_subtitle_path_full = "{$this->output_path}/{$this->output_filename}.vtt";
+        $this->audio_language = 'jpn';
+        $this->subtitles_type = 'hard';
+        $this->subtitles_language = 'eng';
+        parent::__construct($source_path, 'video', $silent);
+        $this->output_subtitle_path_full = "\"{$this->output_path}/{$this->output_filename}-{$this->subtitles_language}.vtt\"" . $this->silence;
     }
 }
 
@@ -49,79 +59,80 @@ class audio_buffer extends media_buffer {
 }
 
 class transcoder {
-    //TODO: figure out interrupting and continuing transcoding at selected time without redoing the transcode, also multistream encoding
-    //TODO: maybe do fully encoding and display which have and which haven't been encoded in the interface
-    //TODO: if on the fly transcoding won't work, transcode 360 -> 480 -> 720
-    //TODO: use adaptive bit rate format streaming
+    //TODO: figure out interrupting and continuing transcoding without redoing the transcode, also multistream encoding
+    //TODO: do fully encoding and display which have and which haven't been encoded in the interface
     //TODO: use queue/pipelines for transcoding
     //TODO: use temporary queue, detect if script is running, if so, add to temporary queue (queue in database?)
     //TODO: check if database queue has jobs, if not run the job, if a job is running, add to database queue, if the job is done processing, check in database queue if another job has to be run 
     //TODO: if queue has multiple jobs, run queries with execute_multiple
-    //TODO: separate selected subtitles and dynamically load them
     //TODO: use cover instead of extracting thumbnail from video
     //TODO: add option to upload subtitle for video
-    //TODO: shell_exec and exec not working in xampp
 
-    // -c:v stands for -codec:video
-    // -c:s copy stands for -codec:subtitle, copy is there so no decoding-filtering-encoding operations will, or can occur.
-    // -map 3:m:language:eng choose stream, 0 is all, 1 is video, 2 is audio, 3 is subtitles
-    // -crf stands for constant rate factor, it has a range of 0-51, 0 is lossless, 23 is default, 51 is worst, 18 is nearly visually lossless
     private array $options = [
         'video' => [
+            'banner'        => '-hide_banner',
             'codecvideo'    => '-c:v libvpx-vp9',
             'audioaudio'    => '-c:a libopus',
-            'jpnaudio'      => '-map 0:m:language:jpn?',
-            // 'chiaudio'      => '-map 0:m:language:chi?',
-            // 'engaudio'      => '-map 0:m:language:eng?',
-            // 'rusaudio'      => '-map 0:m:language:rus?',
-            'threads'       => '-threads 6',
-            'preset'        => '-preset fast',
-            'bitratelimit'  => '-b:v 0',
+            'quality'       => '-quality good',
+            'speed'         => '-speed 2',
+            'bitratelimit'  => '-b:v 4000k',
             'bitratefactor' => '-crf 18',
+            'threads'       => '-threads 6',
+            'threading'     => '-row-mt 1',
         ],
         'audio' => [
             'codec'         => '-c:a libopus',
         ],
-        'subtitles' => [
-            'map'           => '-map 0:m:language:eng',
-            'codec'         => '-c:s copy',
-        ],
     ];
 
-    // skip waiting, but also removes stdio and stderr
-    private string $silence = ' > /dev/null 2>/dev/null &';
-    // private string $out = ' > out.log 2>&1';
+    private function start_process_windows(string $command) : void {
+        $process = popen('start /B ' . $command, 'r');
+        pclose($process);
+    }
 
     public function option_set(string $type, string $key, string $option) : void {
         $this->options[$type][$key] = $option;
     }
     
     public function ffmpeg(media_buffer $buffer, bool $silent = false) : void {
-        $silence = $silent ? $this->silence : '';
+        $buffer->options = implode(' ', $this->options[$buffer->type]);
         
-        // video encoding
-        $options = implode(' ', $this->options[$buffer->type]);
-        $command = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_path_full}" . $silence;
-        dd($command);
-        shell_exec($command);
-        
+        $command = '';
         if ($buffer->type === 'video') {
-            $this->extract_subtitles($buffer, $silence);
+            $command = $this->transcode_video_command($buffer);
         }
+        
+        set_time_limit(10800);
+
+        // linux
+        // shell_exec($command);
+
+        // windows
+        $this->start_process_windows($command);
     }
 
-    private function extract_subtitles(video_buffer $buffer, string $silence) : void {
-        if ($this->has_subtitles($buffer->source_path)) {
-            LOG_INFO('No subtitles found');
-            return;
+    public function transcode_video_command(video_buffer $buffer) : string {
+        $command = "ffmpeg -i {$buffer->source_path} ";
+        $subtitles = $buffer->subtitles_type === 'soft' ? $this->extract_subtitles($buffer) : '';
+        if ($buffer->subtitles_type === 'hard') {
+            $source_path = str_replace(':', '\:', $buffer->source_path);
+            $source_path = str_replace('"', '\'', $source_path);
+            $command .= "-c:s copy -vf \"subtitles=$source_path\" ";
         }
-        $options = implode(' ', $this->options['subtitles']);
-        $command  = "ffmpeg -i {$buffer->source_path} $options {$buffer->output_subtitle_path_full}" . $silence;
-        dd($command);
-        shell_exec($command);
+        $command .= "{$buffer->options} -map 0:m:language:{$buffer->audio_language} ";
+        return "$command {$buffer->output_path_full}" . $subtitles;
     }
 
-    private function has_subtitles(string $path) : bool {
-        return !boolval(shell_exec("ffmpeg -i $path -c copy -map 0:s -f null - -v 0 -hide_banner && echo $? || echo $?"));
+    private function extract_subtitles(video_buffer $buffer) : string {
+        // if (!$this->has_subtitles($buffer->source_path)) {
+        //     LOG_INFO('No subtitles found');
+        //     return '';
+        // }
+        return " && ffmpeg -i {$buffer->source_path} {$buffer->output_subtitle_path_full}";
     }
+
+    // private function has_subtitles(string $path) : bool {
+    //     return !boolval(shell_exec("ffprobe $path -show_streams -select_streams s 2>&1|grep language=eng"));
+    //     //ffmpeg -i $path -c copy -map 0:s -f null - -v 0 -hide_banner && echo $? || echo $?
+    // }
 }
