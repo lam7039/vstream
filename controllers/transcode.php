@@ -2,6 +2,7 @@
 
 namespace controllers;
 
+use source\audio_buffer;
 use source\builder;
 use source\database;
 use source\transcoder;
@@ -33,7 +34,9 @@ class transcode implements controller {
         //     $item = $media_builder->find(['id' => $job->id]);
 
             // $buffer = new video_buffer($item->filename, 10);
-            $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
+            // $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
+            // $buffer->subtitles_type = 'soft';
+            $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
             $this->transcoder->ffmpeg($buffer);
 
             // $jobs_builder->delete(['id' => $job->id]);

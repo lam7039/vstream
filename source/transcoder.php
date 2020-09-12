@@ -51,10 +51,10 @@ class video_buffer extends media_buffer {
 }
 
 class audio_buffer extends media_buffer {
-    public function __construct(string $source_path) {
+    public function __construct(string $source_path, bool $silent = false) {
         $this->type = 'audio';
-        $this->output_extension = 'ogg';
-        parent::__construct($source_path, 'audio');
+        $this->output_extension = 'webm';
+        parent::__construct($source_path, 'audio', $silent);
     }
 }
 
@@ -72,16 +72,25 @@ class transcoder {
         'video' => [
             'banner'        => '-hide_banner',
             'codecvideo'    => '-c:v libvpx-vp9',
-            'audioaudio'    => '-c:a libopus',
+            'codecaudio'    => '-c:a libopus',
             'quality'       => '-quality good',
             'speed'         => '-speed 2',
-            'bitratelimit'  => '-b:v 4000k',
+            'bitratevideo'  => '-b:v 4000k',
             'bitratefactor' => '-crf 18',
             'threads'       => '-threads 6',
             'threading'     => '-row-mt 1',
         ],
         'audio' => [
-            'codec'         => '-c:a libopus',
+            'codecvideo'    => '-c:v libvpx-vp9',
+            'codecaudio'    => '-c:a libopus',
+            'filter'        => '-filter_complex "showwaves=s=1280x720:mode=line:colors=white:rate=30,format=yuv420p[vid]"',
+            'mapto'         => '-map "[vid]"',
+            'stream'        => '-map 0:a',
+            'speed'         => '-speed 4',
+            'quality'       => '-quality good',
+            'bitratefactor' => '-crf 24',
+            'bitrateaudio'  => '-b:a 300k',
+            'bitratevideo'  => '-b:v 2000k',
         ],
     ];
 
@@ -94,13 +103,17 @@ class transcoder {
         $this->options[$type][$key] = $option;
     }
     
-    public function ffmpeg(media_buffer $buffer, bool $silent = false) : void {
+    public function ffmpeg(media_buffer $buffer) : void {
         $buffer->options = implode(' ', $this->options[$buffer->type]);
         
         $command = '';
+        if ($buffer->type === 'audio') {
+            $command = $this->transcode_audio_command($buffer);
+        }
         if ($buffer->type === 'video') {
             $command = $this->transcode_video_command($buffer);
         }
+        dd($command);
         
         set_time_limit(10800);
 
@@ -109,6 +122,10 @@ class transcoder {
 
         // windows
         $this->start_process_windows($command);
+    }
+
+    public function transcode_audio_command(audio_buffer $buffer) : string {
+        return "ffmpeg -i {$buffer->source_path} {$buffer->options} {$buffer->output_path_full}";
     }
 
     public function transcode_video_command(video_buffer $buffer) : string {
