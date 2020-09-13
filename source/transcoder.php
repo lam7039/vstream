@@ -55,7 +55,7 @@ class audio_buffer extends media_buffer {
 
     public function __construct(string $source_path, bool $visualize = false, bool $silent = false) {
         $this->type = 'audio';
-        $this->output_extension = $visualize ? 'webm' : 'ogg';
+        $this->output_extension = 'webm';
         $this->visualize = $visualize;
         parent::__construct($source_path, 'audio', $silent);
     }
@@ -80,10 +80,11 @@ class transcoder {
             'speed'         => '-speed 2',
             'bitratevideo'  => '-b:v 4000k',
             'bitratefactor' => '-crf 18',
-            'threads'       => '-threads 6',
             'threading'     => '-row-mt 1',
+            'threads'       => '-threads 6',
         ],
         'audio' => [
+            'banner'        => '-hide_banner',
             'codecaudio'    => '-c:a libopus',
             'stream'        => '-map 0:a',
             'bitrateaudio'  => '-b:a 300k',
