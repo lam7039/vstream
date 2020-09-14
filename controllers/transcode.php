@@ -19,6 +19,7 @@ class transcode implements controller {
 
     public function run() : void {
         // $media_builder = new builder($this->database, 'media');
+        // TODO: ping database to check connection, if no connection, create new one
         // $jobs_builder = new builder($this->database, 'scheduled_jobs');
         // // $jobs_builder->insert();
         // $jobs = $jobs_builder->find([], ['*']);
