@@ -25,6 +25,7 @@ abstract class media_buffer {
         $this->source_extension = pathinfo($source_path, PATHINFO_EXTENSION);
         $this->output_path = "public/media/{$folder}";
         $this->output_filename = $this->source_filename; //TODO: create proper filename with regex
+        $this->output_extension = 'webm';
         $this->output_path_full = "\"{$this->output_path}/{$this->output_filename}.{$this->output_extension}\"" . $this->silence;
     }
 }
@@ -39,7 +40,6 @@ class video_buffer extends media_buffer {
 
     public function __construct(string $source_path, int $duration, bool $silent = false) {
         $this->type = 'video';
-        $this->output_extension = 'webm';
         $this->duration = $duration;
         $this->duration_time = date('H:i:s', $duration);
         $this->audio_language = 'jpn';
@@ -55,7 +55,6 @@ class audio_buffer extends media_buffer {
 
     public function __construct(string $source_path, bool $visualize = false, bool $silent = false) {
         $this->type = 'audio';
-        $this->output_extension = 'webm';
         $this->visualize = $visualize;
         parent::__construct($source_path, 'audio', $silent);
     }
