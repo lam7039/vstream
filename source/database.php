@@ -9,6 +9,8 @@ use PDOStatement;
 class database {
     private PDO $connection;
     public int $last_inserted_id = 0;
+    //TODO: add rows affected
+    public int $rows_affected = 0;
 
     public function __construct() {
         $host = env('DB_HOST');
