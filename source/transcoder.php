@@ -112,8 +112,13 @@ class transcoder {
     public function ffmpeg(media_buffer $buffer) : void {
         $buffer->options = implode(' ', $this->options[$buffer->type]);
         $command = $this->{"build_{$buffer->type}_command"}($buffer);
+
+        if (file_exists($buffer->output_path_full)) {
+            LOG_WARNING('File has already been transcoded');
+            return;
+        }
+
         dd($command);
-        
         set_time_limit(10800);
 
         // linux

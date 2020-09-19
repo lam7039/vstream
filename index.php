@@ -1,4 +1,5 @@
 <?php
+$start = microtime(true);
 set_include_path(__DIR__);
 
 require('core/init.php');
@@ -23,6 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_check()) {
 }
 
 if (is_file($file_path)) {
+    
+    $templating = new template([
+        'page_path' => 'public',
+        'page_title' => "vstream | $url_page",
+        'page_favicon' => 'favicon-32x32.png',
+        'page_style' => 'layout.css',
+        'page_script' => 'script.js',
+    ]);
+
     $crsf_token = csrf_create();
 
     $user = null;
@@ -44,16 +54,9 @@ if (is_file($file_path)) {
             'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
         ]
     ];
-    
-    $templating = new template([
-        'page_path' => 'public',
-        'page_title' => "vstream | $url_page",
-        'page_favicon' => 'favicon-32x32.png',
-        'page_style' => 'layout.css',
-        'page_script' => 'script.js',
-    ]);
 
     $file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters[$url_page] ?? []);
     echo $templating->render($file_buffer);
     session_clear_temp();
+    echo microtime(true) - $start;
 }

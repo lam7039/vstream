@@ -19,7 +19,7 @@ class template {
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
-        
+
         if ($parameters) {
             $this->layout = $this->bind_parameters($this->layout, $parameters);
         }
@@ -43,7 +43,19 @@ class template {
         return $buffer;
     }
 
-    public function render(file_buffer $buffer) : string {
-        return str_replace('{{{yield}}}', $buffer->body, $this->layout->body);
+    public function render(file_buffer $buffer, bool $cache = false) : string {
+        if ($cache) {
+            $file = 'tmp/cache/' . md5($_SERVER['REQUEST_URI']);
+            if (file_exists($file) && (filemtime($file) + 3600) > time()) {
+                return file_get_contents($file);
+            }
+        }
+
+        $content = str_replace('{{{yield}}}', $buffer->body, $this->layout->body);
+        if ($cache) {
+            file_put_contents($file, $content);
+        }
+
+        return $content;
     }
 }

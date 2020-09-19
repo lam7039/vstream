@@ -2,4 +2,8 @@
 /.env
 /.vscode
 /thirdparty
+/tmp
 /public/media/
+
+/*.mp3
+/*.mkv
