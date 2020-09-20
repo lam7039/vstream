@@ -2,11 +2,11 @@
 
 namespace controllers;
 
-use source\audio_buffer;
 use source\builder;
 use source\database;
 use source\transcoder;
 use source\video_buffer;
+use source\audio_buffer;
 
 class transcode implements controller {
     private database $database;
@@ -17,31 +17,32 @@ class transcode implements controller {
         $this->transcoder = new transcoder;
     }
 
-    public function run() : void {
-        // $media_builder = new builder($this->database, 'media');
+    public function run(string $media_type = 'video') : void {
+        $media_builder = new builder($this->database, 'media');
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
-        // $jobs_builder = new builder($this->database, 'scheduled_jobs');
-        // // $jobs_builder->insert();
-        // $jobs = $jobs_builder->find([], ['*']);
+        $jobs_builder = new builder($this->database, 'scheduled_jobs');
+        $jobs_builder->insert([]);
+        $jobs = $jobs_builder->find([], ['*']);
 
-        // // returns 0 if there are one or more processes running
-        // if (!($command_is_running = shell_exec('pgrep ffmpeg'))) {
-        //     return;
-        // }
+        // returns 0 if there are one or more processes running
+        if (!($command_is_running = shell_exec('pgrep ffmpeg'))) {
+            return;
+        }
         
-        // while ($jobs->count() /* && !$script_already_running */) {
-        //     // $this->transcoder->option_set('codec', '-c:v libx265');
-        //     $job = $jobs_builder->find([], ['*'], 1);
-        //     $item = $media_builder->find(['id' => $job->id]);
+        $buffer_name = "{$media_type}_buffer";
+        while ($jobs->count() && !$command_is_running) {
+            // $this->transcoder->option_set('codec', '-c:v libx265');
+            $job = $jobs_builder->find([], ['*'], 1);
+            $item = $media_builder->find(['id' => $job->id]);
 
-            // $buffer = new video_buffer($item->filename, 10);
+            $buffer = new $buffer_name($item->filename, 10);
             // $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
             // $buffer->subtitles_type = 'soft';
-            $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
+            // $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
             $this->transcoder->ffmpeg($buffer);
 
-            // $jobs_builder->delete(['id' => $job->id]);
-            // $jobs = $jobs_builder->find([], ['*']);
-        // }
+            $jobs_builder->delete(['id' => $job->id]);
+            $jobs = $jobs_builder->find([], ['*']);
+        }
     }
 }
