@@ -5,8 +5,7 @@ namespace controllers;
 use source\builder;
 use source\database;
 use source\transcoder;
-use source\video_buffer;
-use source\audio_buffer;
+use source\media_buffer;
 
 class transcode implements controller {
     private database $database;
@@ -17,7 +16,7 @@ class transcode implements controller {
         $this->transcoder = new transcoder;
     }
 
-    public function run(string $media_type = 'video') : void {
+    public function run(media_buffer $buffer) : void {
         $media_builder = new builder($this->database, 'media');
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
         $jobs_builder = new builder($this->database, 'scheduled_jobs');
@@ -29,13 +28,10 @@ class transcode implements controller {
             return;
         }
         
-        $buffer_name = "{$media_type}_buffer";
         while ($jobs->count() && !$command_is_running) {
-            // $this->transcoder->option_set('codec', '-c:v libx265');
             $job = $jobs_builder->find([], ['*'], 1);
             $item = $media_builder->find(['id' => $job->id]);
-
-            $buffer = new $buffer_name($item->filename, 10);
+            // $buffer = new $buffer_name($item->filename, 10);
             // $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
             // $buffer->subtitles_type = 'soft';
             // $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
