@@ -17,6 +17,10 @@ class transcode implements controller {
     }
 
     public function run(media_buffer $buffer) : void {
+        if (!in_array($buffer->type, ['video', 'audio'])) {
+            return;
+        }
+
         $media_builder = new builder($this->database, 'media');
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
         $jobs_builder = new builder($this->database, 'scheduled_jobs');
