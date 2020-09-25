@@ -18,6 +18,7 @@ class transcode implements controller {
 
     public function run(media_buffer $buffer) : void {
         if (!in_array($buffer->type, ['video', 'audio'])) {
+            LOG_WARNING('Type incompatible, cannot be transcoded');
             return;
         }
 
