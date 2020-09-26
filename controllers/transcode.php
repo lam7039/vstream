@@ -3,28 +3,25 @@
 namespace controllers;
 
 use source\builder;
-use source\database;
 use source\transcoder;
-use source\media_buffer;
 
-class transcode implements controller {
-    private database $database;
+class transcode extends controller {
     private transcoder $transcoder;
 
-    public function __construct(database $database) {
-        $this->database = $database;
+    public function __construct() {
         $this->transcoder = new transcoder;
     }
 
-    public function run(media_buffer $buffer) : void {
-        if (!in_array($buffer->type, ['video', 'audio'])) {
+    public function run() : void {
+        if (!in_array($this->request->buffer->type, ['video', 'audio'])) {
             LOG_WARNING('Type incompatible, cannot be transcoded');
             return;
         }
 
-        $media_builder = new builder($this->database, 'media');
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
-        $jobs_builder = new builder($this->database, 'scheduled_jobs');
+        // TODO: use singleton for transcoder?
+        $media_builder = new builder('media');
+        $jobs_builder = new builder('scheduled_jobs');
         $jobs_builder->insert([]);
         $jobs = $jobs_builder->find([], ['*']);
 
@@ -40,7 +37,7 @@ class transcode implements controller {
             // $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
             // $buffer->subtitles_type = 'soft';
             // $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
-            $this->transcoder->ffmpeg($buffer);
+            $this->transcoder->ffmpeg($this->request->buffer);
 
             $jobs_builder->delete(['id' => $job->id]);
             $jobs = $jobs_builder->find([], ['*']);

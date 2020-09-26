@@ -130,3 +130,16 @@ class database {
         return null;
     }
 }
+
+class db {
+    private static database $database;
+
+    private function __construct() {}
+
+    public static function get() : database {
+        if (!isset(self::$database)) {
+            self::$database = new database;
+        }
+        return self::$database;
+    }
+}

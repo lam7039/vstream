@@ -37,7 +37,7 @@ if (is_file($file_path)) {
 
     $user = null;
     if (session_isset(env('SESSION_AUTH'))) {
-        $user = new user($database);
+        $user = new user;
         $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
     }
 

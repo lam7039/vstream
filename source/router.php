@@ -8,25 +8,23 @@ class route_buffer {
     public string $path;
     public controller $class;
     public string $method;
-    public array $params;
 
-    public function __construct(string $destination, array $params = [], array $constructor = []) {
+    public function __construct(string $destination, array $constructor_params = []) {
         if (strpos($destination, '@') === false) {
             $this->path = $destination;
             return;
         }
 
         [$class, $this->method] = explode('@', $destination, 2);
-        $this->params = $params;
-        $this->class = new $class(...$constructor);
+        $this->class = new $class(...$constructor_params);
     }
 }
 
 class router {
     private array $routes = [];
 
-    public function bind(string $page, string $destination, array $params = [], array $constructor = []) : void {
-        $this->routes[$page] = new route_buffer($destination, $params, $constructor);
+    public function bind(string $page, string $destination, array $constructor_params = []) : void {
+        $this->routes[$page] = new route_buffer($destination, $constructor_params);
     }
 
     public function get(string $page) : ?string {
@@ -41,7 +39,7 @@ class router {
         }
         
         if ($route->class && $route->method) {
-            return $route->class->{$route->method}(...$route->params);
+            return $route->class->{$route->method}();
         }
 
         return null;

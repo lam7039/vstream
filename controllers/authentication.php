@@ -2,7 +2,6 @@
 
 namespace controllers;
 
-use source\database;
 use models\user;
 
 use function source\session_isset;
@@ -10,35 +9,36 @@ use function source\session_set;
 use function source\session_remove;
 use function source\session_once;
 
-class authentication implements controller {
+class authentication extends controller {
 	private user $user;
 
-	public function __construct(database $database) {
-		$this->user = new user($database);
+	public function __construct() {
+		parent::__construct();
+		$this->user = new user;
 	}
 
-	public function register(string $username, string $password, string $verification) : void {
-		if ($password !== $verification) {
+	public function register() : void {
+		if ($this->request->password !== $this->request->verification) {
 			session_once('password_mismatch', 'Password mismatch');
 			redirect('/register');
 			return;
 		}
-		$password_hash = password_hash($password, PASSWORD_DEFAULT);
+		$password_hash = password_hash($this->request->password, PASSWORD_DEFAULT);
 		$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
-		$this->user->insert(['username' => $username, 'password' => $password_hash, 'ip_address' => $ip_address]);
-		$this->login($username, $password);
+		$this->user->insert(['username' => $this->request->username, 'password' => $password_hash, 'ip_address' => $ip_address]);
+		$this->login($this->request->username, $this->request->password);
 	}
 
-	public function login(string $username, string $password) : void {
+	public function login() : void {
 		if (session_isset(env('SESSION_AUTH'))) {
 			redirect('/');
 			return;
 		}
 
-		$user = $this->user->find(['username' => $username]);
-		if ($user && password_verify($password, $user->password)) {
-			if (password_needs_rehash($password, $user->password)) {
-				$password = password_hash($password, PASSWORD_DEFAULT);
+		$user = $this->user->find(['username' => $this->request->username]);
+		if ($user && password_verify($this->request->password, $user->password)) {
+			if (password_needs_rehash($this->request->password, $user->password)) {
+				$password = password_hash($this->request->password, PASSWORD_DEFAULT);
 				$this->user->update(['password' => $password], ['id' => $user->id]);
 			}
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
