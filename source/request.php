@@ -6,15 +6,9 @@ class request {
     private $body;
 
     public function __construct() {
-        if (isset($_POST)) {
-            foreach($_POST as $key => $value) {
-                $this->body[$key] = $value;
-            }
-        }
-        if (isset($_GET)) {
-            foreach($_GET as $key => $value) {
-                $this->body[$key] = $value;
-            }
+        switch($_SERVER['REQUEST_METHOD']) {
+            case 'GET': $this->body = &$_GET; break;
+            case 'POST': $this->body = &$_POST; break;
         }
     }
 
