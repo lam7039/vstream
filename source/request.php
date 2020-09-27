@@ -3,18 +3,18 @@
 namespace source;
 
 class request {
-    private $body;
+    private array $params = [];
 
     public function __construct() {
         switch($_SERVER['REQUEST_METHOD']) {
-            case 'GET': $this->body = &$_GET; break;
-            case 'POST': $this->body = &$_POST; break;
+            case 'GET': $this->params = &$_GET; break;
+            case 'POST': $this->params = &$_POST; break;
         }
     }
 
     public function __get(string $key) {
-        if (isset($this->body[$key])) {
-            return $this->body[$key];
+        if (isset($this->params[$key])) {
+            return $this->params[$key];
         }
         trigger_error("Undefined property via __get(): $key");
         return null;
