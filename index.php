@@ -18,6 +18,7 @@ use function source\session_clear_temp;
 $url_page = $_GET['request'] ?? 'browse';
 $file_path = $route->get($url_page);
 
+//TODO: see if this can be integrated in the request class
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_check()) {
     http_response_code(500);
     return;
