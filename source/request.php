@@ -7,8 +7,16 @@ class request {
 
     public function __construct() {
         switch($_SERVER['REQUEST_METHOD']) {
-            case 'GET': $this->params = &$_GET; break;
-            case 'POST': $this->params = &$_POST; break;
+            case 'GET': 
+                $this->params = &$_GET;
+                break;
+            case 'POST':
+                if (!csrf_check()) {
+                    http_response_code(500);
+                    return;
+                }
+                $this->params = &$_POST;
+                break;
         }
     }
 
