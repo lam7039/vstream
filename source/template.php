@@ -45,7 +45,7 @@ class template {
 
     public function render(file_buffer $buffer, bool $cache = false) : string {
         if ($cache) {
-            $file = 'tmp/cache/' . md5($_SERVER['REQUEST_URI']);
+            $file = 'tmp/cache/' . md5($buffer->path);
             if (file_exists($file) && (filemtime($file) + 3600) > time()) {
                 return file_get_contents($file);
             }
