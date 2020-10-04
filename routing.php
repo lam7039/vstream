@@ -20,5 +20,4 @@ $file_path = $route->get($url_page);
 
 if (!is_file($file_path)) {
     redirect('/');
-    exit;
 }

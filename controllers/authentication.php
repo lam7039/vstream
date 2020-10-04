@@ -18,12 +18,11 @@ class authentication extends controller {
 	}
 
 	public function register() : void {
-		if ($this->request->password !== $this->request->verification) {
+		if ($this->request->password !== $this->request->confirm) {
 			session_once('password_mismatch', 'Password mismatch');
 			redirect('/register');
-			return;
 		}
-		
+
 		$password_hash = password_hash($this->request->password, PASSWORD_DEFAULT);
 		$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 		$this->user->insert(['username' => $this->request->username, 'password' => $password_hash, 'ip_address' => $ip_address]);

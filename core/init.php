@@ -62,4 +62,5 @@ function dd() : void {
 
 function redirect(string $to) {
     header('Location: ' . $to);
+    exit;
 }
