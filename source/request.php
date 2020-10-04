@@ -9,14 +9,14 @@ class request {
         switch($_SERVER['REQUEST_METHOD']) {
             case 'GET': 
                 $this->params = &$_GET;
-                break;
+            break;
             case 'POST':
                 if (!csrf_check()) {
                     http_response_code(500);
-                    return;
+                    exit;
                 }
                 $this->params = &$_POST;
-                break;
+            break;
         }
     }
 

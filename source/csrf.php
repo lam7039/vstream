@@ -3,6 +3,7 @@
 namespace source;
 
 function csrf_create() : string {
+    session_remove('token');
     if (!session_isset('token')) {
         session_set('token', bin2hex(random_bytes(32)));
     }
@@ -10,10 +11,9 @@ function csrf_create() : string {
 }
 
 function csrf_check() : bool {
-    if (isset($_POST['token']) && hash_equals(session_get('token'), $_POST['token'])) {
-        session_remove('token');
-        return true;
-    }
-    LOG_WARNING('CRSF Token mismatch');
-    return false;
+    return isset($_POST['token']) && hash_equals(session_get('token'), $_POST['token']);
+}
+
+function auth_check() : bool {
+    return session_isset(env('SESSION_AUTH'));
 }

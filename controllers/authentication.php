@@ -23,6 +23,7 @@ class authentication extends controller {
 			redirect('/register');
 			return;
 		}
+		
 		$password_hash = password_hash($this->request->password, PASSWORD_DEFAULT);
 		$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 		$this->user->insert(['username' => $this->request->username, 'password' => $password_hash, 'ip_address' => $ip_address]);
@@ -31,7 +32,6 @@ class authentication extends controller {
 
 	public function login() : void {
 		if (session_isset(env('SESSION_AUTH'))) {
-			redirect('/');
 			return;
 		}
 
@@ -44,8 +44,6 @@ class authentication extends controller {
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 			$this->user->update(['ip_address' => $ip_address], ['id' => $user->id]);
 			session_set(env('SESSION_AUTH'), $user->id);
-
-			redirect('/');
 			return;
 		}
 
@@ -55,6 +53,5 @@ class authentication extends controller {
 
 	public function logout() : void {
 		session_remove(env('SESSION_AUTH'));
-		redirect('/');
 	}
 }
