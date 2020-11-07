@@ -1,10 +1,11 @@
 <?php
 
+use source\request;
 use source\router;
 
+$request = new request;
 $route = new router;
 
-//TODO: handle redirects in javascript as a one page application
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {
     $route->bind($page, "public/html/$page.html");
@@ -16,7 +17,7 @@ $route->bind('do_logout', '\controllers\authentication@logout');
 $route->bind('do_transcode', '\controllers\transcode@run');
 
 $url_page = $_GET['request'] ?? 'browse';
-$file_path = $route->get($url_page);
+$file_path = $route->get($request->page);
 
 if (!is_file($file_path)) {
     redirect('/');

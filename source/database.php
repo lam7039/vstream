@@ -9,7 +9,6 @@ use PDOStatement;
 class database {
     private PDO $connection;
     public int $last_inserted_id = 0;
-    //TODO: add rows affected
     public int $rows_affected = 0;
 
     public function __construct() {
@@ -84,9 +83,12 @@ class database {
         return false;
     }
 
+    //TODO: clean this up
     public function execute(string $sql, array $variables = []) : bool {
         try {
-            $executed = $this->query($sql, $variables)->execute();
+            $executed = $this->query($sql, $variables);
+            $this->rows_affected = $executed->rowCount();
+            $executed = $executed->execute();
             $this->last_inserted_id = $this->connection->lastInsertId();
             return $executed;
         } catch (PDOException $e) {
@@ -135,6 +137,8 @@ class db {
     private static database $database;
 
     private function __construct() {}
+    private function __clone() {}
+    private function __wakeup() {}
 
     public static function get() : database {
         if (!isset(self::$database)) {

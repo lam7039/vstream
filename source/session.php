@@ -37,3 +37,7 @@ function session_clear_temp() : void {
     }
     session_set('SESSION_TEMP', []);
 }
+
+function auth_check() : bool {
+    return session_isset(env('SESSION_AUTH'));
+}

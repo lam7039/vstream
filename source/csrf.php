@@ -13,7 +13,3 @@ function csrf_create() : string {
 function csrf_check() : bool {
     return isset($_POST['token']) && hash_equals(session_get('token'), $_POST['token']);
 }
-
-function auth_check() : bool {
-    return session_isset(env('SESSION_AUTH'));
-}

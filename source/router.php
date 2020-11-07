@@ -24,6 +24,12 @@ class router {
     private array $routes = [];
 
     public function bind(string $page, string $destination, array $constructor_params = []) : void {
+        //TODO: find variable get parameters somehow
+        // if (preg_match_all('/\{(.*?)\}/', $page, $matches) !== false) {
+        //     foreach ($matches as $match) {
+
+        //     }
+        // }
         $this->routes[$page] = new route_buffer($destination, $constructor_params);
     }
 

@@ -8,6 +8,7 @@ abstract class controller {
     protected request $request;
 
     public function __construct() {
+        //TODO: is this request necessary?
         $this->request = new request;
     }
 }
