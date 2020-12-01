@@ -49,5 +49,8 @@ class router {
         }
 
         return null;
+
+        //TODO: test this with PHP8
+        // return $route->class?->{$route->method}()?;
     }
 }
