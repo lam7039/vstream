@@ -10,6 +10,7 @@ class route_buffer {
     public string $method;
 
     public function __construct(string $destination, array $constructor_params = []) {
+        // if (str_contains($destination, '@')) {
         if (strpos($destination, '@') === false) {
             $this->path = $destination;
             return;
@@ -51,6 +52,6 @@ class router {
         return null;
 
         //TODO: test this with PHP8
-        // return $route->class?->{$route->method}()?;
+        // return $route?->class?->{$route->method}();
     }
 }

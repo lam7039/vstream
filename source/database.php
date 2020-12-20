@@ -138,7 +138,7 @@ class db {
 
     private function __construct() {}
     private function __clone() {}
-    private function __wakeup() {}
+    // private function __wakeup() {}
 
     public static function get() : database {
         if (!isset(self::$database)) {

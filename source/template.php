@@ -26,6 +26,7 @@ class template {
     }
 
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
+        // if (str_contains($buffer->body, "{{{$key}}}")) {
         if (strpos($buffer->body, "{{{$key}}}") === false) {
             LOG_INFO("Parameter {{{$key}}} does not exist");
             return $buffer;

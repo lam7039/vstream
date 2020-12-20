@@ -19,7 +19,7 @@ create table if not exists `vstream`.`scheduled_jobs` (
     `id` int unsigned not null auto_increment,
     `at` datetime not null,
     `media_id` int unsigned not null,
-    `locked` unsigned tinyint(1) not null default 0,
+    `locked` tinyint(1) not null default 0,
     `status` varchar(255) not null default 0,
     `response` text null,
     constraint `scheduled_jobs_pk` primary key (`id`),
