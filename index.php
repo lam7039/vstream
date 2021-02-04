@@ -33,7 +33,7 @@ if (auth_check()) {
     $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
 }
 
-$parameters = [
+$parameters = match ($url_page) {
     'login' => [
         'error' => session_get('incorrect_login') ?? '',
         'token' => $crsf_token,
@@ -45,9 +45,10 @@ $parameters = [
     'account' => [
         'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
     ],
-];
+    default => [],
+};
 
-$file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters[$url_page] ?? []);
+$file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters ?? []);
 echo $templating->render($file_buffer);
 session_clear_temp();
 echo microtime(true) - $start;
