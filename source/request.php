@@ -18,7 +18,10 @@ class request {
                     http_response_code(500);
                     exit;
                 }
-                $this->params = &$_POST;
+                foreach ($_POST as $key => $value) {
+                    $this->params[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                }
+                // $this->params = &$_POST;
             break;
         }
     }
