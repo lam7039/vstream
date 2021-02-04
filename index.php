@@ -25,8 +25,6 @@ $templating = new template([
     'page_script' => 'script.js',
 ]);
 
-$crsf_token = csrf_create();
-
 $user = null;
 if (auth_check()) {
     $user = new user;
@@ -36,11 +34,11 @@ if (auth_check()) {
 $parameters = match ($url_page) {
     'login' => [
         'error' => session_get('incorrect_login') ?? '',
-        'token' => $crsf_token,
+        'token' => csrf_create(),
     ],
     'register' => [
         'error' => session_get('password_mismatch') ?? '',
-        'token' => $crsf_token,
+        'token' => csrf_create(),
     ],
     'account' => [
         'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
