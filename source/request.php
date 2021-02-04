@@ -19,7 +19,10 @@ class request {
                     exit;
                 }
                 foreach ($_POST as $key => $value) {
-                    $this->params[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                    if (!($input = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS))) {
+                        LOG_WARNING("$key failed on filter with value: $value");
+                    }
+                    $this->params[$key] = $input;
                 }
                 // $this->params = &$_POST;
             break;
