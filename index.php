@@ -1,7 +1,4 @@
 <?php
-// echo phpinfo();
-// exit;
-
 $start = microtime(true);
 set_include_path(__DIR__);
 
