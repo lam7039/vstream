@@ -43,7 +43,7 @@ $parameters = match ($url_page) {
     default => [],
 };
 
-$file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters ?? []);
+$file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters);
 echo $templating->render($file_buffer);
 session_clear_temp();
 echo microtime(true) - $start;
