@@ -5,9 +5,9 @@ namespace source;
 use controllers\controller;
 
 class route_buffer {
-    public string $path;
     public controller $class;
     public string $method;
+    public string $path;
 
     public function __construct(string $destination, array $constructor_params = []) {
         // if (str_contains($destination, '@')) {

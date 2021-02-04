@@ -11,7 +11,7 @@ class log {
         file_put_contents($this->debug_file, $template_contents);
     }
 
-    private function generate_debug(string $string = '', string $error_type) : string {
+    private function generate_debug(string $string, string $error_type) : string {
         $stacktrace = debug_backtrace()[2];
         $timestamp = date('d/m/Y H:i:s', time());
         $file = explode('\\', $stacktrace['file']);
