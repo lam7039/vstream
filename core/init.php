@@ -60,7 +60,7 @@ function dd() : void {
     exit;
 }
 
-function redirect(string $to) {
+function redirect(string $to) : void {
     header('Location: ' . $to);
     exit;
 }

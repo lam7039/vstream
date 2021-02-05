@@ -6,7 +6,7 @@ function session_isset(string $key) : bool {
     return isset($_SESSION[$key]);
 }
 
-function session_get(string $key) {
+function session_get(string $key) : mixed {
     return session_isset($key) ? $_SESSION[$key] : null;
 }
 
