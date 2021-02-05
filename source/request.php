@@ -24,7 +24,6 @@ class request {
                     }
                     $this->params[$key] = $input;
                 }
-                // $this->params = &$_POST;
             break;
         }
     }

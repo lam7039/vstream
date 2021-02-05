@@ -57,7 +57,7 @@ function dd() : void {
     array_map(function($x) { 
         dump($x); 
     }, func_get_args());
-    die;
+    exit;
 }
 
 function redirect(string $to) {
