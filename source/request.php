@@ -28,7 +28,7 @@ class request {
         }
     }
 
-    public function __get(string $key) {
+    public function __get(string $key) : mixed {
         if (isset($this->params[$key])) {
             return $this->params[$key];
         }
