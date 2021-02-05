@@ -42,7 +42,7 @@ function LOG_CRITICAL(string $string) : void {
 }
 
 $config = new config;
-function env(string $key) {
+function env(string $key) : ?string {
     global $config;
     return $config->get($key);
 }
