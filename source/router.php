@@ -9,28 +9,23 @@ class route_buffer {
     public string $method;
     public string $path;
 
-    public function __construct(string $destination, array $params = []) {
+    public function __construct(string $destination, array $parameters = []) {
         if (!str_contains($destination, '@')) {
             $this->path = $destination;
             return;
         }
 
         [$class, $this->method] = explode('@', $destination, 2);
-        $this->class = new $class(...$params);
+        $this->class = new $class(...$parameters);
     }
 }
 
 class router {
     private array $routes = [];
 
-    public function bind(string $page, string $destination, array $params = []) : void {
-        //TODO: find variable get parameters somehow
-        // if (preg_match_all('/\{(.*?)\}/', $page, $matches) !== false) {
-        //     foreach ($matches as $match) {
-
-        //     }
-        // }
-        $this->routes[$page] = new route_buffer($destination, $params);
+    public function bind(string $page, string $destination, array $parameters = []) : void {
+        //TODO: check if class already has been initiated
+        $this->routes[$page] = new route_buffer($destination, $parameters);
     }
 
     public function get(string $page) : ?string {

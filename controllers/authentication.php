@@ -3,6 +3,7 @@
 namespace controllers;
 
 use models\user;
+use source\request;
 
 use function source\session_isset;
 use function source\session_set;
@@ -12,8 +13,8 @@ use function source\session_once;
 class authentication extends controller {
 	private user $user;
 
-	public function __construct() {
-		parent::__construct();
+	public function __construct(request $request = null) {
+		parent::__construct($request);
 		$this->user = new user;
 	}
 
