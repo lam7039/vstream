@@ -66,6 +66,6 @@ class router {
         }
 
         $route = $this->routes[$page];
-        return isset($route->path) ? $route->path : $this->initiated_classes[$route?->class?]->{$route->method}(...$parameters);
+        return isset($route->path) ? $route->path : $this->initiated_classes[$route->class]?->{$route->method}(...$parameters);
     }
 }
