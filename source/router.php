@@ -59,13 +59,13 @@ class router {
         }
     }
 
-    public function get(string $page) : ?string {
+    public function get(string $page, array $parameters = []) : ?string {
         if (!isset($this->routes[$page])) {
             http_response_code(404);
             return null;
         }
 
         $route = $this->routes[$page];
-        return isset($route->path) ? $route->path : $this->initiated_classes[$route?->class?]->{$route->method}();
+        return isset($route->path) ? $route->path : $this->initiated_classes[$route?->class?]->{$route->method}(...$parameters);
     }
 }
