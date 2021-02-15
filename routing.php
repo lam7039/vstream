@@ -12,8 +12,8 @@ foreach ($pages as $page) {
 }
 
 $router->bind('do_register', '\controllers\authentication@register', [$request]);
-$router->bind('do_login', '\controllers\authentication@login', [$request]);
-$router->bind('do_logout', '\controllers\authentication@logout', [$request]);
+$router->bind('do_login', '\controllers\authentication@login');
+$router->bind('do_logout', '\controllers\authentication@logout');
 $router->bind('do_transcode', '\controllers\transcode@run');
 
 $url_page = $request->current_page;
