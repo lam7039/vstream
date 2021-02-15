@@ -4,7 +4,7 @@ namespace source;
 
 use controllers\controller;
 
-$initiated_classes = [];
+// $initiated_classes = [];
 
 // class route_buffer {
 //     public controller $class;
