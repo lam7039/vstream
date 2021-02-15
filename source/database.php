@@ -30,19 +30,13 @@ class database {
     }
 
     private function find_param_type($value) : int {
-        if (is_int($value)) {
-            return PDO::PARAM_INT;
-        }
-        if (is_bool($value)) {
-            return PDO::PARAM_BOOL;
-        }
-        if (is_file($value)) {
-            return PDO::PARAM_LOB;
-        }
-        if (is_null($value)) {
-            return PDO::PARAM_NULL;
-        }
-        return PDO::PARAM_STR;
+        return match (gettype($value)) {
+            'integer' => PDO::PARAM_INT,
+            'boolean' => PDO::PARAM_BOOL,
+            'object' => PDO::PARAM_LOB,
+            'NULL' => PDO::PARAM_NULL,
+            default => PDO::PARAM_STR,
+        };
     }
 
     private function query(string $sql, array $variables = []) : PDOStatement {
@@ -138,7 +132,6 @@ class db {
 
     private function __construct() {}
     private function __clone() {}
-    // private function __wakeup() {}
 
     public static function get() : database {
         if (!isset(self::$database)) {
