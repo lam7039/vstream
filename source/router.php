@@ -4,6 +4,8 @@ namespace source;
 
 use controllers\controller;
 
+$initiated_classes = [];
+
 class route_buffer {
     public controller $class;
     public string $method;
@@ -16,7 +18,15 @@ class route_buffer {
         }
 
         [$class, $this->method] = explode('@', $destination, 2);
-        $this->class = new $class(...$parameters);
+
+        global $initiated_classes;
+        if (isset($initiated_class[$class])) {
+            $this->class = $class;
+            return;
+        }
+        
+        $initiated_classes[$class] = new $class(...$parameters);
+        $this->class = $initiated_classes[$class];
     }
 }
 
@@ -24,7 +34,6 @@ class router {
     private array $routes = [];
 
     public function bind(string $page, string $destination, array $parameters = []) : void {
-        //TODO: check if class already has been initiated
         $this->routes[$page] = new route_buffer($destination, $parameters);
     }
 
