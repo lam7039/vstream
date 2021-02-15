@@ -6,36 +6,57 @@ use controllers\controller;
 
 $initiated_classes = [];
 
+// class route_buffer {
+//     public controller $class;
+//     public string $method;
+//     public string $path;
+
+//     public function __construct(string $destination, array $parameters = []) {
+//         if (!str_contains($destination, '@')) {
+//             $this->path = $destination;
+//             return;
+//         }
+
+//         [$class, $this->method] = explode('@', $destination, 2);
+
+//         //TODO: this will reuse yes, but always with the first set parameters
+//         global $initiated_classes;
+//         if (isset($initiated_classes[$class])) {
+//             $this->class = $initiated_classes[$class];
+//             return;
+//         }
+        
+//         $initiated_classes[$class] = new $class(...$parameters);
+//         $this->class = $initiated_classes[$class];
+//     }
+// }
+
 class route_buffer {
-    public controller $class;
+    public string $class;
     public string $method;
     public string $path;
 
-    public function __construct(string $destination, array $parameters = []) {
+    public function __construct(string $destination) {
         if (!str_contains($destination, '@')) {
             $this->path = $destination;
             return;
         }
 
-        [$class, $this->method] = explode('@', $destination, 2);
-
-        //TODO: this will reuse yes, but always with the first set parameters
-        global $initiated_classes;
-        if (isset($initiated_class[$class])) {
-            $this->class = $initiated_classes[$class];
-            return;
-        }
-        
-        $initiated_classes[$class] = new $class(...$parameters);
-        $this->class = $initiated_classes[$class];
+        [$this->class, $this->method] = explode('@', $destination, 2);
     }
 }
 
 class router {
     private array $routes = [];
+    private array $initiated_classes = [];
 
     public function bind(string $page, string $destination, array $parameters = []) : void {
-        $this->routes[$page] = new route_buffer($destination, $parameters);
+        $buffer = new route_buffer($destination);
+        $this->routes[$page] = $buffer;
+        
+        if (!isset($this->initiated_classes[$buffer->class])) {
+            $this->initiated_classes[$buffer->class] = new $class(...$parameters);
+        }
     }
 
     public function get(string $page) : ?string {
@@ -45,6 +66,6 @@ class router {
         }
 
         $route = $this->routes[$page];
-        return isset($route->path) ? $route->path : $route?->class?->{$route->method}();
+        return isset($route->path) ? $route->path : $this->initiated_classes[$route?->class?]->{$route->method}();
     }
 }
