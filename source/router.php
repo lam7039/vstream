@@ -19,6 +19,7 @@ class route_buffer {
 
         [$class, $this->method] = explode('@', $destination, 2);
 
+        //TODO: this will reuse yes, but always with the first set parameters
         global $initiated_classes;
         if (isset($initiated_class[$class])) {
             $this->class = $initiated_classes[$class];
