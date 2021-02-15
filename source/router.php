@@ -21,7 +21,7 @@ class route_buffer {
 
         global $initiated_classes;
         if (isset($initiated_class[$class])) {
-            $this->class = $class;
+            $this->class = $initiated_classes[$class];
             return;
         }
         
