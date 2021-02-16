@@ -3,7 +3,7 @@
 namespace source;
 
 class request {
-    private array $parameters = [];
+    public array $parameters = [];
     public string $current_page;
 
     public function __construct($default_page = 'browse') {
@@ -13,6 +13,7 @@ class request {
                 exit;
             }
             $this->parameters = &$_POST;
+            unset($this->parameters['token']);
         }
         
         $parameters = explode('/', $_GET['request'] ?? '');

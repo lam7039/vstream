@@ -4,7 +4,7 @@ create table if not exists `vstream`.`users` (
     `id` int unsigned not null auto_increment,
     `username` varchar(60) not null unique,
     `password` varchar (255) not null,
-    `ip_address` int(45) unsigned not null unique,
+    `ip_address` int(45) unsigned not null,
     constraint `users_pk` primary key (`id`)
 );
 
