@@ -6,7 +6,7 @@ class request {
     public array $parameters = [];
     public string $current_page;
 
-    public function __construct($default_page = 'home') {
+    public function __construct($default_page = '') {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!csrf_check()) {
                 http_response_code(500);
@@ -17,7 +17,7 @@ class request {
         }
         
         $parameters = explode('/', $_GET['request'] ?? '');
-        $this->current_page = array_shift($parameters) ?: $default_page;
+        $this->current_page = array_shift($parameters) ?: $default_page ?: env('HOMEPAGE');
         $this->parameters = array_merge($parameters, $this->parameters);
     }
 

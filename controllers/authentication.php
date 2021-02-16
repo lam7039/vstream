@@ -30,7 +30,7 @@ class authentication extends controller {
 
 	public function login(string $username, string $password) : void {
 		if (session_isset(env('SESSION_AUTH'))) {
-			return;
+			redirect('/account');
 		}
 
 		$user = $this->user->find(['username' => $username]);
@@ -42,7 +42,7 @@ class authentication extends controller {
 			$ip_address = ip2long($_SERVER['REMOTE_ADDR']);
 			$this->user->update(['ip_address' => $ip_address], ['id' => $user->id]);
 			session_set(env('SESSION_AUTH'), $user->id);
-			return;
+			redirect('/account');
 		}
 
 		session_once('incorrect_login', 'Wrong username/password');
