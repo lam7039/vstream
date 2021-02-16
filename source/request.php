@@ -6,7 +6,7 @@ class request {
     public array $parameters = [];
     public string $current_page;
 
-    public function __construct($default_page = '') {
+    public function __construct(string $default_page = '') {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!csrf_check()) {
                 http_response_code(500);

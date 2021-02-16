@@ -15,11 +15,9 @@ interface sql_builder {
 
 class builder implements sql_builder {
     private database $database;
-    private string $table;
 
-    public function __construct(string $table) {
+    public function __construct(private string $table) {
         $this->database = db::get();
-        $this->table = $table;
     }
     
     public function fetch(string $sql, array $variables = []) : ?object {

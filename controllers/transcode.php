@@ -3,6 +3,7 @@
 namespace controllers;
 
 use source\builder;
+use source\media_buffer;
 use source\transcoder;
 
 class transcode extends controller {
@@ -12,8 +13,8 @@ class transcode extends controller {
         $this->transcoder = new transcoder;
     }
 
-    public function run() : void {
-        if (!in_array($this->request->buffer->type, ['video', 'audio'])) {
+    public function run(media_buffer $buffer) : void {
+        if (!in_array($buffer->type, ['video', 'audio'])) {
             LOG_WARNING('Type incompatible, cannot be transcoded');
             return;
         }
@@ -37,7 +38,7 @@ class transcode extends controller {
             // $buffer = new video_buffer('D:/xampp/htdocs/Baka to Test to Shoukanjuu Matsuri - NCOP.mkv', 10);
             // $buffer->subtitles_type = 'soft';
             // $buffer = new audio_buffer('D:/xampp/htdocs/ikenai borderline.mp3');
-            $this->transcoder->ffmpeg($this->request->buffer);
+            $this->transcoder->ffmpeg($buffer);
 
             $jobs_builder->delete(['id' => $job->id]);
             $jobs = $jobs_builder->find([], ['*']);
