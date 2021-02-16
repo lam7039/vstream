@@ -3,7 +3,7 @@
 use source\request;
 use source\router;
 
-$request = new request;
+$request = new request('browse');
 $router = new router;
 
 $pages = ['browse', 'register', 'login', 'account'];
