@@ -51,11 +51,11 @@ class template {
             }
         }
 
-        $content = str_replace('{{{yield}}}', $buffer->body, $this->layout->body);
+        $body = str_replace('{{{yield}}}', $buffer->body, $this->layout->body);
         if ($cache) {
-            file_put_contents($file, $content);
+            file_put_contents($file, $body);
         }
 
-        return $content;
+        return $body;
     }
 }
