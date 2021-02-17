@@ -20,5 +20,5 @@ $url_page = $request->current_page;
 $file_path = $router->get($url_page, $request->parameters);
 
 if (!is_file($file_path)) {
-    redirect('/');
+    redirect(env('HOMEPAGE'));
 }
