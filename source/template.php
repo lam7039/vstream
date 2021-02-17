@@ -32,6 +32,7 @@ class template {
         }
         
         $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
+        // $buffer->body = preg_replace('#(<if>).*?(</if>)', '', $buffer->body);
         return $buffer;
     }
 
