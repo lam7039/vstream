@@ -16,7 +16,7 @@ class file_buffer {
     public function __construct(
         public string $path, 
         public string $body = file_get_contents($path), 
-        public string $size = ($body)
+        public string $size = strlen($body)
     ) {}
 }
 
