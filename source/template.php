@@ -14,6 +14,15 @@ class file_buffer {
     }
 }
 
+class token_node {
+    public function __construct(
+        public string $type, 
+        public string $expression, 
+        public array $children = [], 
+        public ?string $value = null
+    ) {}
+}
+
 class template {
     private file_buffer $layout;
 
@@ -30,9 +39,13 @@ class template {
             LOG_INFO("Parameter {{{$key}}} does not exist");
             return $buffer;
         }
-        
+
         $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
-        // $buffer->body = preg_replace('#(<if>).*?(</if>)', '', $buffer->body);
+        
+        // if (preg_match('/(?<=<if).*(?=>)/', $buffer->body, $matches, PREG_OFFSET_CAPTURE)) {
+        //     dd($matches);
+        // }
+
         return $buffer;
     }
 
