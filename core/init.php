@@ -64,3 +64,7 @@ function redirect(string $to) : void {
     header('Location: ' . $to);
     exit;
 }
+
+function is_32bit() : int {
+    return PHP_INT_SIZE === 8;
+}
