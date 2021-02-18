@@ -2,22 +2,14 @@
 
 namespace source;
 
-// class file_buffer {
-//     public string $body;
-//     public int $size;
-
-//     public function __construct(public string $path) {
-//         $this->body = file_get_contents($path);
-//         $this->size = strlen($this->body);
-//     }
-// }
-
 class file_buffer {
-    public function __construct(
-        public string $path, 
-        public string $body = file_get_contents($path), 
-        public string $size = strlen($body)
-    ) {}
+    public string $body;
+    public int $size;
+
+    public function __construct(public string $path) {
+        $this->body = file_get_contents($path);
+        $this->size = strlen($this->body);
+    }
 }
 
 class token_node {
