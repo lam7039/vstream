@@ -3,12 +3,10 @@
 namespace source;
 
 class file_buffer {
-    public string $path;
     public string $body;
     public int $size;
 
-    public function __construct(string $path) {
-        $this->path = $path;
+    public function __construct(public string $path) {
         $this->body = file_get_contents($path);
         $this->size = strlen($this->body);
     }
