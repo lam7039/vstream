@@ -65,6 +65,6 @@ function redirect(string $to) : void {
     exit;
 }
 
-function is_32bit() : int {
+function is_64bit() : int {
     return PHP_INT_SIZE === 8;
 }
