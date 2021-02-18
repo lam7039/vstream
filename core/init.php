@@ -50,7 +50,9 @@ function env(string $key) : ?string {
 date_default_timezone_set(env('TIMEZONE'));
 
 function dump($x) : void {
+    echo '<pre>';
     var_dump($x);
+    echo '</pre>';
 }
 
 function dd() : void {

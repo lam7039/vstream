@@ -21,6 +21,7 @@ class token_node {
     ) {}
 }
 
+//TODO: use htmlspecialchars on variables so it doesn't interfere with tokenization
 class template {
     private file_buffer $layout;
 
@@ -30,20 +31,16 @@ class template {
         if ($parameters) {
             $this->layout = $this->bind_parameters($this->layout, $parameters);
         }
+        // $this->parse_syntax($this->layout);
     }
 
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
-        if (!str_contains($buffer->body, "{{{$key}}}")) {
-            LOG_INFO("Parameter {{{$key}}} does not exist");
+        if (!str_contains($buffer->body, "[\$$key]")) {
+            LOG_INFO("Parameter [\$$key] does not exist");
             return $buffer;
         }
 
-        $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
-        
-        // if (preg_match('/(?<=<if).*(?=>)/', $buffer->body, $matches, PREG_OFFSET_CAPTURE)) {
-        //     dd($matches);
-        // }
-
+        $buffer->body = str_replace("[\$$key]", $value, $buffer->body);
         return $buffer;
     }
 
@@ -63,11 +60,55 @@ class template {
             }
         }
 
-        $body = str_replace('{{{yield}}}', $buffer->body, $this->layout->body);
+        $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
         if ($cache) {
             file_put_contents($file, $body);
         }
-
+        
         return $body;
+    }
+
+    private function parse_syntax(file_buffer $buffer) {
+        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches);
+        array_shift($matches);
+        foreach ($matches as $match) {
+            [$syntax, $position] = $match;
+            
+            [$type, $check] = explode('|', $syntax);
+            switch ($type) {
+                case 'if':
+                    $allowed_functions = ['isset'];
+                    if (!in_array($check, $allowed_functions)) {
+                        break;
+                    }
+                    break;
+                case 'else':
+
+                    break;
+                case 'endif':
+
+                    break;
+            }
+            
+            $buffer->body = str_replace("[$syntax]", '', $buffer->body);
+        }
+    }
+
+    private function tokenize(string $body) : array {
+        $lines = explode("\n", $body);
+        foreach ($lines as $line) {
+            if (($position = strpos($line, '<if')) === false) {
+                continue;
+            }
+            $position_end = strpos($line, '</if>');
+            $token_if = substr($line, $position, $position_end - $position);
+
+            
+        }
+        return [];
+    }
+
+    private function create_tree(array $tokens) : token_node {
+        return new token_node('root', '');
     }
 }

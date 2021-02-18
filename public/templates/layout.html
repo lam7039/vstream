@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>{{page_title}}</title>
-		<link rel="icon" type="image/png" href="{{page_path}}/resources/favicon/{{page_favicon}}" />
-		<link rel="stylesheet" type="text/css" href="{{page_path}}/styles/{{page_style}}" />
+		<title>[$page_title]</title>
+		<link rel="icon" type="image/png" href="[$page_path]/resources/favicon/[$page_favicon]" />
+		<link rel="stylesheet" type="text/css" href="[$page_path]/styles/[$page_style]" />
 	</head>
 	<body>
 		<aside>
 			<nav>
 				<ul>
 					<li>
-						<ul>
-							<li><a href="/login">login</a></li>
-							<li><a href="/register">register</a></li>
-						</ul>
+						[:if|isset($user)]
+							<ul>
+								<li><a href="/login">login</a></li>
+								<li><a href="/register">register</a></li>
+							</ul>
+						[:else]
+							<a href="/do_logout">do_logout</a>
+						[:endif]
 					</li>
 					<li><a href="/browse">browse</a></li>
 					<li><a href="/account">account</a></li>
-					<li><a href="/do_logout">do_logout</a></li>
 				</ul>
 			</nav>
 			<section class="video-controls">
@@ -26,7 +29,7 @@
 		</aside>
 		<section class="content">
 			<section class="yielded_content">
-				{{{yield}}}
+				[:yield]
 			</section>
 		</section>
 
