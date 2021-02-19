@@ -24,6 +24,17 @@ class token_node {
 //TODO: use htmlspecialchars on variables so it doesn't interfere with tokenization
 class template {
     private file_buffer $layout;
+    private array $lexicon = [
+        'if' => 'statement',
+        'endif' => 'statement',
+        'for' => 'statement',
+        'endfor' => 'statement',
+        'isset' => 'function',
+        '"' => 'string',
+        '\'' => 'string',
+        '(' => 'parentheses',
+        ')' => 'parentheses',
+    ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
@@ -31,7 +42,7 @@ class template {
         if ($parameters) {
             $this->layout = $this->bind_parameters($this->layout, $parameters);
         }
-        // $this->parse_syntax($this->layout);
+
     }
     
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
@@ -60,6 +71,7 @@ class template {
             }
         }
 
+        $this->tokenize($this->layout);
         $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
         if ($cache) {
             file_put_contents($file, $body);
@@ -69,26 +81,24 @@ class template {
     }
 
     private function tokenize(file_buffer $buffer) {
-        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
-        array_shift($matches);
-
+        preg_match_all('/\[:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
+        [$full_matches, $partial_matches] = $matches;
         $tokens = [];
-        foreach ($matches as $match) {
-            [$expression, $position] = $match;
 
+        foreach ($partial_matches as $partial_match) {
+            [$expression, $offset] = $partial_match;
             $token = '';
-            for ($i = $position; $i < strlen($expression); $i++) {
-                $char = $buffer->body[$i];
+            for ($i = 0; $i < strlen($expression); $i++) {
+                $char = $buffer->body[$offset + $i];
                 $token .= $char;
-                // Creating token tree?
-                // if(in_array($token, ['if', 'for', '$'])) {
-                //     $tokens[] = new token_node($token, $expression);
-                //     $token = '';
-                // }
+                if (isset($this->lexicon[$char]) || isset($this->lexicon[$token])) {
+                    $tokens[] = isset($this->lexicon[$char]) ? [$this->lexicon[$char], $char] : [$this->lexicon[$token], $token];
+                    $token = '';
+                }
             }
-            
-            $buffer->body = str_replace("[$expression]", '', $buffer->body);
         }
+
+        dd($tokens);
     }
 
     private function parse_syntax(array $tokens) : array {
@@ -96,6 +106,10 @@ class template {
     }
 
     private function create_tree(array $tokens) : token_node {
-        return new token_node('root', '');
+        $root = new token_node('root', '');
+        foreach ($tokens as $token) {
+            [$type, $value] = $token;
+        }
+        return $root;
     }
 }
