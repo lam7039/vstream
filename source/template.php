@@ -40,7 +40,8 @@ class template {
             return $buffer;
         }
 
-        $buffer->body = str_replace("[\$$key]", $value, $buffer->body);
+        // $buffer->body = str_replace("[\$$key]", $value, $buffer->body);
+        $buffer->body = strtr($buffer->body, "[\$$key]", '');
         return $buffer;
     }
 
@@ -60,7 +61,8 @@ class template {
             }
         }
 
-        $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
+        // $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
+        $body = strtr($this->layout->body, '[:yield]', $buffer->body);
         if ($cache) {
             file_put_contents($file, $body);
         }
@@ -90,11 +92,14 @@ class template {
                     break;
             }
             
-            $buffer->body = str_replace("[$syntax]", '', $buffer->body);
+            // $buffer->body = str_replace("[$syntax]", '', $buffer->body);
+            $buffer->body = strtr($buffer->body, "[$syntax]", '');
         }
     }
 
-    private function tokenize(string $body) : array {
+    private function tokenize(file_buffer $buffer) : array {
+        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
+
         $lines = explode("\n", $body);
         foreach ($lines as $line) {
             if (($position = strpos($line, '<if')) === false) {

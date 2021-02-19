@@ -25,7 +25,8 @@ abstract class media_buffer {
         $this->source_extension = pathinfo($source_path, PATHINFO_EXTENSION);
         $this->output_path = "public/media/{$folder}";
         $this->output_filename = preg_replace('/ ?\[.*?\] ?/', '', $this->source_filename);
-        $this->output_filename = str_replace('_', ' ', $this->output_filename);
+        // $this->output_filename = str_replace('_', ' ', $this->output_filename);
+        $this->output_filename = strtr($this->output_filename, '_', '');
         if (!$this->output_extension) {
             $this->output_extension = 'webm';
         }
