@@ -41,15 +41,20 @@ class template {
         }
 
         // $buffer->body = str_replace("[\$$key]", $value, $buffer->body);
-        $buffer->body = strtr($buffer->body, "[\$$key]", '');
+        $buffer->body = strtr($buffer->body, "[\$$key]", $value);
         return $buffer;
     }
 
     public function bind_parameters(file_buffer $buffer, array $parameters) : file_buffer {
         foreach ($parameters as $key => $value) {
             $buffer = $this->bind_parameter($buffer, $key, $value);
+            // if (!str_contains($buffer->body, "[\$$key]")) {
+            //     LOG_INFO("Parameter [\$$key] does not exist");
+            // }
+            // unset($parameters[$key]);
+            // $parameters["[\$$key]"] = $value;
         }
-
+        // strtr($buffer->body, $parameters);
         return $buffer;
     }
 
@@ -95,6 +100,11 @@ class template {
             // $buffer->body = str_replace("[$syntax]", '', $buffer->body);
             $buffer->body = strtr($buffer->body, "[$syntax]", '');
         }
+        //TODO: replace body with array in strtr
+        // $buffer->body = strtr($buffer->body, [
+        //     'first' => 'replace one',
+        //     'second' => 'replace two',
+        // ]);
     }
 
     private function tokenize(file_buffer $buffer) : array {
