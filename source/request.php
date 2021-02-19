@@ -17,7 +17,7 @@ class request {
         }
         
         $parameters = explode('/', $_GET['request'] ?? '');
-        $this->current_page = array_shift($parameters) ?: $default_page ?: env('HOMEPAGE');
+        $this->current_page = array_pop($parameters) ?: $default_page ?: env('HOMEPAGE');
         $this->parameters = array_merge($parameters, $this->parameters);
     }
 

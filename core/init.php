@@ -62,6 +62,12 @@ function dd() : void {
     exit;
 }
 
+function output() : void {
+    array_map(function($x) { 
+        dump($x); 
+    }, func_get_args());
+}
+
 function redirect(string $to) : void {
     header('Location: ' . $to);
     exit;

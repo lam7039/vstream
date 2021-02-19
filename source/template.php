@@ -13,27 +13,34 @@ class file_buffer {
 }
 
 class token_node {
+    public int $size = 0;
+
     public function __construct(
         public string $type, 
         public string $expression, 
+        public int $offset,
         public array $children = [], 
         public ?string $value = null
-    ) {}
+    ) {
+        $this->size = strlen($expression);
+    }
 }
 
 //TODO: use htmlspecialchars on variables so it doesn't interfere with tokenization
 class template {
     private file_buffer $layout;
     private array $lexicon = [
-        'if' => 'statement',
-        'endif' => 'statement',
-        'for' => 'statement',
-        'endfor' => 'statement',
+        'yield' => 'replace',
+        'if' => 'statement_start',
+        'endif' => 'statement_end',
+        'for' => 'statement_start',
+        'endfor' => 'statement_end',
         'isset' => 'function',
         '"' => 'string',
         '\'' => 'string',
         '(' => 'parentheses',
         ')' => 'parentheses',
+        '!' =>  'not',
     ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
@@ -42,7 +49,6 @@ class template {
         if ($parameters) {
             $this->layout = $this->bind_parameters($this->layout, $parameters);
         }
-
     }
     
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
@@ -71,7 +77,10 @@ class template {
             }
         }
 
-        $this->tokenize($this->layout);
+        $tokens = $this->tokenize($this->layout);
+        $tree = $this->create_tree($tokens);
+        $parse = $this->parse_syntax($buffer, $tree);
+
         $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
         if ($cache) {
             file_put_contents($file, $body);
@@ -80,11 +89,11 @@ class template {
         return $body;
     }
 
-    private function tokenize(file_buffer $buffer) {
+    private function tokenize(file_buffer $buffer) : array {
         preg_match_all('/\[:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
         [$full_matches, $partial_matches] = $matches;
-        $tokens = [];
 
+        $tokens = [];
         foreach ($partial_matches as $partial_match) {
             [$expression, $offset] = $partial_match;
             $token = '';
@@ -92,24 +101,57 @@ class template {
                 $char = $buffer->body[$offset + $i];
                 $token .= $char;
                 if (isset($this->lexicon[$char]) || isset($this->lexicon[$token])) {
-                    $tokens[] = isset($this->lexicon[$char]) ? [$this->lexicon[$char], $char] : [$this->lexicon[$token], $token];
+                    $tokens[] = isset($this->lexicon[$char]) ? [$this->lexicon[$char], $char, $offset] : [$this->lexicon[$token], $token, $offset];
                     $token = '';
                 }
             }
         }
 
-        dd($tokens);
+        return $tokens;
     }
 
-    private function parse_syntax(array $tokens) : array {
-        return [];
+    private function expression_if(string $data, token_node $token) : string {
+        //substr data
+        return $data;
+    }
+
+    private function parse_syntax(file_buffer $buffer, token_node $token) : file_buffer {
+        foreach ($token->children as $child) {
+            $buffer->body = match ($child->type) {
+                'if' => $this->expression_if($buffer->body, $token),
+                'for' => '',
+                'yield' => str_replace('[:yield]', $this->layout->body, $buffer->body),
+                default => $buffer->body,
+            };
+        }
+        return $buffer;
     }
 
     private function create_tree(array $tokens) : token_node {
-        $root = new token_node('root', '');
+        $root = new token_node('root', '', 0);
+        $current = $root;
+        $stack = [];
         foreach ($tokens as $token) {
-            [$type, $value] = $token;
+            [$type, $expression, $offset] = $token;
+            
+            switch ($type) {
+                case 'statement_start':
+                    $node = new token_node($type, $expression, $offset);
+                    $current->children[] = $node;
+                    //if not var
+                    array_push($stack, $current);
+                    $current = $node;
+                    break;
+                case 'statement_end':
+                    if ($stack) {
+                        $current = array_pop($stack);
+                        break;
+                    }
+                    $stack[] = $current;
+                    break;
+            }
         }
+        
         return $root;
     }
 }

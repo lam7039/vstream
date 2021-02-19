@@ -11,11 +11,14 @@
 				<ul>
 					<li>
 						[:if|isset(user)]
+							[:if|isset(asdf)]
 							<ul>
 								<li><a href="/login">login</a></li>
 								<li><a href="/register">register</a></li>
 							</ul>
-						[:else]
+							[:endif]
+						[:endif]
+						[:if|!isset(user)]
 							<a href="/do_logout">do_logout</a>
 						[:endif]
 					</li>
