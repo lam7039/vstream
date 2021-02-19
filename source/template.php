@@ -75,30 +75,27 @@ class template {
         return $body;
     }
 
-    private function parse_syntax(file_buffer $buffer) {
-        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches);
+    private function tokenize(file_buffer $buffer) {
+        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
         array_shift($matches);
+
+        $tokens = [];
         foreach ($matches as $match) {
-            [$syntax, $position] = $match;
-            
-            [$type, $check] = explode('|', $syntax);
-            switch ($type) {
-                case 'if':
-                    $allowed_functions = ['isset'];
-                    if (!in_array($check, $allowed_functions)) {
-                        break;
-                    }
-                    break;
-                case 'else':
+            [$expression, $position] = $match;
 
-                    break;
-                case 'endif':
-
-                    break;
+            $token = '';
+            for ($i = $position; $i < strlen($expression); $i++) {
+                $char = $buffer->body[$i];
+                $token .= $char;
+                // Creating token tree?
+                // if(in_array($token, ['if', 'for', '$'])) {
+                //     $tokens[] = new token_node($token, $expression);
+                //     $token = '';
+                // }
             }
             
             // $buffer->body = str_replace("[$syntax]", '', $buffer->body);
-            $buffer->body = strtr($buffer->body, "[$syntax]", '');
+            $buffer->body = strtr($buffer->body, "[$expression]", '');
         }
         //TODO: replace body with array in strtr
         // $buffer->body = strtr($buffer->body, [
@@ -107,19 +104,7 @@ class template {
         // ]);
     }
 
-    private function tokenize(file_buffer $buffer) : array {
-        preg_match_all('/\[\:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
-
-        $lines = explode("\n", $body);
-        foreach ($lines as $line) {
-            if (($position = strpos($line, '<if')) === false) {
-                continue;
-            }
-            $position_end = strpos($line, '</if>');
-            $token_if = substr($line, $position, $position_end - $position);
-
-            
-        }
+    private function parse_syntax(array $tokens) : array {
         return [];
     }
 
