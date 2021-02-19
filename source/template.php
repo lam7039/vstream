@@ -33,28 +33,22 @@ class template {
         }
         // $this->parse_syntax($this->layout);
     }
-
+    
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
-        if (!str_contains($buffer->body, "[\$$key]")) {
-            LOG_INFO("Parameter [\$$key] does not exist");
+        if (!str_contains($buffer->body, "[:$key]")) {
+            LOG_INFO("Parameter [:$key] does not exist");
             return $buffer;
         }
 
-        // $buffer->body = str_replace("[\$$key]", $value, $buffer->body);
-        $buffer->body = strtr($buffer->body, "[\$$key]", $value);
+        $buffer->body = str_replace("[:$key]", $value, $buffer->body);
         return $buffer;
     }
 
     public function bind_parameters(file_buffer $buffer, array $parameters) : file_buffer {
         foreach ($parameters as $key => $value) {
             $buffer = $this->bind_parameter($buffer, $key, $value);
-            // if (!str_contains($buffer->body, "[\$$key]")) {
-            //     LOG_INFO("Parameter [\$$key] does not exist");
-            // }
-            // unset($parameters[$key]);
-            // $parameters["[\$$key]"] = $value;
         }
-        // strtr($buffer->body, $parameters);
+
         return $buffer;
     }
 
@@ -66,8 +60,7 @@ class template {
             }
         }
 
-        // $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
-        $body = strtr($this->layout->body, '[:yield]', $buffer->body);
+        $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
         if ($cache) {
             file_put_contents($file, $body);
         }
@@ -94,14 +87,8 @@ class template {
                 // }
             }
             
-            // $buffer->body = str_replace("[$syntax]", '', $buffer->body);
-            $buffer->body = strtr($buffer->body, "[$expression]", '');
+            $buffer->body = str_replace("[$expression]", '', $buffer->body);
         }
-        //TODO: replace body with array in strtr
-        // $buffer->body = strtr($buffer->body, [
-        //     'first' => 'replace one',
-        //     'second' => 'replace two',
-        // ]);
     }
 
     private function parse_syntax(array $tokens) : array {

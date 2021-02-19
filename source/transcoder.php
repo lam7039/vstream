@@ -81,10 +81,8 @@ class transcoder {
         $command = "ffmpeg -i {$buffer->source_path} ";
         $subtitles = $buffer->subtitles_type === 'soft' ? $this->extract_subtitles($buffer) : '';
         if ($buffer->subtitles_type === 'hard') {
-            // $source_path = str_replace(':', '\:', $buffer->source_path);
-            // $source_path = str_replace('"', '\'', $source_path);
-            $source_path = strtr($buffer->source_path, ':', '\:');
-            $source_path = strtr($buffer->source_path, '"', '\'');
+            $source_path = str_replace(':', '\:', $buffer->source_path);
+            $source_path = str_replace('"', '\'', $source_path);
             $command .= "-c:s copy -vf \"subtitles=$source_path\" ";
         }
         $command .= "{$buffer->options} -map 0:m:language:{$buffer->audio_language} ";
