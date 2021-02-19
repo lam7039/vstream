@@ -26,7 +26,6 @@ class token_node {
     }
 }
 
-//TODO: use htmlspecialchars on variables so it doesn't interfere with tokenization
 class template {
     private file_buffer $layout;
     private array $lexicon = [
@@ -110,23 +109,6 @@ class template {
         return $tokens;
     }
 
-    private function expression_if(string $data, token_node $token) : string {
-        //substr data
-        return $data;
-    }
-
-    private function parse_syntax(file_buffer $buffer, token_node $token) : file_buffer {
-        foreach ($token->children as $child) {
-            $buffer->body = match ($child->type) {
-                'if' => $this->expression_if($buffer->body, $token),
-                'for' => '',
-                'yield' => str_replace('[:yield]', $this->layout->body, $buffer->body),
-                default => $buffer->body,
-            };
-        }
-        return $buffer;
-    }
-
     private function create_tree(array $tokens) : token_node {
         $root = new token_node('root', '', 0);
         $current = $root;
@@ -153,5 +135,25 @@ class template {
         }
         
         return $root;
+    }
+
+    private function parse_syntax(file_buffer $buffer, token_node $token) : file_buffer {
+        foreach ($token->children as $child) {
+            $buffer->body = match ($child->type) {
+                'if' => $this->expression_if($buffer, $token),
+                'for' => '',
+                'yield' => str_replace('[:yield]', $this->layout->body, $buffer->body),
+                default => $buffer->body,
+            };
+        }
+        return $buffer;
+    }
+
+    private function expression_if(file_buffer $buffer, token_node $token) : string {
+        //substr data
+        
+        $body = substr($buffer->body, $token->offset, -($buffer->size - $token->size));
+        dd($body);
+        return $body;
     }
 }
