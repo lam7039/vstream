@@ -49,7 +49,6 @@ class template {
             }
         }
 
-        //TODO: gives correct output but also gives error for some reason
         $tokens = @$this->tokenize($this->layout->body);
         $tree = $this->create_tree($tokens);
         $buffer->body = $this->interpret_tree($tree, $buffer);
@@ -63,7 +62,6 @@ class template {
 
     private function tokenize(string $template) : array {
         [$left, $right] = ['', $template];
-        // [$left, $right] = ['', htmlspecialchars($template)];
         $tokens = [];
         while (true) {
             [$left, $right] = explode('{% ', $right, 2);
@@ -122,8 +120,8 @@ class template {
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
                 'yield' => $this->expression_yield($buffer),
-                'var' => $branch->expression,
                 'html' => $branch->expression,
+                'var' => $branch->expression,
                 'if' => $this->expression_if($branch),
             };
         }
