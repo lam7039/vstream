@@ -57,9 +57,7 @@ function dump($x) : void {
             color: white;
         }
     </style>
-    <pre>';
-    var_dump($x);
-    echo '</pre>';
+    <pre>' . var_export($x, true) . '</pre>';
 }
 
 function dd() : void {
