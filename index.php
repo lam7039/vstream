@@ -7,6 +7,7 @@ require('routing.php');
 
 use source\file_buffer;
 use source\template;
+use source\_template;
 use models\user;
 
 use function source\auth_check;
@@ -14,7 +15,7 @@ use function source\csrf_create;
 use function source\session_get;
 use function source\session_clear_temp;
 
-$templating = new template([
+$templating = new _template([
     'page_path' => 'public',
     'page_title' => "vstream | $url_page",
     'page_favicon' => 'favicon-32x32.png',
@@ -43,7 +44,7 @@ $parameters = match ($url_page) {
     default => [],
 };
 
-$file_buffer = $templating->bind_parameters(new file_buffer($file_path), $parameters);
-echo $templating->render($file_buffer);
+$file_buffer = $templating->bind_parameters($parameters);
+echo $templating->render(new file_buffer($file_path));
 session_clear_temp();
 echo microtime(true) - $start;
