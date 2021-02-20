@@ -107,7 +107,7 @@ class template {
                         $current = $node;
                         break;
                     case 'replace':
-                        $root->branches[] = new token_node('yield', '');
+                        $root->branches[] = new token_node($type, '');
                         break;
                 }
             }
