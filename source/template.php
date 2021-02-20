@@ -12,28 +12,11 @@ class file_buffer {
     }
 }
 
-//Legacy
 class token_node {
-    public int $expression_size = 0;
-    public int $body_size = 0;
-    public int $end_size = 0;
-
     public function __construct(
         public string $type, 
         public string $expression, 
-        public int $offset,
-        public array $children = [], 
-        public ?string $value = null
-    ) {
-        $this->expression_size = strlen($expression);
-    }
-}
-
-class _token_node {
-    public function __construct(
-        public string $type, 
-        public string $expression, 
-        public array $children = [], 
+        public array $branches = [], 
         public ?string $value = null
     ) {}
 }
@@ -149,13 +132,13 @@ class _template {
         return $tokens;
     }
 
-    private function tree(array $tokens) : _token_node {
-        $root = new _token_node('root', '');
+    private function tree(array $tokens) : token_node {
+        $root = new token_node('root', '');
         $current = $root;
         $stack = [];
         foreach ($tokens as $i => $token) {
             if (!($i % 2)) {
-                $root->children[] = new _token_node('html', $token);
+                $root->branches[] = new token_node('html', $token);
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
@@ -169,39 +152,39 @@ class _template {
                         }
                         break;
                     case 'start_expression':
-                        $node = new _token_node($type, $token);
-                        $current->children[] = $node;
+                        $node = new token_node($type, $token);
+                        $current->branches[] = $node;
                         $stack[] = $current;
                         $current = $node;
                         break;
                 }
             }
         }
-        dd($root);
+        // dd($root);
         return $root;
     }
 
-    private function parse_tree(_token_node $node) : string {
+    private function parse_tree(token_node $node) : string {
         $output = '';
-        foreach ($node->children as $child) {
-            switch ($child->type) {
+        foreach ($node->branches as $branch) {
+            switch ($branch->type) {
                 case 'html':
-                    $output .= $child->expression;
+                    $output .= $branch->expression;
                     break;
                 case 'if':
-                    $output .= $this->expression_if($child);
+                    $output .= $this->expression_if($branch);
                     break;
             }
         }
         return $output;
     }
 
-    private function expression_if(_token_node $node) : string {
+    private function expression_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
         dd($expression);
         $output = '';
 
-        if ($node->children) {
+        if ($node->branches) {
             $output .= $this->parse_tree($node);
         }
         return $output;
