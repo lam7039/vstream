@@ -13,7 +13,9 @@ class file_buffer {
 }
 
 class token_node {
-    public int $size = 0;
+    public int $expression_size = 0;
+    public int $body_size = 0;
+    public int $end_size = 0;
 
     public function __construct(
         public string $type, 
@@ -22,14 +24,13 @@ class token_node {
         public array $children = [], 
         public ?string $value = null
     ) {
-        $this->size = strlen($expression);
+        $this->expression_size = strlen($expression);
     }
 }
 
 class template {
     private file_buffer $layout;
     private array $lexicon = [
-        'yield' => 'replace',
         'if' => 'statement_start',
         'endif' => 'statement_end',
         'for' => 'statement_start',
@@ -51,12 +52,12 @@ class template {
     }
     
     public function bind_parameter(file_buffer $buffer, string $key, string $value) : file_buffer {
-        if (!str_contains($buffer->body, "[:$key]")) {
-            LOG_INFO("Parameter [:$key] does not exist");
+        if (!str_contains($buffer->body, "{{{$key}}}")) {
+            LOG_INFO("Parameter {{{$key}}} does not exist");
             return $buffer;
         }
 
-        $buffer->body = str_replace("[:$key]", $value, $buffer->body);
+        $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
         return $buffer;
     }
 
@@ -80,7 +81,7 @@ class template {
         $tree = $this->create_tree($tokens);
         $parse = $this->parse_syntax($buffer, $tree);
 
-        $body = str_replace('[:yield]', $buffer->body, $this->layout->body);
+        $body = str_replace('{{yield}}', $buffer->body, $this->layout->body);
         if ($cache) {
             file_put_contents($file, $body);
         }
@@ -89,7 +90,7 @@ class template {
     }
 
     private function tokenize(file_buffer $buffer) : array {
-        preg_match_all('/\[:(.*)\]/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/{%\s*(.*)\s*%}/', $buffer->body, $matches, PREG_OFFSET_CAPTURE);
         [$full_matches, $partial_matches] = $matches;
 
         $tokens = [];
@@ -117,23 +118,22 @@ class template {
             [$type, $expression, $offset] = $token;
             
             switch ($type) {
+                case 'statement_end':
+                    if ($stack) {
+                        $current->body_size = $offset;
+                        $current->end_size = strlen($expression);
+                        $current = array_pop($stack);
+                    }
                 case 'statement_start':
                     $node = new token_node($type, $expression, $offset);
                     $current->children[] = $node;
+
                     //if not var
-                    array_push($stack, $current);
-                    $current = $node;
-                    break;
-                case 'statement_end':
-                    if ($stack) {
-                        $current = array_pop($stack);
-                        break;
-                    }
                     $stack[] = $current;
-                    break;
+                    $current = $node;
             }
         }
-        
+        dd($root);
         return $root;
     }
 
@@ -142,7 +142,6 @@ class template {
             $buffer->body = match ($child->type) {
                 'if' => $this->expression_if($buffer, $token),
                 'for' => '',
-                'yield' => str_replace('[:yield]', $this->layout->body, $buffer->body),
                 default => $buffer->body,
             };
         }
@@ -152,8 +151,10 @@ class template {
     private function expression_if(file_buffer $buffer, token_node $token) : string {
         //substr data
         
-        $body = substr($buffer->body, $token->offset, -($buffer->size - $token->size));
-        dd($body);
+        $body = substr($buffer->body, $token->offset, -($buffer->size - $token->expression_size));
+        if ($token->children) {
+            $body .= $this->parse_syntax($buffer, $token)->body;
+        }
         return $body;
     }
 }
