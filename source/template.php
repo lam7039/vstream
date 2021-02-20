@@ -29,7 +29,7 @@ class template {
         'endif' => 'end_expression',
         'for' => 'start_expression',
         'endfor' => 'end_expression',
-        // 'yield' => 'replace',
+        'yield' => 'replace',
     ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
@@ -49,13 +49,10 @@ class template {
             }
         }
 
-        //TODO: handle yield within interpreter
-        $buffer->body = str_replace('{{yield}}', $buffer->body, $this->layout->body);
-
         //TODO: gives correct output but also gives error for some reason
-        $tokens = @$this->tokenize($buffer->body);
-        $tree = $this->create_tree($tokens, $buffer);
-        $buffer->body = $this->interpret_tree($tree);
+        $tokens = @$this->tokenize($this->layout->body);
+        $tree = $this->create_tree($tokens);
+        $buffer->body = $this->interpret_tree($tree, $buffer);
 
         if ($cache) {
             file_put_contents($file, $buffer->body);
@@ -83,7 +80,7 @@ class template {
         return $tokens;
     }
 
-    private function create_tree(array $tokens, file_buffer $buffer = null) : token_node {
+    private function create_tree(array $tokens) : token_node {
         $root = new token_node('root', '');
         $current = $root;
         $stack = [];
@@ -111,29 +108,35 @@ class template {
                         $stack[] = $current;
                         $current = $node;
                         break;
-                    // case 'replace':
-                    //     $buffer_tokens = @$this->tokenize($buffer->body);
-                    //     $buffer_tree = $this->create_tree($buffer_tokens);
-                    //     $root->branches[] = $buffer_tree->branches;
-                    //     break;
+                    case 'replace':
+                        $root->branches[] = new token_node('yield', '');
+                        break;
                 }
             }
         }
-        // dd($root);
         return $root;
     }
 
-    private function interpret_tree(token_node $node) : string {
+    private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
         $output = '';
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
+                'yield' => $this->expression_yield($buffer),
                 'var' => $branch->expression,
                 'html' => $branch->expression,
                 'if' => $this->expression_if($branch),
-                // 'yield' => $branch->expression,
             };
         }
         return $output;
+    }
+
+    private function expression_yield(file_buffer $buffer) : string {
+        if (!$buffer) {
+            return '';
+        }
+        $tokens = @$this->tokenize($buffer->body);
+        $tree = $this->create_tree($tokens);
+        return $this->interpret_tree($tree);
     }
 
     private function expression_if(token_node $node) : string {
