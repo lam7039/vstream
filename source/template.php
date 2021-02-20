@@ -22,7 +22,7 @@ class token_node {
 }
 
 //Legacy
-class template {
+class _template {
     private file_buffer $layout;
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
@@ -68,7 +68,7 @@ class template {
     }
 }
 
-class _template {
+class template {
     private file_buffer $layout;
     private array $parameters = [];
     private array $lexicon = [
@@ -76,6 +76,7 @@ class _template {
         'endif' => 'end_expression',
         'for' => 'start_expression',
         'endfor' => 'end_expression',
+        // 'yield' => 'replace',
     ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
@@ -95,17 +96,13 @@ class _template {
             }
         }
 
-        //TODO: also detect variables with the parser
+        //TODO: handle yield within interpreter
         $buffer->body = str_replace('{{yield}}', $buffer->body, $this->layout->body);
-        foreach ($this->parameters as $key => $value) {
-            $buffer->body = str_replace("{{{$key}}}", $value, $buffer->body);
-        }
 
         //TODO: gives correct output but also gives error for some reason
-        $tokens = @$this->tokenizer($buffer->body);
-        $tree = $this->tree($tokens);
-        $buffer->body = $this->parse_tree($tree);
-        // dd($output);
+        $tokens = @$this->tokenize($buffer->body);
+        $tree = $this->create_tree($tokens, $buffer);
+        $buffer->body = $this->interpret_tree($tree);
 
         if ($cache) {
             file_put_contents($file, $buffer->body);
@@ -114,8 +111,9 @@ class _template {
         return $buffer->body;
     }
 
-    private function tokenizer(string $template) : array {
-        [$left, $right] = ['', htmlspecialchars($template)];
+    private function tokenize(string $template) : array {
+        [$left, $right] = ['', $template];
+        // [$left, $right] = ['', htmlspecialchars($template)];
         $tokens = [];
         while (true) {
             [$left, $right] = explode('{% ', $right, 2);
@@ -132,7 +130,7 @@ class _template {
         return $tokens;
     }
 
-    private function tree(array $tokens) : token_node {
+    private function create_tree(array $tokens, file_buffer $buffer = null) : token_node {
         $root = new token_node('root', '');
         $current = $root;
         $stack = [];
@@ -140,6 +138,9 @@ class _template {
             if (!($i % 2)) {
                 $root->branches[] = new token_node('html', $token);
                 continue;
+            }
+            if (isset($this->parameters[$token])) {
+                $root->branches[] = new token_node('var', $this->parameters[$token]);
             }
             foreach ($this->lexicon as $type => $category) {
                 if ($type !== substr($token, 0, strlen($type))) {
@@ -157,6 +158,11 @@ class _template {
                         $stack[] = $current;
                         $current = $node;
                         break;
+                    // case 'replace':
+                    //     $buffer_tokens = @$this->tokenize($buffer->body);
+                    //     $buffer_tree = $this->create_tree($buffer_tokens);
+                    //     $root->branches[] = $buffer_tree->branches;
+                    //     break;
                 }
             }
         }
@@ -164,28 +170,25 @@ class _template {
         return $root;
     }
 
-    private function parse_tree(token_node $node) : string {
+    private function interpret_tree(token_node $node) : string {
         $output = '';
         foreach ($node->branches as $branch) {
-            switch ($branch->type) {
-                case 'html':
-                    $output .= $branch->expression;
-                    break;
-                case 'if':
-                    $output .= $this->expression_if($branch);
-                    break;
-            }
+            $output .= match ($branch->type) {
+                'var' => $branch->expression,
+                'html' => $branch->expression,
+                'if' => $this->expression_if($branch),
+                // 'yield' => $branch->expression,
+            };
         }
         return $output;
     }
 
     private function expression_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
-        dd($expression);
         $output = '';
 
         if ($node->branches) {
-            $output .= $this->parse_tree($node);
+            $output .= $this->interpret_tree($node);
         }
         return $output;
     }
