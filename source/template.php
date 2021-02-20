@@ -158,26 +158,26 @@ class _template {
                 $root->children[] = new _token_node('html', $token);
                 continue;
             }
-
             foreach ($this->lexicon as $type => $category) {
-                if ($type === substr($token, 0, strlen($type))) {
-                    switch ($category) {
-                        case 'end_expression':
-                            if ($stack) {
-                                $current = array_pop($stack);
-                            }
-                            break;
-                        case 'start_expression':
-                            $node = new _token_node($type, $token);
-                            $current->children[] = $node;
-                            $stack[] = $current;
-                            $current = $node;
-                            break;
-                    }
+                if ($type !== substr($token, 0, strlen($type))) {
+                    continue;
+                }
+                switch ($category) {
+                    case 'end_expression':
+                        if ($stack) {
+                            $current = array_pop($stack);
+                        }
+                        break;
+                    case 'start_expression':
+                        $node = new _token_node($type, $token);
+                        $current->children[] = $node;
+                        $stack[] = $current;
+                        $current = $node;
+                        break;
                 }
             }
         }
-
+        dd($root);
         return $root;
     }
 

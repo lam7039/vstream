@@ -50,7 +50,14 @@ function env(string $key) : ?string {
 date_default_timezone_set(env('TIMEZONE'));
 
 function dump($x) : void {
-    echo '<pre>';
+    echo '<style>
+        body {
+            padding: 10px;
+            background-color: #202021;
+            color: white;
+        }
+    </style>
+    <pre>';
     var_dump($x);
     echo '</pre>';
 }
