@@ -17,7 +17,6 @@ class token_node {
         public string $type, 
         public string $expression, 
         public array $branches = [], 
-        public ?string $value = null
     ) {}
 }
 
