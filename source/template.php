@@ -23,7 +23,7 @@ class token_node {
 
 class template {
     private file_buffer $layout;
-    private array $parameters = ['test' => 'asdf'];
+    private array $parameters = [];
     private array $lexicon = [
         'if' => 'start_expression',
         'endif' => 'end_expression',
