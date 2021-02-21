@@ -131,6 +131,7 @@ class template {
                 'html' => $branch->expression,
                 'var' => $branch->expression,
                 'if' => $this->interpret_if($branch),
+                'for'=> $this->interpret_for($branch),
                 default => '',
             };
         }
@@ -149,6 +150,10 @@ class template {
     private function interpret_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
         return $this->apply_function($expression) ? $this->interpret_tree($node) : '';
+    }
+
+    private function interpret_for(token_node $node) : string {
+        return '';
     }
 
     private function apply_function(string $expression) : mixed {
