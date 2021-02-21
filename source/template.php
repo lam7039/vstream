@@ -144,18 +144,14 @@ class template {
 
     private function expression_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
-        $output = '';
-        if ($this->apply_function($expression)) {
-            $output .= $this->interpret_tree($node);
-        }
-        return $output;
+        return $this->apply_function($expression) ? $this->interpret_tree($node) : '';
     }
 
     private function apply_function(string $expression) : mixed {
         [$function, $parameters] = explode('(', rtrim($expression, ')'), 2);
-
         $not = $function[0] === '!';
         $function = $not ? ltrim($function, '!') : $function;
+
         if (!in_array($function, $this->allowed_functions)) {
             return false;
         }
