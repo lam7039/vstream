@@ -10,15 +10,13 @@
 			<nav>
 				<ul>
 					<li>
-						{% if(isset(user)) %}
-							{% if(isset(asdf)) %}
+						{% if(auth_check()) %}
 							<ul>
 								<li><a href="/login">login</a></li>
 								<li><a href="/register">register</a></li>
 							</ul>
-							{% endif %}
 						{% endif %}
-						{% if(!isset(user)) %}
+						{% if(!auth_check()) %}
 							<a href="/do_logout">do_logout</a>
 						{% endif %}
 					</li>

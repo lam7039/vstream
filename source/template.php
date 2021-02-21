@@ -23,13 +23,17 @@ class token_node {
 
 class template {
     private file_buffer $layout;
-    private array $parameters = [];
+    private array $parameters = ['test' => 'asdf'];
     private array $lexicon = [
         'if' => 'start_expression',
         'endif' => 'end_expression',
         'for' => 'start_expression',
         'endfor' => 'end_expression',
         'yield' => 'replace',
+    ];
+    private array $allowed_functions = [
+        'isset',
+        'auth_check',
     ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
@@ -84,7 +88,7 @@ class template {
         $stack = [];
         foreach ($tokens as $i => $token) {
             if (!($i % 2)) {
-                $root->branches[] = new token_node('html', $token);
+                $current->branches[] = new token_node('html', $token);
                 continue;
             }
             if (isset($this->parameters[$token])) {
@@ -141,14 +145,23 @@ class template {
     private function expression_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
         $output = '';
-
-        if ($node->branches) {
+        if ($this->apply_function($expression)) {
             $output .= $this->interpret_tree($node);
         }
         return $output;
     }
 
-    private function apply_functions(string $expression) {
-        $function = explode('(', rtrim($expression, ')'), 2);
+    private function apply_function(string $expression) : mixed {
+        [$function, $parameters] = explode('(', rtrim($expression, ')'), 2);
+
+        $not = $function[0] === '!';
+        $function = $not ? ltrim($function, '!') : $function;
+        if (!in_array($function, $this->allowed_functions)) {
+            return false;
+        }
+        
+        $parameters = explode(',', $parameters);
+        $result = (__NAMESPACE__ . '\\' . $function)(...$parameters);
+        return $not ? $result : !$result;
     }
 }
