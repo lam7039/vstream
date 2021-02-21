@@ -115,7 +115,7 @@ class template {
                         }
                         continue 2;
                     case 'replace':
-                        $root->branches[] = new token_node($type, $token);
+                        $current->branches[] = new token_node($type, $token);
                         continue 2;
                 }
             }
