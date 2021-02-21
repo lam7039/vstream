@@ -127,17 +127,17 @@ class template {
         $output = '';
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
-                'yield' => $this->expression_yield($buffer),
+                'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
                 'var' => $branch->expression,
-                'if' => $this->expression_if($branch),
+                'if' => $this->interpret_if($branch),
                 default => '',
             };
         }
         return $output;
     }
 
-    private function expression_yield(file_buffer $buffer) : string {
+    private function interpret_yield(file_buffer $buffer) : string {
         if (!$buffer) {
             return '';
         }
@@ -146,7 +146,7 @@ class template {
         return $this->interpret_tree($tree);
     }
 
-    private function expression_if(token_node $node) : string {
+    private function interpret_if(token_node $node) : string {
         $expression = substr($node->expression, 3, -1);
         return $this->apply_function($expression) ? $this->interpret_tree($node) : '';
     }
