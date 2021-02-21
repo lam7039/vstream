@@ -89,6 +89,7 @@ class template {
             }
             if (isset($this->parameters[$token])) {
                 $root->branches[] = new token_node('var', $this->parameters[$token]);
+                continue;
             }
             foreach ($this->lexicon as $type => $category) {
                 if ($type !== substr($token, 0, strlen($type))) {
@@ -99,16 +100,16 @@ class template {
                         if ($stack) {
                             $current = array_pop($stack);
                         }
-                        break;
+                        continue 2;
                     case 'start_expression':
                         $node = new token_node($type, $token);
                         $current->branches[] = $node;
                         $stack[] = $current;
                         $current = $node;
-                        break;
+                        continue 2;
                     case 'replace':
                         $root->branches[] = new token_node($type, $token);
-                        break;
+                        continue 2;
                 }
             }
         }
