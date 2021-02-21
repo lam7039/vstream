@@ -57,7 +57,7 @@ class template {
         }
 
         $tokens = @$this->tokenize($this->layout->body);
-        $tree = $this->create_tree($tokens);
+        $tree = $this->build_tree($tokens);
         $buffer->body = $this->interpret_tree($tree, $buffer);
 
         if ($cache) {
@@ -85,7 +85,7 @@ class template {
         return $tokens;
     }
 
-    private function create_tree(array $tokens) : token_node {
+    private function build_tree(array $tokens) : token_node {
         $root = new token_node('root', '');
         $current = $root;
         $stack = [];
@@ -142,7 +142,7 @@ class template {
             return '';
         }
         $tokens = @$this->tokenize($buffer->body);
-        $tree = $this->create_tree($tokens);
+        $tree = $this->build_tree($tokens);
         return $this->interpret_tree($tree);
     }
 
