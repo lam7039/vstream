@@ -39,7 +39,7 @@ $parameters = match ($url_page) {
         'token' => csrf_create(),
     ],
     'account' => [
-        'ip' => long2ip($user->ip_address),
+        'ip' => $user ? long2ip($user->ip_address) : '',
     ],
     default => [],
 };
