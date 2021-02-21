@@ -37,10 +37,14 @@ class template {
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
-        $this->parameters = array_merge($this->parameters, $parameters);
+        $this->bind_parameters($parameters);
     }
 
     public function bind_parameters(array $parameters) : void {
+        if (array_intersect_key($this->lexicon, $parameters)) {
+            LOG_CRITICAL('A key within the added parameters exists in the lexicon');
+            return;
+        }
         $this->parameters = array_merge($this->parameters, $parameters);
     }
 

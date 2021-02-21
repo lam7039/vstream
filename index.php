@@ -26,7 +26,7 @@ $templating = new template([
     'page_favicon' => 'favicon-32x32.png',
     'page_style' => 'layout.css',
     'page_script' => 'script.js',
-    'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
+    'username' => $user ? $user->username : '',
 ]);
 
 $parameters = match ($url_page) {
@@ -37,6 +37,9 @@ $parameters = match ($url_page) {
     'register' => [
         'error' => session_get('password_mismatch') ?? '',
         'token' => csrf_create(),
+    ],
+    'account' => [
+        'ip' => long2ip($user->ip_address),
     ],
     default => [],
 };
