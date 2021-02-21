@@ -9,19 +9,19 @@
 		<aside>
 			<nav>
 				<ul>
-					<li>
-						{% if(auth_check()) %}
+					{% if(auth_check()) %}
+						<li>
 							<ul>
 								<li><a href="/login">login</a></li>
 								<li><a href="/register">register</a></li>
 							</ul>
-						{% endif %}
-						{% if(!auth_check()) %}
-							<a href="/do_logout">logout</a>
-						{% endif %}
-					</li>
+						</li>
+					{% endif %}
+					{% if(!auth_check()) %}
+						<li><a href="/account">{% username %}</a></li>
+						<li><a href="/do_logout">logout</a></li>
+					{% endif %}
 					<li><a href="/browse">browse</a></li>
-					<li><a href="/account">account</a></li>
 				</ul>
 			</nav>
 			<section class="video-controls">

@@ -92,7 +92,7 @@ class template {
                 continue;
             }
             if (isset($this->parameters[$token])) {
-                $root->branches[] = new token_node('var', $this->parameters[$token]);
+                $current->branches[] = new token_node('var', $this->parameters[$token]);
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {

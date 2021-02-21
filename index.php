@@ -14,19 +14,20 @@ use function source\csrf_create;
 use function source\session_get;
 use function source\session_clear_temp;
 
+$user = null;
+if (auth_check()) {
+    $user = new user;
+    $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
+}
+
 $templating = new template([
     'page_path' => 'public',
     'page_title' => "vstream | $url_page",
     'page_favicon' => 'favicon-32x32.png',
     'page_style' => 'layout.css',
     'page_script' => 'script.js',
+    'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
 ]);
-
-$user = null;
-if (auth_check()) {
-    $user = new user;
-    $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
-}
 
 $parameters = match ($url_page) {
     'login' => [
@@ -36,9 +37,6 @@ $parameters = match ($url_page) {
     'register' => [
         'error' => session_get('password_mismatch') ?? '',
         'token' => csrf_create(),
-    ],
-    'account' => [
-        'username' => $user ? $user->username . ' (' . long2ip($user->ip_address) . ')' : '',
     ],
     default => [],
 };
