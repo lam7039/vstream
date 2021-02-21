@@ -24,10 +24,10 @@ class template {
     private file_buffer $layout;
     private array $parameters = [];
     private array $lexicon = [
-        'if' => 'start_expression',
-        'endif' => 'end_expression',
-        'for' => 'start_expression',
-        'endfor' => 'end_expression',
+        'if' => 'start',
+        'endif' => 'end',
+        'for' => 'start',
+        'endfor' => 'end',
         'yield' => 'replace',
     ];
     private array $allowed_functions = [
@@ -103,16 +103,16 @@ class template {
                     continue;
                 }
                 switch ($category) {
-                    case 'end_expression':
-                        if ($stack) {
-                            $current = array_pop($stack);
-                        }
-                        continue 2;
-                    case 'start_expression':
+                    case 'start':
                         $node = new token_node($type, $token);
                         $current->branches[] = $node;
                         $stack[] = $current;
                         $current = $node;
+                        continue 2;
+                    case 'end':
+                        if ($stack) {
+                            $current = array_pop($stack);
+                        }
                         continue 2;
                     case 'replace':
                         $root->branches[] = new token_node($type, $token);
