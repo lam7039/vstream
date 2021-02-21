@@ -131,6 +131,7 @@ class template {
                 'html' => $branch->expression,
                 'var' => $branch->expression,
                 'if' => $this->expression_if($branch),
+                default => '',
             };
         }
         return $output;
