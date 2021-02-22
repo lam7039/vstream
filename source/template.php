@@ -177,7 +177,7 @@ class template {
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
         // return $not ? $function : !$function;
         return match ($function) {
-            'isset' => $not ? isset($parameters[0]) : !isset($parameters[0]),
+            'isset' => $not ? !isset($this->parameters[$parameters[0]]) : isset($this->parameters[$parameters[0]]),
             default => $not ? (__NAMESPACE__ . '\\' . $function)(...$parameters) : !(__NAMESPACE__ . '\\' . $function)(...$parameters),
         };
     }
