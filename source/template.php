@@ -23,7 +23,6 @@ class token_node {
 class template {
     private file_buffer $layout;
     private array $parameters = [];
-    private array $parameters_temp = [];
     private array $lexicon = [
         'if' => 'start',
         'endif' => 'end',
@@ -154,12 +153,12 @@ class template {
     }
 
     private function interpret_for(token_node $node) : string {
-        [$parameter, $temp_param] = explode($node->expression, ' in ', 2);
+        [$parameter, $parameter_temp] = explode($node->expression, ' in ', 2);
         $output = '';
-        $this->parameters_temp[$temp_param] = [];
-        foreach ($this->parameters[$parameter] as $temp) {
-            $current = $this->parameters_temp[$temp];
+        foreach ($this->parameters[$parameter] as $value) {
+            $this->parameters[$parameter_temp] = $value;
             $output .= $this->interpret_tree($node);
+            unset($this->parameters[$parameter_temp]);
         }
         return $output;
     }
