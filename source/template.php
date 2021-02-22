@@ -158,6 +158,7 @@ class template {
         $output = '';
         $this->parameters_temp[$temp_param] = [];
         foreach ($this->parameters[$parameter] as $temp) {
+            $current = $this->parameters_temp[$temp];
             $output .= $this->interpret_tree($node);
         }
         return $output;
