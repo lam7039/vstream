@@ -166,7 +166,9 @@ class template {
         }
         
         $parameters = explode(',', $parameters);
-        $result = (__NAMESPACE__ . '\\' . $function)(...$parameters);
-        return $not ? $result : !$result;
+        return match ($function) {
+            'isset' => $not ? isset($parameters[0]) : !isset($parameters[0]),
+            default => $not ? (__NAMESPACE__ . '\\' . $function)(...$parameters) : !(__NAMESPACE__ . '\\' . $function)(...$parameters),
+        };
     }
 }
