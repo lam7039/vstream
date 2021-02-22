@@ -17,6 +17,7 @@ class token_node {
         public string $type, 
         public string $expression, 
         public array $branches = [], 
+        public ?string $value = null,
     ) {}
 }
 
@@ -99,12 +100,14 @@ class template {
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
-                if ($type !== substr($token, 0, strlen($type))) {
+                $type_length = strlen($type);
+                if ($type !== substr($token, 0, $type_length)) {
                     continue;
                 }
                 switch ($category) {
                     case 'start':
-                        $node = new token_node($type, $token);
+                        $type_length_full = $type_length + 1;
+                        $node = new token_node($type, substr($token, $type_length_full, strlen($token) - $type_length_full));
                         $current->branches[] = $node;
                         $stack[] = $current;
                         $current = $node;
@@ -148,19 +151,17 @@ class template {
     }
 
     private function interpret_if(token_node $node) : string {
-        $expression = substr($node->expression, 3, -1);
-        return $this->apply_function($expression) ? $this->interpret_tree($node) : '';
+        return $this->apply_function($node->expression) ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_for(token_node $node) : string {
-        [$parameter, $parameter_temp] = explode($node->expression, ' in ', 2);
-        $output = '';
+        [$parameter, $parameter_temp] = explode(' in ', $node->expression, 2);
         foreach ($this->parameters[$parameter] as $value) {
-            $this->parameters[$parameter_temp] = $value;
-            $output .= $this->interpret_tree($node);
-            unset($this->parameters[$parameter_temp]);
+            // output($value);
+            //TODO: figure out how to also render html within the block
+            $node->branches[] = new token_node('var', $value);
         }
-        return $output;
+        return $this->interpret_tree($node);
     }
 
     private function apply_function(string $expression) : mixed {
@@ -173,6 +174,8 @@ class template {
         }
         
         $parameters = explode(',', $parameters);
+        // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
+        // return $not ? $function : !$function;
         return match ($function) {
             'isset' => $not ? isset($parameters[0]) : !isset($parameters[0]),
             default => $not ? (__NAMESPACE__ . '\\' . $function)(...$parameters) : !(__NAMESPACE__ . '\\' . $function)(...$parameters),

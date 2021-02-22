@@ -40,6 +40,11 @@ $parameters = match ($url_page) {
     ],
     'account' => [
         'ip' => $user ? long2ip($user->ip_address) : '',
+        'testfor' => [
+            'first',
+            'second',
+            'third',
+        ],
     ],
     default => [],
 };

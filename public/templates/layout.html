@@ -9,7 +9,7 @@
 		<aside>
 			<nav>
 				<ul>
-					{% if(auth_check()) %}
+					{% if auth_check() %}
 						<li>
 							<ul>
 								<li><a href="/login">login</a></li>
@@ -17,7 +17,7 @@
 							</ul>
 						</li>
 					{% endif %}
-					{% if(!auth_check()) %}
+					{% if !auth_check() %}
 						<li><a href="/account">{% username %}</a></li>
 						<li><a href="/do_logout">logout</a></li>
 					{% endif %}
