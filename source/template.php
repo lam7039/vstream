@@ -114,14 +114,13 @@ class template {
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
-                $type_length = strlen($type);
-                if ($type !== substr($token, 0, $type_length)) {
+                //TODO: category => value (loops only 3 times), if isset($this->lexicon[category][substr(token, 0, strlen(category))]) continue;
+                if ($type !== substr($token, 0, strlen($type))) {
                     continue;
                 }
                 switch ($category) {
                     case 'start':
-                        $type_length_full = $type_length + 1;
-                        $node = new token_node($type, substr($token, $type_length_full, strlen($token) - $type_length_full));
+                        $node = new token_node($type, ltrim($token, "$type: "));
                         $current->branches[] = $node;
                         $stack[] = $current;
                         $current = $node;
@@ -173,7 +172,8 @@ class template {
         foreach ($this->parameters[$parameter] as $value) {
             // output($value);
             //TODO: figure out how to also render html within the block
-            $node->branches[] = new token_node('var', $value);
+            $this->parameters[$parameter_temp] = $value;
+            $node->branches[] = new token_node('var', $parameter_temp);
         }
         return $this->interpret_tree($node);
     }
