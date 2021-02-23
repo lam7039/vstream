@@ -31,6 +31,18 @@ class template {
         'endfor' => 'end',
         'yield' => 'replace',
     ];
+    //TODO: maybe refactor it like this and just do isset instead of a switch?
+    private array $_lexicon = [
+        'start' => [
+            'if',
+            'for',
+            'yield',
+        ],
+        'end' => [
+            'endif',
+            'endfor',
+        ],
+    ];
     private array $allowed_functions = [
         'isset',
         'auth_check',
