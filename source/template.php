@@ -170,14 +170,11 @@ class template {
         [$parameter, $parameter_temp] = explode(' in ', $node->expression, 2);
         $output = '';
         foreach ($this->parameters[$parameter] as $value) {
-            // output($value);
-            //TODO: figure out how to also render html within the block
             $this->parameters[$parameter_temp] = $value;
-            $node->branches[] = new token_node('var', $value);
-            $output .= $this->interpret_tree($node);
+            // $output .= $value . $this->interpret_tree($node); // This works but doesn't use a tempvar
         }
         unset($this->parameters[$parameter_temp]);
-        return $output;
+        return $output . $this->interpret_tree($node);
     }
 
     private function apply_function(string $expression) : mixed {
