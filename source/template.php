@@ -31,20 +31,6 @@ class template {
         'endfor' => 'end',
         'yield' => 'replace',
     ];
-    //TODO: maybe refactor it like this and just do isset instead of a switch?
-    private array $_lexicon = [
-        'start' => [
-            'if',
-            'for',
-        ],
-        'end' => [
-            'endif',
-            'endfor',
-        ],
-        'replace' => [
-            'yield',
-        ]
-    ];
     private array $allowed_functions = [
         'isset',
         'auth_check',
@@ -114,7 +100,6 @@ class template {
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
-                //TODO: category => value (loops only 3 times), if isset($this->lexicon[category][substr(token, 0, strlen(category))]) continue;
                 if ($type !== substr($token, 0, strlen($type))) {
                     continue;
                 }
@@ -191,13 +176,16 @@ class template {
 
     private function interpret_for(token_node $node) : string {
         [$parameter, $parameter_temp] = explode(' in ', $node->expression, 2);
+        $output = '';
         foreach ($this->parameters[$parameter] as $value) {
             // output($value);
             //TODO: figure out how to also render html within the block
             $this->parameters[$parameter_temp] = $value;
-            $node->branches[] = new token_node('var', $parameter_temp);
+            $node->branches[] = new token_node('var', $value);
+            $output .= $this->interpret_tree($node);
         }
-        return $this->interpret_tree($node);
+        unset($this->parameters[$parameter_temp]);
+        return $output;
     }
 
     private function apply_function(string $expression) : mixed {
