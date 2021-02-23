@@ -36,12 +36,14 @@ class template {
         'start' => [
             'if',
             'for',
-            'yield',
         ],
         'end' => [
             'endif',
             'endfor',
         ],
+        'replace' => [
+            'yield',
+        ]
     ];
     private array $allowed_functions = [
         'isset',
