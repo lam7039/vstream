@@ -152,22 +152,14 @@ class template {
         $check = false;
         if (str_contains($node->expression, '==')) {
             [$first, $second] = explode(' == ', $node->expression);
-            if (isset($this->parameters[$first])) {
-                $first = $this->parameters[$first];
-            }
-            if (isset($this->parameters[$second])) {
-                $second = $this->parameters[$second];
-            }
-            $check = str_replace('\'', '', $first) === str_replace('\'', '', $second);
+            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', $first);
+            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', $second);
+            $check = $first === $second;
         } elseif (str_contains($node->expression, '!=')) {
             [$first, $second] = explode(' != ', $node->expression);
-            if (isset($this->parameters[$first])) {
-                $first = $this->parameters[$first];
-            }
-            if (isset($this->parameters[$second])) {
-                $second = $this->parameters[$second];
-            }
-            $check = str_replace('\'', '', $first) !== str_replace('\'', '', $second);
+            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', $first);
+            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', $second);
+            $check = $first !== $second;
         } else {
             $check = $this->apply_function($node->expression);
         }
