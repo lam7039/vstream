@@ -164,7 +164,29 @@ class template {
     }
 
     private function interpret_if(token_node $node) : string {
-        return $this->apply_function($node->expression) ? $this->interpret_tree($node) : '';
+        $check = false;
+        if (str_contains($node->expression, '==')) {
+            [$first, $second] = explode(' == ', $node->expression);
+            if (isset($this->parameters[$first])) {
+                $first = $this->parameters[$first];
+            }
+            if (isset($this->parameters[$second])) {
+                $second = $this->parameters[$second];
+            }
+            $check = str_replace('\'', '', $first) === str_replace('\'', '', $second);
+        } elseif (str_contains($node->expression, '!=')) {
+            [$first, $second] = explode(' != ', $node->expression);
+            if (isset($this->parameters[$first])) {
+                $first = $this->parameters[$first];
+            }
+            if (isset($this->parameters[$second])) {
+                $second = $this->parameters[$second];
+            }
+            $check = str_replace('\'', '', $first) !== str_replace('\'', '', $second);
+        } else {
+            $check = $this->apply_function($node->expression);
+        }
+        return $check ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_for(token_node $node) : string {
