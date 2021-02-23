@@ -151,14 +151,14 @@ class template {
     private function interpret_if(token_node $node) : string {
         $check = false;
         if (str_contains($node->expression, '==')) {
-            [$first, $second] = explode(' == ', $node->expression);
-            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', $first);
-            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', $second);
+            [$first, $second] = explode('==', $node->expression);
+            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', trim($first));
+            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', trim($second));
             $check = $first === $second;
         } elseif (str_contains($node->expression, '!=')) {
-            [$first, $second] = explode(' != ', $node->expression);
-            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', $first);
-            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', $second);
+            [$first, $second] = explode('!=', $node->expression);
+            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', trim($first));
+            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', trim($second));
             $check = $first !== $second;
         } else {
             $check = $this->apply_function($node->expression);
