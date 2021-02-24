@@ -175,7 +175,7 @@ class template {
         $array_count = count($array);
         if ($depth !== null && $depth > 0) {
             $depth--;
-            $this->parameters[$variable] = $this->get($array)[$array_count - $depth];
+            $this->parameters[$variable] = $this->get($array)[($array_count - 1) - $depth];
             return $this->interpret_tree($node);
         }
         if ($depth === null) {
