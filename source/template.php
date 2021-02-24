@@ -126,10 +126,10 @@ class template {
     }
 
     private function interpret_tree(token_node $node, file_buffer $buffer = null, int $depth = null) : string {
-        $output = '';
-        if ($depth !== null) {
+        if ($node->type === 'for' && $depth !== null) {
             return $this->interpret_for($node, $depth);
         }
+        $output = '';
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
@@ -172,11 +172,13 @@ class template {
 
     private function interpret_for(token_node $node, int $depth = null) : string {
         [$variable, $array] = explode(' in ', $node->expression, 2);
-        $array_count = count($array);
+        $values = $this->get($array);
+        $array_count = count($values);
         if ($depth !== null && $depth > 0) {
             $depth--;
-            $this->parameters[$variable] = $this->get($array)[($array_count - 1) - $depth];
-            return $this->interpret_tree($node);
+            $this->parameters[$variable] = $values[($array_count - 1) - $depth];
+            $node->branches[] = new token_node('var', $this->get($variable));
+            return $this->interpret_tree($node, depth: $depth);
         }
         if ($depth === null) {
             $depth = $array_count;
