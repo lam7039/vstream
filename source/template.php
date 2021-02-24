@@ -125,10 +125,10 @@ class template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, file_buffer $buffer = null, int $depth = 0) : string {
+    private function interpret_tree(token_node $node, file_buffer $buffer = null, int $depth = null) : string {
         $output = '';
-        if ($depth >= -1) {
-            $output .= $this->interpret_for($node, $depth);
+        if ($depth !== null) {
+            return $this->interpret_for($node, $depth);
         }
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
@@ -170,17 +170,20 @@ class template {
         return $check ? $this->interpret_tree($node) : '';
     }
 
-    private function interpret_for(token_node $node, int $depth = -1) : string {
+    private function interpret_for(token_node $node, int $depth = null) : string {
         [$variable, $array] = explode(' in ', $node->expression, 2);
         $array_count = count($array);
-        if ($depth > -1) {
-            $this->parameters[$variable] = $this->get($array)[$array_count - $depth];
-            // $node->branches[] = new token_node('var', $array[$variable]);
+        if ($depth !== null && $depth > 0) {
             $depth--;
-            return $this->interpret_tree($node, depth: $depth);
+            $this->parameters[$variable] = $this->get($array)[$array_count - $depth];
+            return $this->interpret_tree($node);
         }
-        $depth = $array_count;
-        unset($this->parameters[$variable]);
+        if ($depth === null) {
+            $depth = $array_count;
+        } elseif ($depth === 0) {
+            $depth = null;
+            unset($this->parameters[$variable]);
+        }
         return $this->interpret_tree($node, depth: $depth);
     }
 
