@@ -17,7 +17,8 @@ class token_node {
         public string $type, 
         public string $expression, 
         public array $branches = [], 
-        public ?string $value = null,
+        public string $value = '',
+        public int $depth = 0
     ) {}
 }
 
@@ -124,8 +125,11 @@ class template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
+    private function interpret_tree(token_node $node, file_buffer $buffer = null, int $depth = 0) : string {
         $output = '';
+        if ($depth >= -1) {
+            $output .= $this->interpret_for($node, $depth);
+        }
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
@@ -166,15 +170,17 @@ class template {
         return $check ? $this->interpret_tree($node) : '';
     }
 
-    private function interpret_for(token_node $node) : string {
+    private function interpret_for(token_node $node, int $depth = -1) : string {
         [$parameter, $parameter_temp] = explode(' in ', $node->expression, 2);
-        $output = '';
-        foreach ($this->parameters[$parameter] as $value) {
-            $this->parameters[$parameter_temp] = $value;
-            // $output .= $value . $this->interpret_tree($node); // This works but doesn't use a tempvar
+        $parameter_count = count($this->parameters[$parameter]);
+        if ($depth > -1) {
+            $this->parameters[$parameter_temp] = $this->parameters[$parameter][$parameter_count - $depth];
+            $depth--;
+            return $this->interpret_tree($node, depth: $depth);
         }
+        $depth = $parameter_count;
         unset($this->parameters[$parameter_temp]);
-        return $output . $this->interpret_tree($node);
+        return $this->interpret_tree($node, depth: $depth);
     }
 
     private function apply_function(string $expression) : mixed {
