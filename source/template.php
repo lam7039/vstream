@@ -96,8 +96,8 @@ class template {
                 $current->branches[] = new token_node('html', $token);
                 continue;
             }
-            if (($variable = $this->get($token))) {
-                $current->branches[] = new token_node('var', $variable);
+            if (isset($this->parameters[$token])) {
+                $current->branches[] = new token_node('var', $this->parameters[$token]);
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
