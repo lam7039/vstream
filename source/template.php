@@ -171,15 +171,19 @@ class template {
     }
 
     private function interpret_for(token_node $node, int $depth = -1) : string {
-        [$parameter, $parameter_temp] = explode(' in ', $node->expression, 2);
-        $parameter_count = count($this->parameters[$parameter]);
+        [$array, $variable] = explode(' in ', $node->expression, 2);
+        if (!is_array($this->parameters[$array])) {
+            LOG_WARNING("Variable must evaluate to be an array");
+            return '';
+        }
+        $array_count = count($this->parameters[$array]);
         if ($depth > -1) {
-            $this->parameters[$parameter_temp] = $this->parameters[$parameter][$parameter_count - $depth];
+            $this->parameters[$variable] = $this->parameters[$array][$array_count - $depth];
             $depth--;
             return $this->interpret_tree($node, depth: $depth);
         }
-        $depth = $parameter_count;
-        unset($this->parameters[$parameter_temp]);
+        $depth = $array_count;
+        unset($this->parameters[$variable]);
         return $this->interpret_tree($node, depth: $depth);
     }
 
