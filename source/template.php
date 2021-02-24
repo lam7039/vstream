@@ -172,14 +172,9 @@ class template {
 
     private function interpret_for(token_node $node, int $depth = -1) : string {
         [$variable, $array] = explode(' in ', $node->expression, 2);
-        $array = $this->get($array);
-        if (!is_array($array)) {
-            LOG_WARNING("Variable must evaluate to be an array");
-            return '';
-        }
         $array_count = count($array);
         if ($depth > -1) {
-            $this->parameters[$variable] = $array[$array_count - $depth];
+            $this->parameters[$variable] = $this->get($array)[$array_count - $depth];
             // $node->branches[] = new token_node('var', $array[$variable]);
             $depth--;
             return $this->interpret_tree($node, depth: $depth);
