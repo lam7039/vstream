@@ -180,7 +180,7 @@ class template {
         $array_count = count($array);
         if ($depth > -1) {
             $this->parameters[$variable] = $array[$array_count - $depth];
-            $node->branches[] = new token_node('var', $array[$variable]);
+            // $node->branches[] = new token_node('var', $array[$variable]);
             $depth--;
             return $this->interpret_tree($node, depth: $depth);
         }
