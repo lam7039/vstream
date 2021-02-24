@@ -96,8 +96,8 @@ class template {
                 $current->branches[] = new token_node('html', $token);
                 continue;
             }
-            if (isset($this->parameters[$token])) {
-                $current->branches[] = new token_node('var', $this->parameters[$token]);
+            if (($variable = $this->get($token))) {
+                $current->branches[] = new token_node('var', $variable);
                 continue;
             }
             foreach ($this->lexicon as $type => $category) {
@@ -156,13 +156,13 @@ class template {
         $check = false;
         if (str_contains($node->expression, '==')) {
             [$first, $second] = explode('==', $node->expression);
-            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', trim($first));
-            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', trim($second));
+            $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+            $first = $this->get($second) ?? str_replace('\'', '', trim($second));
             $check = $first === $second;
         } elseif (str_contains($node->expression, '!=')) {
             [$first, $second] = explode('!=', $node->expression);
-            $first = isset($this->parameters[$first]) ? $this->parameters[$first] : str_replace('\'', '', trim($first));
-            $second = isset($this->parameters[$second]) ? $this->parameters[$second] : str_replace('\'', '', trim($second));
+            $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+            $first = $this->get($second) ?? str_replace('\'', '', trim($second));
             $check = $first !== $second;
         } else {
             $check = $this->apply_function($node->expression);
@@ -171,14 +171,16 @@ class template {
     }
 
     private function interpret_for(token_node $node, int $depth = -1) : string {
-        [$array, $variable] = explode(' in ', $node->expression, 2);
-        if (!is_array($this->parameters[$array])) {
+        [$variable, $array] = explode(' in ', $node->expression, 2);
+        $array = $this->get($array);
+        if (!is_array($array)) {
             LOG_WARNING("Variable must evaluate to be an array");
             return '';
         }
-        $array_count = count($this->parameters[$array]);
+        $array_count = count($array);
         if ($depth > -1) {
-            $this->parameters[$variable] = $this->parameters[$array][$array_count - $depth];
+            $this->parameters[$variable] = $array[$array_count - $depth];
+            $node->branches[] = new token_node('var', $array[$variable]);
             $depth--;
             return $this->interpret_tree($node, depth: $depth);
         }
@@ -203,5 +205,13 @@ class template {
             'isset' => $not ? !isset($this->parameters[$parameters[0]]) : isset($this->parameters[$parameters[0]]),
             default => $not ? (__NAMESPACE__ . '\\' . $function)(...$parameters) : !(__NAMESPACE__ . '\\' . $function)(...$parameters),
         };
+    }
+
+    private function get(string $key) : mixed {
+        if (!isset($this->parameters[$key])) {
+            LOG_WARNING("Variable: '$key' does not exist");
+            return null;
+        }
+        return $this->parameters[$key];
     }
 }
