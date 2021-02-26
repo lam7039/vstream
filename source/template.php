@@ -191,17 +191,17 @@ class template {
     }
 
     private function apply_function(string $expression) : mixed {
-        [$function, $parameters] = explode('(', rtrim($expression, ')'), 2);
-        $not = $function[0] === '!';
-        $function = $not ? ltrim($function, '!') : $function;
+        [$name, $parameters] = explode('(', rtrim($expression, ')'), 2);
+        $not = $name[0] === '!';
+        $name = $not ? ltrim($name, '!') : $name;
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
-        // return $not ? $function : !$function;
-        return match ($function) {
-            'isset' => $not ? !$this->get($parameters[0]) : $this->get($parameters[0]),
-            'auth_check' => $not ? !auth_check() : auth_check(),
+        $function = match ($name) {
+            'isset' => $this->get($parameters[0]),
+            'auth_check' => auth_check(),
             default => false,
         };
+        return $not ? !$function : $function;
     }
 
     private function get(string $key) : mixed {
