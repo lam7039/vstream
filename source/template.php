@@ -170,9 +170,12 @@ class template {
         [$variable, $array] = explode(' in ', $node->expression, 2);
         $values = $this->get($array);
 
-        foreach ($values as $value) {
-            $node->branches[] = new token_node('var', $value);
-        }
+        $output = '';
+        // foreach ($values as $value) {
+        //     $tokens = @$this->tokenize($value);
+        //     $tree = $this->build_tree($tokens);
+        //     $output .= $this->interpret_tree($tree);
+        // }
 
         // $array_count = count($values);
         // if ($depth !== null && $depth > 0) {
@@ -187,7 +190,7 @@ class template {
         //     $depth = null;
         //     unset($this->parameters[$variable]);
         // }
-        return $this->interpret_tree($node);
+        return $output;
     }
 
     private function apply_function(string $expression) : mixed {
