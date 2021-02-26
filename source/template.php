@@ -199,7 +199,7 @@ class template {
         // return $not ? $function : !$function;
         return match ($function) {
             'isset' => $not ? !$this->get($parameters[0]) : $this->get($parameters[0]),
-            'auth_check' => $not ? auth_check() : !auth_check(),
+            'auth_check' => $not ? !auth_check() : auth_check(),
             default => false,
         };
     }
