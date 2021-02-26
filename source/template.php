@@ -32,10 +32,6 @@ class template {
         'endfor' => 'end',
         'yield' => 'replace',
     ];
-    private array $allowed_functions = [
-        'isset',
-        'auth_check',
-    ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
@@ -198,17 +194,13 @@ class template {
         [$function, $parameters] = explode('(', rtrim($expression, ')'), 2);
         $not = $function[0] === '!';
         $function = $not ? ltrim($function, '!') : $function;
-
-        if (!in_array($function, $this->allowed_functions)) {
-            return false;
-        }
-        
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
         // return $not ? $function : !$function;
         return match ($function) {
             'isset' => $not ? !$this->get($parameters[0]) : $this->get($parameters[0]),
-            default => $not ? (__NAMESPACE__ . '\\' . $function)(...$parameters) : !(__NAMESPACE__ . '\\' . $function)(...$parameters),
+            'auth_check' => $not ? auth_check() : !auth_check(),
+            default => false,
         };
     }
 
