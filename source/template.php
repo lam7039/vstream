@@ -32,10 +32,6 @@ class template {
     }
 
     public function bind_parameters(array $parameters) : void {
-        if (array_intersect_key($this->parameters, $parameters)) {
-            LOG_CRITICAL('One or more keys within the given parameters already exists');
-            return;
-        }
         $this->parameters = array_merge($this->parameters, $parameters);
     }
 
@@ -95,7 +91,7 @@ class template {
                 substr($token, 0, 4) === 'for:' => 'for',
                 default => 'var',
             };
-            $expression = match($type) {
+            $expression = match ($type) {
                 'yield' => $token,
                 'if' => substr($token, 3),
                 'for' => substr($token, 4),
@@ -103,18 +99,16 @@ class template {
                 default => '',
             };
 
-            if (in_array($type, ['endif', 'else', 'endfor'])) {
-                if ($stack) {
-                    $current = array_pop($stack);
-                }
+            if (in_array($type, ['endif', 'else', 'endfor']) && $stack) {
+                $current = array_pop($stack);
             }
             if (in_array($type, ['if', 'else', 'for', 'var', 'yield'])) {
                 $node = new token_node($type, trim($expression));
                 $current->branches[] = $node;
-            }
-            if (in_array($type, ['if', 'else', 'for'])) {
-                $stack[] = $current;
-                $current = $node;
+                if (!in_array($type, ['var', 'yield'])) {
+                    $stack[] = $current;
+                    $current = $node;
+                }
             }
         }
         return $root;
@@ -126,7 +120,6 @@ class template {
         }
         $output = '';
         foreach ($node->branches as $branch) {
-            // output(htmlspecialchars($branch->expression));
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
