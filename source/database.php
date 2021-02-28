@@ -134,9 +134,6 @@ class db {
     private function __clone() {}
 
     public static function get() : database {
-        if (!isset(self::$database)) {
-            self::$database = new database;
-        }
-        return self::$database;
+        return self::$database ?? new database;
     }
 }
