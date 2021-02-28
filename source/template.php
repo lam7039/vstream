@@ -81,7 +81,6 @@ class template {
                 $current->branches[] = new token_node('html', $token);
                 continue;
             }
-
             $type = match (true) {
                 $token === 'yield' => 'yield',
                 $token === 'endif' => 'endif',
@@ -98,7 +97,6 @@ class template {
                 'var' => $this->parameters[$token] ?? '',
                 default => '',
             };
-
             if (in_array($type, ['endif', 'else', 'endfor']) && $stack) {
                 $current = array_pop($stack);
             }
