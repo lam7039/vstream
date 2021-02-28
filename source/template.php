@@ -25,13 +25,6 @@ class token_node {
 class template {
     private file_buffer $layout;
     private array $parameters = [];
-    private array $lexicon = [
-        'if' => 'start',
-        'endif' => 'end',
-        'for' => 'start',
-        'endfor' => 'end',
-        'yield' => 'replace',
-    ];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
         $this->layout = new file_buffer($template_path);
@@ -39,8 +32,8 @@ class template {
     }
 
     public function bind_parameters(array $parameters) : void {
-        if (array_intersect_key($this->lexicon, $parameters)) {
-            LOG_CRITICAL('A key within the added parameters exists in the lexicon');
+        if (array_intersect_key($this->parameters, $parameters)) {
+            LOG_CRITICAL('One or more keys within the given parameters already exists');
             return;
         }
         $this->parameters = array_merge($this->parameters, $parameters);
@@ -92,30 +85,36 @@ class template {
                 $current->branches[] = new token_node('html', $token);
                 continue;
             }
-            if (isset($this->parameters[$token])) {
-                $current->branches[] = new token_node('var', $this->parameters[$token]);
-                continue;
+
+            $type = match (true) {
+                $token === 'yield' => 'yield',
+                $token === 'endif' => 'endif',
+                $token === 'endfor' => 'endfor',
+                $token === 'else' => 'else',
+                substr($token, 0, 3) === 'if:' => 'if',
+                substr($token, 0, 4) === 'for:' => 'for',
+                default => 'var',
+            };
+            $expression = match($type) {
+                'yield' => $token,
+                'if' => substr($token, 3),
+                'for' => substr($token, 4),
+                'var' => $this->parameters[$token] ?? '',
+                default => '',
+            };
+
+            if (in_array($type, ['endif', 'else', 'endfor'])) {
+                if ($stack) {
+                    $current = array_pop($stack);
+                }
             }
-            foreach ($this->lexicon as $type => $category) {
-                if ($type !== substr($token, 0, strlen($type))) {
-                    continue;
-                }
-                switch ($category) {
-                    case 'start':
-                        $node = new token_node($type, ltrim($token, "$type: "));
-                        $current->branches[] = $node;
-                        $stack[] = $current;
-                        $current = $node;
-                        continue 2;
-                    case 'end':
-                        if ($stack) {
-                            $current = array_pop($stack);
-                        }
-                        continue 2;
-                    case 'replace':
-                        $current->branches[] = new token_node($type, $token);
-                        continue 2;
-                }
+            if (in_array($type, ['if', 'else', 'for', 'var', 'yield'])) {
+                $node = new token_node($type, trim($expression));
+                $current->branches[] = $node;
+            }
+            if (in_array($type, ['if', 'else', 'for'])) {
+                $stack[] = $current;
+                $current = $node;
             }
         }
         return $root;
@@ -127,6 +126,7 @@ class template {
         }
         $output = '';
         foreach ($node->branches as $branch) {
+            // output(htmlspecialchars($branch->expression));
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
