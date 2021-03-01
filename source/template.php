@@ -202,7 +202,7 @@ class template {
     private function apply_function(string $expression) : mixed {
         [$name, $parameters] = explode('(', rtrim($expression, ')'), 2);
         $not = $name[0] === '!';
-        $name = $not ? ltrim($name, '!') : $name;
+        $name = $not ? substr($name, 1) : $name;
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
         $function = match ($name) {
