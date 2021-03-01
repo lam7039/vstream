@@ -98,24 +98,6 @@ class database {
             return false;
         }
         return $this->commit();
-        // try {
-        //     foreach ($sql_queries as $key => $sql) {
-        //         if (!is_string($sql)) {
-        //             LOG_WARNING("Invalid type in \$sql_queries: " . gettype($sql) . "($sql)");
-        //             continue;
-        //         }
-        //         if (!$this->query($sql, $variables[$key])->execute()) {
-        //             LOG_WARNING("Invalid SQL: $sql");
-        //             $this->rollback();
-        //             return false;
-        //         }
-        //     }
-        //     return $this->commit();
-        // } catch (PDOException $e) {
-        //     LOG_WARNING($e->getMessage());
-        //     $this->rollback();
-        // }
-        // return false;
     }
 
     public function fetch(string $sql, array $variables = []) : ?object {
