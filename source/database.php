@@ -91,27 +91,33 @@ class database {
         return false;
     }
 
-    //TODO: improve this
+    //TODO: improve this (run the multiple queries in a single statement)
     public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         $this->transaction();
-        try {
-            foreach ($sql_queries as $key => $sql) {
-                if (!is_string($sql)) {
-                    LOG_WARNING("Invalid type in \$sql_queries: " . gettype($sql) . "($sql)");
-                    continue;
-                }
-                if (!$this->query($sql, $variables[$key])->execute()) {
-                    LOG_WARNING("Invalid SQL: $sql");
-                    $this->rollback();
-                    return false;
-                }
-            }
-            return $this->commit();
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
+        $sql = implode(';', $sql_queries);
+        if (!$this->query($sql, $variables)) {
             $this->rollback();
+            return false;
         }
-        return false;
+        return $this->commit();
+        // try {
+        //     foreach ($sql_queries as $key => $sql) {
+        //         if (!is_string($sql)) {
+        //             LOG_WARNING("Invalid type in \$sql_queries: " . gettype($sql) . "($sql)");
+        //             continue;
+        //         }
+        //         if (!$this->query($sql, $variables[$key])->execute()) {
+        //             LOG_WARNING("Invalid SQL: $sql");
+        //             $this->rollback();
+        //             return false;
+        //         }
+        //     }
+        //     return $this->commit();
+        // } catch (PDOException $e) {
+        //     LOG_WARNING($e->getMessage());
+        //     $this->rollback();
+        // }
+        // return false;
     }
 
     public function fetch(string $sql, array $variables = []) : ?object {
