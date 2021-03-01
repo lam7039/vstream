@@ -90,17 +90,17 @@ class template {
                 substr($token, 0, 4) === 'for:' => 'for',
                 default => 'var',
             };
-            $expression = match ($type) {
-                'yield' => $token,
-                'if' => substr($token, 3),
-                'for' => substr($token, 4),
-                'var' => $this->parameters[$token] ?? '',
-                default => '',
-            };
             if (in_array($type, ['endif', 'else', 'endfor']) && $stack) {
                 $current = array_pop($stack);
             }
             if (in_array($type, ['if', 'else', 'for', 'var', 'yield'])) {
+                $expression = match ($type) {
+                    'yield' => $token,
+                    'if' => substr($token, 3),
+                    'for' => substr($token, 4),
+                    'var' => $this->parameters[$token] ?? '',
+                    default => '',
+                };
                 $node = new token_node($type, trim($expression));
                 $current->branches[] = $node;
                 if (!in_array($type, ['var', 'yield'])) {
