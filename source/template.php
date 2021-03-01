@@ -140,21 +140,35 @@ class template {
     }
 
     private function interpret_if(token_node $node) : string {
-        $check = false;
-        if (str_contains($node->expression, '==')) {
-            [$first, $second] = explode('==', $node->expression);
-            $first = $this->get($first) ?? str_replace('\'', '', trim($first));
-            $first = $this->get($second) ?? str_replace('\'', '', trim($second));
-            $check = $first === $second;
-        } elseif (str_contains($node->expression, '!=')) {
-            [$first, $second] = explode('!=', $node->expression);
-            $first = $this->get($first) ?? str_replace('\'', '', trim($first));
-            $first = $this->get($second) ?? str_replace('\'', '', trim($second));
-            $check = $first !== $second;
-        } else {
-            $check = $this->apply_function($node->expression);
-        }
-        return $check ? $this->interpret_tree($node) : '';
+        $type = match (true) {
+            str_contains($node->expression, '==') => '==',
+            str_contains($node->expression, '!=') => '!=',
+            default => 'undefined',
+        };
+        [$first, $second] = explode($type, $node->expression);
+        $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+        $second = $this->get($second) ?? str_replace('\'', '', trim($second));
+        return match ($type) {
+            '==' => $first === $second,
+            '!=' => $first !== $second,
+            'undefined' => $this->apply_function($node->expression) ?? '',
+        };
+
+        // $check = false;
+        // if (str_contains($node->expression, '==')) {
+        //     [$first, $second] = explode('==', $node->expression);
+        //     $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+        //     $second = $this->get($second) ?? str_replace('\'', '', trim($second));
+        //     $check = $first === $second;
+        // } elseif (str_contains($node->expression, '!=')) {
+        //     [$first, $second] = explode('!=', $node->expression);
+        //     $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+        //     $second = $this->get($second) ?? str_replace('\'', '', trim($second));
+        //     $check = $first !== $second;
+        // } else {
+        //     $check = $this->apply_function($node->expression);
+        // } 
+        // return $check ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_for(token_node $node, int $depth = null) : string {
