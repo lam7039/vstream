@@ -77,7 +77,6 @@ class database {
         return false;
     }
 
-    //TODO: clean this up
     public function execute(string $sql, array $variables = []) : bool {
         try {
             $query = $this->query($sql, $variables);
@@ -91,7 +90,6 @@ class database {
         return false;
     }
 
-    //TODO: improve this (run the multiple queries in a single statement)
     public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         $this->transaction();
         $sql = implode(';', $sql_queries);
