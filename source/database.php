@@ -80,9 +80,9 @@ class database {
     //TODO: clean this up
     public function execute(string $sql, array $variables = []) : bool {
         try {
-            $executed = $this->query($sql, $variables);
-            $this->rows_affected = $executed->rowCount();
-            $executed = $executed->execute();
+            $query = $this->query($sql, $variables);
+            $executed = $query->execute();
+            $this->rows_affected = $query->rowCount();
             $this->last_inserted_id = $this->connection->lastInsertId();
             return $executed;
         } catch (PDOException $e) {
