@@ -145,7 +145,7 @@ class template {
             str_contains($node->expression, '!=') => '!=',
             default => 'undefined',
         };
-        [$first, $second] = explode($type, $node->expression);
+        [$first, $second] = explode($type, $node->expression, 2);
         $first = $this->get($first) ?? str_replace('\'', '', trim($first));
         $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         return match ($type) {
