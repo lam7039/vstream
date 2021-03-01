@@ -123,6 +123,7 @@ class template {
                 'html' => $branch->expression,
                 'var' => $branch->expression,
                 'if' => $this->interpret_if($branch),
+                'else' => $this->interpret_else($branch),
                 'for'=> $this->interpret_for($branch),
                 default => '',
             };
@@ -156,6 +157,12 @@ class template {
             default => $this->apply_function($node->expression) ?? '',
         };
         return $check ? $this->interpret_tree($node) : '';
+    }
+
+    //TODO: interpret else within the if?
+    private function interpret_else(token_node $node) : string {
+        
+        return $this->interpret_tree($node);
     }
 
     private function interpret_for(token_node $node, int $depth = null) : string {
