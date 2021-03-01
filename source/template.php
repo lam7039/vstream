@@ -143,9 +143,9 @@ class template {
         $type = match (true) {
             str_contains($node->expression, '==') => '==',
             str_contains($node->expression, '!=') => '!=',
-            default => 'undefined',
+            default => '',
         };
-        if ($type !== 'undefined') {
+        if ($type) {
             [$first, $second] = explode($type, $node->expression, 2);
             $first = $this->get($first) ?? str_replace('\'', '', trim($first));
             $second = $this->get($second) ?? str_replace('\'', '', trim($second));
@@ -153,7 +153,7 @@ class template {
         $check = match ($type) {
             '==' => $first === $second,
             '!=' => $first !== $second,
-            'undefined' => $this->apply_function($node->expression) ?? '',
+            default => $this->apply_function($node->expression) ?? '',
         };
         return $check ? $this->interpret_tree($node) : '';
     }
