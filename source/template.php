@@ -98,7 +98,7 @@ class template {
                     'yield' => $token,
                     'if' => substr($token, 3),
                     'for' => substr($token, 4),
-                    'var' => $this->parameters[$token] ?? '',
+                    'var' => $this->get($token) ?? '',
                     default => '',
                 };
                 $node = new token_node($type, trim($expression));
@@ -148,7 +148,7 @@ class template {
         [$first, $second] = explode($type, $node->expression, 2);
         $first = $this->get($first) ?? str_replace('\'', '', trim($first));
         $second = $this->get($second) ?? str_replace('\'', '', trim($second));
-        return match ($type) {
+        $check = match ($type) {
             '==' => $first === $second,
             '!=' => $first !== $second,
             'undefined' => $this->apply_function($node->expression) ?? '',
@@ -167,8 +167,9 @@ class template {
         //     $check = $first !== $second;
         // } else {
         //     $check = $this->apply_function($node->expression);
-        // } 
-        // return $check ? $this->interpret_tree($node) : '';
+        // }
+        
+        return $check ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_for(token_node $node, int $depth = null) : string {
