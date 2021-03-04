@@ -7,21 +7,30 @@ function directory_files(string $directory, array $except = []) : array {
     });
 }
 
-$source_files = directory_files('source');
-foreach ($source_files as $source_file) {
-    require "source/$source_file";
-}
+// $source_files = directory_files('source');
+// foreach ($source_files as $source_file) {
+//     require "source/$source_file";
+// }
+
+// require 'models/model.php';
+// $model_files = directory_files('models', ['model.php']);
+// foreach ($model_files as $model_file) {
+//     require "models/$model_file";
+// }
+
+// require 'controllers/controller.php';
+// $controller_files = directory_files('controllers', ['controller.php']);
+// foreach ($controller_files as $controller_file) {
+//     require "controllers/$controller_file";
+// }
 
 require 'models/model.php';
-$model_files = directory_files('models', ['model.php']);
-foreach ($model_files as $model_file) {
-    require "models/$model_file";
-}
-
 require 'controllers/controller.php';
-$controller_files = directory_files('controllers', ['controller.php']);
-foreach ($controller_files as $controller_file) {
-    require "controllers/$controller_file";
+foreach (['source', 'models', 'controllers'] as $directory) {
+    $directory_files = directory_files($directory, ['model.php', 'controller.php']);
+    foreach ($directory_files as $directory_file) {
+        require("$directory/$directory_file");
+    }
 }
 
 use source\config;
