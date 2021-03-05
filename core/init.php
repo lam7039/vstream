@@ -1,5 +1,7 @@
 <?php
 
+use source\config;
+use source\log;
 use function source\session_isset;
 use function source\session_set;
 
@@ -34,8 +36,6 @@ foreach ($controller_files as $controller_file) {
     require "controllers/$controller_file";
 }
 
-use source\config;
-use source\log;
 
 $log = new log;
 function LOG_INFO(string $string) : void {
@@ -52,7 +52,7 @@ function LOG_CRITICAL(string $string) : void {
 }
 
 $config = new config;
-function env(string $key) : ?string {
+function env(string $key) : string|null {
     global $config;
     return $config->get($key);
 }

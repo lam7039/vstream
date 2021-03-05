@@ -20,7 +20,7 @@ class config {
         }
     }
 
-    public function get(string $key) : ?string {
+    public function get(string $key) : string|null {
         if(!isset($this->config[$key])) {
             LOG_WARNING('Configuration does not exist');
             return null;

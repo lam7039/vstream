@@ -13,7 +13,7 @@ abstract class model implements sql_builder {
         $this->builder = new builder($this->table);
     }
 
-    public function fetch(string $sql, array $variables = []) : ?object {
+    public function fetch(string $sql, array $variables = []) : object|null {
         return $this->builder->fetch($sql, $variables);
     }
 
@@ -25,7 +25,7 @@ abstract class model implements sql_builder {
         return $this->builder->execute_multiple($sql_queries, $variables);
     }
 
-    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object {
+    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : object|null {
         return $this->builder->find($where, $columns, $limit);
     }
 

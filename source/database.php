@@ -100,7 +100,7 @@ class database {
         return $this->commit();
     }
 
-    public function fetch(string $sql, array $variables = []) : ?object {
+    public function fetch(string $sql, array $variables = []) : object|null {
         try {
             $query = $this->query($sql, $variables);
             if ($query->execute() && $response = $query->fetch(PDO::FETCH_OBJ)) {

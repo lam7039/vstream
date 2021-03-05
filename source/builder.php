@@ -3,11 +3,11 @@
 namespace source;
 
 interface sql_builder {
-    public function fetch(string $sql, array $variables = []) : ?object;
+    public function fetch(string $sql, array $variables = []) : object|null;
     public function execute(string $sql, array $variables = []) : bool;
     public function execute_multiple(array $sql_queries, array $variables = []) : bool;
 
-    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object;
+    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : object|null;
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
@@ -20,7 +20,7 @@ class builder implements sql_builder {
         $this->database = db::get();
     }
     
-    public function fetch(string $sql, array $variables = []) : ?object {
+    public function fetch(string $sql, array $variables = []) : object|null {
         return $this->database->fetch($sql, $variables);
     }
     
@@ -32,7 +32,7 @@ class builder implements sql_builder {
         return $this->database->execute_multiple($sql_queries, $variables);
     }
     
-    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : ?object {
+    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : object|null {
         $select_str = $this->sql_columns($columns);
         $sql = "select $select_str from {$this->table}";
         if ($where) {
