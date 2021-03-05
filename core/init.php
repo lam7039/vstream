@@ -1,4 +1,8 @@
 <?php
+
+use function source\session_isset;
+use function source\session_set;
+
 session_start();
 
 $cwd = getcwd();
@@ -12,6 +16,10 @@ function directory_files(string $directory, array $except = []) : array {
 $source_files = directory_files('source');
 foreach ($source_files as $source_file) {
     require "source/$source_file";
+}
+
+if (!session_isset('SESSION_TEMP')) {
+    session_set('SESSION_TEMP', []);
 }
 
 require 'models/model.php';

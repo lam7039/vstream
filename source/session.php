@@ -20,10 +20,6 @@ function session_remove(string $key) : void {
     }
 }
 
-if (!session_isset('SESSION_TEMP')) {
-    session_set('SESSION_TEMP', []);
-}
-
 function session_once(string $key, $value) : void {
     if (!in_array($key, $_SESSION['SESSION_TEMP'])) {
         session_set($key, $value);
