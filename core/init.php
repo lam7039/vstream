@@ -36,7 +36,6 @@ foreach ($controller_files as $controller_file) {
     require "controllers/$controller_file";
 }
 
-
 $log = new log;
 function LOG_INFO(string $string) : void {
     global $log;

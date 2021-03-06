@@ -21,7 +21,6 @@ if (auth_check()) {
 }
 
 $templating = new template([
-    'page_path' => 'public',
     'page_title' => "vstream | $url_page",
     'page_favicon' => 'favicon-32x32.png',
     'page_style' => 'layout.css',
