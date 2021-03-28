@@ -7,10 +7,9 @@ use function source\session_set;
 
 session_start();
 
-$cwd = getcwd();
 function directory_files(string $directory, array $except = []) : array {
-    return array_filter(array_diff(scandir($directory), ['..', '.', ...$except]), function ($item) use ($directory) {
-        global $cwd;
+    $cwd = getcwd();
+    return array_filter(array_diff(scandir($directory), ['..', '.', ...$except]), function ($item) use ($directory, $cwd) {
         return !is_dir("$cwd/$directory/$item");
     });
 }
