@@ -168,17 +168,7 @@ class template {
         $output = '';
         foreach ($this->get($array_name) as $value) {
             $this->parameters[$local_name] = $value;
-            foreach ($node->branches as $branch) {
-                if ($branch->type === 'html') {
-                    $tokens = @$this->tokenize($branch->expression);
-                    $tree = $this->build_tree($tokens);
-                    $output .= $this->interpret_tree($tree);
-                } elseif ($branch->type === 'var') {
-                    $output .= $this->get($branch->expression);
-                } else {
-                    $output .= $this->interpret_tree($branch);
-                }
-            }
+            $output .= $this->interpret_tree($node);
         }
         unset($this->parameters[$local_name]);
         return $output;
