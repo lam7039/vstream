@@ -162,7 +162,6 @@ class template {
         return $this->interpret_tree($node);
     }
 
-    //optimize so you don't have to reinterpret expressions
     private function interpret_for(token_node $node) : string {
         [$local_name, $array_name] = explode(' in ', $node->expression, 2);
         $output = '';
