@@ -101,7 +101,7 @@ class template {
                     'var' => $this->get($token) ?? '',
                     default => '',
                 };
-                $node = new token_node($type, trim($expression));
+                $node = new token_node($type, trim($expression), value: $token);
                 $current->branches[] = $node;
                 if (!in_array($type, ['var', 'yield'])) {
                     $stack[] = $current;
@@ -112,10 +112,7 @@ class template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, file_buffer $buffer = null, int $depth = null) : string {
-        if ($node->type === 'for' && $depth !== null) {
-            return $this->interpret_for($node, $depth);
-        }
+    private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
         $output = '';
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
@@ -165,30 +162,24 @@ class template {
         return $this->interpret_tree($node);
     }
 
-    private function interpret_for(token_node $node, int $depth = null) : string {
-        [$variable, $array] = explode(' in ', $node->expression, 2);
-        $values = $this->get($array);
-
+    private function interpret_for(token_node $node) : string {
+        [$local_name, $array_name] = explode(' in ', $node->expression, 2);
         $output = '';
-        // foreach ($values as $value) {
-        //     $tokens = @$this->tokenize($value);
-        //     $tree = $this->build_tree($tokens);
-        //     $output .= $this->interpret_tree($tree);
-        // }
-
-        // $array_count = count($values);
-        // if ($depth !== null && $depth > 0) {
-        //     $depth--;
-        //     $this->parameters[$variable] = $values[($array_count - 1) - $depth];
-        //     $node->branches[] = new token_node('var', $this->get($variable));
-        //     return $this->interpret_tree($node, depth: $depth);
-        // }
-        // if ($depth === null) {
-        //     $depth = $array_count;
-        // } elseif ($depth === 0) {
-        //     $depth = null;
-        //     unset($this->parameters[$variable]);
-        // }
+        foreach ($this->get($array_name) as $value) {
+            $this->parameters[$local_name] = $value;
+            foreach ($node->branches as $branch) {
+                if ($branch->type === 'html') {
+                    $tokens = @$this->tokenize($branch->expression);
+                    $tree = $this->build_tree($tokens);
+                    $output .= $this->interpret_tree($tree);
+                } elseif ($branch->type === 'var') {
+                    $output .= $this->parameters[$branch->value];
+                } else {
+                    $output .= $this->interpret_tree($branch);
+                }
+            }
+        }
+        unset($this->parameters[$local_name]);
         return $output;
     }
 
