@@ -16,9 +16,7 @@ class token_node {
     public function __construct(
         public string $type, 
         public string $expression, 
-        public array $branches = [], 
-        public string $value = '',
-        public int $depth = 0
+        public array $branches = []
     ) {}
 }
 
