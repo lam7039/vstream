@@ -13,7 +13,7 @@ interface sql_builder {
     public function delete(array $where) : bool;
 }
 
-class builder implements sql_builder {
+class mysql_builder implements sql_builder {
     private database $database;
 
     public function __construct(private string $table) {

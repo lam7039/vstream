@@ -2,7 +2,7 @@
 
 namespace controllers;
 
-use source\builder;
+use source\mysql_builder;
 use source\media_buffer;
 use source\transcoder;
 
@@ -21,8 +21,8 @@ class transcode extends controller {
 
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
         // TODO: use singleton for transcoder?
-        $media_builder = new builder('media');
-        $jobs_builder = new builder('scheduled_jobs');
+        $media_builder = new mysql_builder('media');
+        $jobs_builder = new mysql_builder('scheduled_jobs');
         $jobs_builder->insert([]);
         $jobs = $jobs_builder->find([], ['*']);
 

@@ -3,14 +3,14 @@
 namespace models;
 
 use source\sql_builder;
-use source\builder;
+use source\mysql_builder;
 
 abstract class model implements sql_builder {
     protected string $table;
     protected sql_builder $builder;
 
     public function __construct() {
-        $this->builder = new builder($this->table);
+        $this->builder = new mysql_builder($this->table);
     }
 
     public function fetch(string $sql, array $variables = []) : object|null {
