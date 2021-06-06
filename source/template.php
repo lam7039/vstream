@@ -98,10 +98,10 @@ class template {
                     'yield' => $token,
                     'if' => substr($token, 3),
                     'for' => substr($token, 4),
-                    'var' => $this->get($token) ?? '',
+                    'var' => $token,
                     default => '',
                 };
-                $node = new token_node($type, trim($expression), value: $token);
+                $node = new token_node($type, trim($expression));
                 $current->branches[] = $node;
                 if (!in_array($type, ['var', 'yield'])) {
                     $stack[] = $current;
@@ -118,7 +118,7 @@ class template {
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
-                'var' => $branch->expression,
+                'var' => $this->get($branch->expression) ?? '',
                 'if' => $this->interpret_if($branch),
                 'else' => $this->interpret_else($branch),
                 'for'=> $this->interpret_for($branch),
@@ -162,6 +162,7 @@ class template {
         return $this->interpret_tree($node);
     }
 
+    //optimize so you don't have to reinterpret expressions
     private function interpret_for(token_node $node) : string {
         [$local_name, $array_name] = explode(' in ', $node->expression, 2);
         $output = '';
@@ -173,7 +174,7 @@ class template {
                     $tree = $this->build_tree($tokens);
                     $output .= $this->interpret_tree($tree);
                 } elseif ($branch->type === 'var') {
-                    $output .= $this->parameters[$branch->value];
+                    $output .= $this->get($branch->expression);
                 } else {
                     $output .= $this->interpret_tree($branch);
                 }
