@@ -157,6 +157,9 @@ class template {
     }
 
     private function interpret_else(token_node $node, string $if_expression) : string {
+        if (!$if_expression) {
+            return '';
+        }
         $not = $if_expression[0] === '!';
         $node->expression = $not ? substr($if_expression, 1) : '!' . $if_expression;
         return $this->interpret_if($node);

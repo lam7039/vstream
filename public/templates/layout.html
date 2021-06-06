@@ -9,6 +9,7 @@
 		<aside>
 			<nav>
 				<ul>
+					<li><a href="/browse">browse</a></li>
 					{% if: !auth_check() %}
 						<li>
 							<ul>
@@ -20,7 +21,6 @@
 						<li><a href="/account">{% username %}</a></li>
 						<li><a href="/do_logout">logout</a></li>
 					{% endif %}
-					<li><a href="/browse">browse</a></li>
 				</ul>
 			</nav>
 			<section class="video-controls">
