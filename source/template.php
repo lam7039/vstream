@@ -34,7 +34,7 @@ class template {
     }
 
     public function render(file_buffer $buffer, bool $cache = false) : string {
-        if ($cache) {
+        if ($cache /* && $file !== $buffer->body */) {
             $file = 'tmp/cache/' . md5($buffer->path);
             if (file_exists($file) && (filemtime($file) + 3600) > time()) {
                 return file_get_contents($file);
@@ -112,20 +112,14 @@ class template {
 
     private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
         $output = '';
-        $previous = '';
+        $if_expression = '';
         foreach ($node->branches as $branch) {
-            if ($branch->type === 'if') {
-                $previous = $branch->expression;
-            }
-            if ($branch->type === 'else') {
-                $branch->expression = $previous;
-            }
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
                 'var' => $this->get($branch->expression) ?? '',
-                'if' => $this->interpret_if($branch),
-                'else' => $this->interpret_else($branch),
+                'if' => $this->interpret_if($branch, $if_expression),
+                'else' => $this->interpret_else($branch, $if_expression),
                 'for'=> $this->interpret_for($branch),
                 default => '',
             };
@@ -142,7 +136,8 @@ class template {
         return $this->interpret_tree($tree);
     }
 
-    private function interpret_if(token_node $node) : string {
+    private function interpret_if(token_node $node, string &$if_expression = '') : string {
+        $if_expression = $node->expression;
         $type = match (true) {
             str_contains($node->expression, '==') => '==',
             str_contains($node->expression, '!=') => '!=',
@@ -161,9 +156,9 @@ class template {
         return $check ? $this->interpret_tree($node) : '';
     }
 
-    private function interpret_else(token_node $node) : string {
-        $not = $node->expression[0] === '!';
-        $node->expression = $not ? substr($node->expression, 1) : '!' . $node->expression;
+    private function interpret_else(token_node $node, string $if_expression) : string {
+        $not = $if_expression[0] === '!';
+        $node->expression = $not ? substr($if_expression, 1) : '!' . $if_expression;
         return $this->interpret_if($node);
     }
 
