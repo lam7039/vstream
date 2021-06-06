@@ -112,15 +112,14 @@ class template {
 
     private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
         $output = '';
-        $temp = '';
+        $previous = '';
         foreach ($node->branches as $branch) {
             if ($branch->type === 'if') {
-                $temp = $branch->expression;
+                $previous = $branch->expression;
             }
             if ($branch->type === 'else') {
-                $branch->expression = $temp;
+                $branch->expression = $previous;
             }
-            $branch->expression = $branch->type === 'else' ? $temp : $branch->expression;
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
