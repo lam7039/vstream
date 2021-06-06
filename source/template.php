@@ -112,7 +112,15 @@ class template {
 
     private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
         $output = '';
+        $temp = '';
         foreach ($node->branches as $branch) {
+            if ($branch->type === 'if') {
+                $temp = $branch->expression;
+            }
+            if ($branch->type === 'else') {
+                $branch->expression = $temp;
+            }
+            $branch->expression = $branch->type === 'else' ? $temp : $branch->expression;
             $output .= match ($branch->type) {
                 'yield' => $this->interpret_yield($buffer),
                 'html' => $branch->expression,
@@ -154,10 +162,10 @@ class template {
         return $check ? $this->interpret_tree($node) : '';
     }
 
-    //TODO: interpret else within the if?
     private function interpret_else(token_node $node) : string {
-        
-        return $this->interpret_tree($node);
+        $not = $node->expression[0] === '!';
+        $node->expression = $not ? substr($node->expression, 1) : '!' . $node->expression;
+        return $this->interpret_if($node);
     }
 
     private function interpret_for(token_node $node) : string {

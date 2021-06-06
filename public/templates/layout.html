@@ -16,8 +16,7 @@
 								<li><a href="/register">register</a></li>
 							</ul>
 						</li>
-					{% endif %}
-					{% if: auth_check() %}
+					{% else %}
 						<li><a href="/account">{% username %}</a></li>
 						<li><a href="/do_logout">logout</a></li>
 					{% endif %}
