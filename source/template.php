@@ -40,15 +40,10 @@ class template {
                 return file_get_contents($file);
             }
         }
-
-        $tokens = @$this->tokenize($this->layout->body);
-        $tree = $this->build_tree($tokens);
-        $buffer->body = $this->interpret_tree($tree, $buffer);
-
+        $buffer->body = $this->interpret_html($buffer);
         if ($cache) {
             file_put_contents($file, $buffer->body);
         }
-        
         return $buffer->body;
     }
 
@@ -115,7 +110,7 @@ class template {
         $if_expression = '';
         foreach ($node->branches as $branch) {
             $output .= match ($branch->type) {
-                'yield' => $this->interpret_yield($buffer),
+                'yield' => $this->interpret_html($buffer),
                 'html' => $branch->expression,
                 'var' => $this->get($branch->expression) ?? '',
                 'if' => $this->interpret_if($branch, $if_expression),
@@ -127,7 +122,7 @@ class template {
         return $output;
     }
 
-    private function interpret_yield(file_buffer $buffer) : string {
+    private function interpret_html(file_buffer $buffer) : string {
         if (!$buffer) {
             return '';
         }
