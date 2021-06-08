@@ -40,7 +40,7 @@ class template {
                 return file_get_contents($file);
             }
         }
-        $buffer->body = $this->interpret_html($buffer);
+        $buffer->body = $this->interpret_html($this->layout, $buffer);
         if ($cache) {
             file_put_contents($file, $buffer->body);
         }
@@ -122,13 +122,10 @@ class template {
         return $output;
     }
 
-    private function interpret_html(file_buffer $buffer) : string {
-        if (!$buffer) {
-            return '';
-        }
-        $tokens = @$this->tokenize($buffer->body);
+    private function interpret_html(file_buffer $layout, file_buffer $buffer = null) : string {
+        $tokens = @$this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
-        return $this->interpret_tree($tree);
+        return $this->interpret_tree($tree, $buffer);
     }
 
     private function interpret_if(token_node $node, string &$if_expression = '') : string {
