@@ -122,10 +122,10 @@ class template {
         return $output;
     }
 
-    private function interpret_html(file_buffer $layout, file_buffer $buffer = null) : string {
+    private function interpret_html(file_buffer $layout, file_buffer $body = null) : string {
         $tokens = @$this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
-        return $this->interpret_tree($tree, $buffer);
+        return $this->interpret_tree($tree, $body);
     }
 
     private function interpret_if(token_node $node, string &$if_expression = '') : string {
