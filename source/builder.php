@@ -7,7 +7,7 @@ interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;
     public function execute_multiple(array $sql_queries, array $variables = []) : bool;
 
-    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : object|null;
+    public function find(array $where = [], array $columns = [], int $limit = 0) : object|null;
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
@@ -32,7 +32,7 @@ class mysql_builder implements sql_builder {
         return $this->database->execute_multiple($sql_queries, $variables);
     }
     
-    public function find(array $where = [], array $columns = ['*'], int $limit = 0) : object|null {
+    public function find(array $where = [], array $columns = [], int $limit = 0) : object|null {
         $select_str = $this->sql_columns($columns);
         $sql = "select $select_str from {$this->table}";
         if ($where) {
@@ -71,6 +71,9 @@ class mysql_builder implements sql_builder {
     }
 
     private function sql_columns(array $columns, bool $colon = false) : string {
+        if (!$columns) {
+            return '*';
+        }
         $select_str = '';
         foreach ($columns as $column) {
             if ($colon) {
