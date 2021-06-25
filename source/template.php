@@ -34,6 +34,7 @@ class template {
     }
 
     public function render(file_buffer $buffer, bool $cache = false) : string {
+        //TODO: re-cache affected files when changes occur instead of detecting it on page load 
         if ($cache /* && $file !== $buffer->body */) {
             $file = 'tmp/cache/' . md5($buffer->path);
             if (file_exists($file) && (filemtime($file) + 3600) > time()) {
