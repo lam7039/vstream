@@ -175,7 +175,7 @@ class template {
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
         $function = match ($name) {
-            'isset' => $this->get($parameters[0]),
+            'isset' => $this->get(...$parameters),
             'auth_check' => auth_check(),
         };
         return $not ? !$function : $function;
