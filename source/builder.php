@@ -13,6 +13,7 @@ interface sql_builder {
     public function delete(array $where) : bool;
 }
 
+//TODO: implement caching here between the application and database
 class mysql_builder implements sql_builder {
     private database $database;
 
@@ -84,6 +85,7 @@ class mysql_builder implements sql_builder {
         return substr($select_str, 0, -2);
     }
 
+    //TODO: add other operations: <, >, <=, >=, like, etc.
     private function sql_where(array $where, string $operator = 'and') : string {
         $where_str = '';
         foreach (array_keys($where) as $column) {
