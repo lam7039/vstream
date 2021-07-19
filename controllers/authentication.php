@@ -7,7 +7,6 @@ use models\user;
 use function source\session_isset;
 use function source\session_set;
 use function source\session_remove;
-use function source\session_once;
 
 class authentication extends controller {
 	private user $user;
