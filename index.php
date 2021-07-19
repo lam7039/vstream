@@ -49,6 +49,6 @@ $parameters = match ($url_page) {
 };
 
 $file_buffer = $templating->bind_parameters($parameters);
-echo $templating->render(new file_buffer($file_path));
+echo $templating->render(new file_buffer($response));
 session_clear_temp();
 echo microtime(true) - $start;

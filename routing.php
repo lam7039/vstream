@@ -17,8 +17,8 @@ $router->bind('do_logout', '\controllers\authentication@logout');
 $router->bind('do_transcode', '\controllers\transcode@run');
 
 $url_page = $request->current_page;
-$file_path = $router->get($url_page, $request->parameters);
+$response = $router->get($url_page, $request->parameters);
 
-if (!is_file($file_path)) {
-    redirect(env('HOMEPAGE'));
+if (!$response || (is_string($response) && !is_file($response)) || isset($response['path'])) {
+    redirect($response['path'] ?? env('HOMEPAGE'));
 }

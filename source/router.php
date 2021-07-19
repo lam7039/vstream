@@ -32,7 +32,7 @@ class router {
         }
     }
 
-    public function get(string $page, array $parameters = []) : string|null {
+    public function get(string $page, array $parameters = []) : array|string|null {
         if (!isset($this->routes[$page])) {
             http_response_code(404);
             return null;
