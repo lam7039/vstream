@@ -30,11 +30,11 @@ $templating = new template([
 
 $parameters = match ($url_page) {
     'login' => [
-        'error' => session_get('incorrect_login') ?? '',
+        'error' => session_get('error') ?? '',
         'token' => csrf_create(),
     ],
     'register' => [
-        'error' => session_get('password_mismatch') ?? '',
+        'error' => session_get('error') ?? '',
         'token' => csrf_create(),
     ],
     'account' => [

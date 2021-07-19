@@ -17,9 +17,18 @@ class authentication extends controller {
 	}
 
 	public function register(string $username, string $password, string $confirm) : array {
+		$error = '';
+		if (!$username || !$password || !$confirm) {
+			$error = 'A required field is empty';
+		}
 		if ($password !== $confirm) {
-			session_once('password_mismatch', 'Password mismatch');
-			return ['path' => '/register'];
+			$error = 'Password mismatch';
+		}
+		if ($error) {
+			return [
+				'path' => '/register',
+				'error' => $error
+			];
 		}
 
 		$password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -45,8 +54,10 @@ class authentication extends controller {
 			return ['path' => '/account'];
 		}
 
-		session_once('incorrect_login', 'Wrong username/password');
-		return ['path' => '/login'];
+		return [
+			'path' => '/login',
+			'error' => 'Wrong username/password'
+		];
 	}
 
 	public function logout() : void {
