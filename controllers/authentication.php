@@ -16,6 +16,7 @@ class authentication extends controller {
 	}
 
 	public function register(string $username, string $password, string $confirm) : array {
+		//TODO: refine page error checking
 		$error = '';
 		if (!$username || !$password || !$confirm) {
 			$error = 'A required field is empty';
