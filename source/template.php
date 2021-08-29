@@ -57,7 +57,7 @@ class template {
             if (!$left || !$right) {
                 break;
             }
-            [$left, $right] = explode(' %}', $right, 2);
+            [$left, $right] = array_pad(explode(' %}', $right, 2), 2, '');
             $tokens[] = $left;
             if (!$left || !$right) {
                 break;
