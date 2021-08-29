@@ -52,7 +52,7 @@ class template {
         [$left, $right] = ['', $template];
         $tokens = [];
         while (true) {
-            [$left, $right] = explode('{% ', $right, 2);
+            [$left, $right] = array_pad(explode('{% ', $right, 2), 2, '');
             $tokens[] = $left;
             if (!$left || !$right) {
                 break;
@@ -124,7 +124,7 @@ class template {
     }
 
     private function interpret_html(file_buffer $layout, file_buffer $body = null) : string {
-        $tokens = @$this->tokenize($layout->body);
+        $tokens = $this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
         return $this->interpret_tree($tree, $body);
     }
