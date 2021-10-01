@@ -87,12 +87,14 @@ class mysql_builder implements sql_builder {
 
     private function sql_where(array $where, string|array $comparitor = '=', string|array $operator = 'and') : string {
         $where_str = '';
+        $comparitor_is_array = is_array($comparitor);
+        $operator_is_array = is_array($operator);
         foreach (array_keys($where) as $i => $column) {
-            $where_str .= "where $column $comparitor ";
-            $where_str .= is_array($comparitor) && strtolower($comparitor[$i]) === 'like' ? "%:$column% " : ":$column ";
-            $where_str .= is_array($operator) ? $operator[$i] : $operator;
+            $where_str .= "where $column ";
+            $where_str .= ($comparitor_is_array ? $comparitor[$i] : $comparitor) . " :$column ";
+            $where_str .= ($operator_is_array ? $operator[$i] : $operator) . ' ';
         }
-        return substr($where_str, 0, -(strlen($operator) + 2));
+        return substr($where_str, 0, -(strlen($operator_is_array ? end($operator) : $operator) + 2));
     }
 
     private function sql_set(array $set) : string {
