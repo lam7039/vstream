@@ -46,8 +46,9 @@ class mysql_builder implements sql_builder {
     }
 
     public function insert(array $columns) : int {
-        $columns_str = $this->sql_columns(array_keys($columns));
-        $values_str = $this->sql_columns(array_keys($columns), true);
+        $columns_keys = array_keys($columns);
+        $columns_str = $this->sql_columns($columns_keys);
+        $values_str = $this->sql_columns($columns_keys, true);
         $sql = "insert into {$this->table} ($columns_str) values ($values_str)";
         if ($this->database->execute($sql, $columns)) {
             return $this->database->last_inserted_id;

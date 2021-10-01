@@ -10,8 +10,11 @@ abstract class model implements sql_builder {
     protected string $table;
     protected sql_builder $builder;
 
-    public function __construct() {
+    public function __construct(array $columns = []) {
         $this->builder = new mysql_builder($this->table);
+        if ($columns) {
+            $this->insert($columns);
+        }
     }
 
     public function fetch(string $sql, array $variables = []) : object|null {
