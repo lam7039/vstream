@@ -138,6 +138,7 @@ class template {
         };
         if ($type) {
             [$first, $second] = explode($type, $node->expression, 2);
+            //todo: no limit on explode, split everything up in 2, then loop through it
             $first = $this->get($first) ?? str_replace('\'', '', trim($first));
             $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         }

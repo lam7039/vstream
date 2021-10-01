@@ -7,7 +7,7 @@ interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;
     public function execute_multiple(array $sql_queries, array $variables = []) : bool;
 
-    public function find(array $where = [], array $columns = [], int $limit = 0) : object|null;
+    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', int $limit = 0) : object|null;
     public function insert(array $columns) : int;
     public function update(array $columns, array $where = []) : bool;
     public function delete(array $where) : bool;
@@ -33,11 +33,11 @@ class mysql_builder implements sql_builder {
         return $this->database->execute_multiple($sql_queries, $variables);
     }
     
-    public function find(array $where = [], array $columns = [], int $limit = 0) : object|null {
+    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', int $limit = 0) : object|null {
         $select_str = $this->sql_columns($columns);
         $sql = "select $select_str from {$this->table}";
         if ($where) {
-            $sql .= ' ' . $this->sql_where($where);
+            $sql .= ' ' . $this->sql_where($where, $comparitor);
         }
         if ($limit) {
             $sql .= ' limit ' . $limit;
@@ -71,9 +71,9 @@ class mysql_builder implements sql_builder {
         return $this->database->execute($sql, $where);
     }
 
-    private function sql_columns(array $columns, bool $colon = false) : string {
-        if (!$columns) {
-            return '*';
+    private function sql_columns(string|array $columns, bool $colon = false) : string {
+        if (!is_array($columns)) {
+            return $columns;
         }
         $select_str = '';
         foreach ($columns as $column) {
@@ -85,11 +85,12 @@ class mysql_builder implements sql_builder {
         return substr($select_str, 0, -2);
     }
 
-    //TODO: add other operations: <, >, <=, >=, like, etc.
-    private function sql_where(array $where, string $operator = 'and') : string {
+    private function sql_where(array $where, string|array $comparitor = '=', string|array $operator = 'and') : string {
         $where_str = '';
-        foreach (array_keys($where) as $column) {
-            $where_str .= "where $column = :$column $operator ";
+        foreach (array_keys($where) as $i => $column) {
+            $where_str .= "where $column $comparitor ";
+            $where_str .= is_array($comparitor) && strtolower($comparitor[$i]) === 'like' ? "%:$column% " : ":$column ";
+            $where_str .= is_array($operator) ? $operator[$i] : $operator;
         }
         return substr($where_str, 0, -(strlen($operator) + 2));
     }
