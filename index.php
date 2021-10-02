@@ -48,6 +48,8 @@ $parameters = match ($url_page) {
     default => [],
 };
 
+//TODO: use observer pattern for caching pages, subscribe pages to events that change the page
+
 $file_buffer = $templating->bind_parameters($parameters);
 echo $templating->render(new file_buffer($response));
 session_clear_temp();
