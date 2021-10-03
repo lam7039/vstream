@@ -17,7 +17,8 @@ interface sql_builder {
 class mysql_builder implements sql_builder {
     private database $database;
 
-    public function __construct(private string $table) {
+    //TODO: implement joins for find
+    public function __construct(private string|array $table) {
         $this->database = db::get();
     }
     
