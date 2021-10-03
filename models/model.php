@@ -29,19 +29,19 @@ abstract class model implements sql_builder {
         return $this->builder->execute_multiple($sql_queries, $variables);
     }
 
-    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', int $limit = 0) : object|null {
-        return $this->builder->find($where, $columns, $comparitor, $limit);
+    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null {
+        return $this->builder->find($where, $columns, $comparitor, $conjunctor, $limit);
     }
 
     public function insert(array $columns) : int {
         return $this->builder->insert($columns);
     }
 
-    public function update(array $columns, array $where = []) : bool {
-        return $this->builder->update($columns, $where);
+    public function update(array $columns, array $where = [], string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
+        return $this->builder->update($columns, $where, $comparitor, $conjunctor);
     }
 
-    public function delete(array $where) : bool {
-        return $this->builder->delete($where);
+    public function delete(array $where, string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
+        return $this->builder->delete($where, $comparitor, $conjunctor);
     }
 }

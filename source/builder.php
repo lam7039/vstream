@@ -7,10 +7,10 @@ interface sql_builder {
     public function execute(string $sql, array $variables = []) : bool;
     public function execute_multiple(array $sql_queries, array $variables = []) : bool;
 
-    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', int $limit = 0) : object|null;
+    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null;
     public function insert(array $columns) : int;
-    public function update(array $columns, array $where = []) : bool;
-    public function delete(array $where) : bool;
+    public function update(array $columns, array $where = [], string|array $comparitor = '=', string|array $conjunctor = 'and') : bool;
+    public function delete(array $where, string|array $comparitor = '=', string|array $conjunctor = 'and') : bool;
 }
 
 //TODO: implement caching here between the application and database
@@ -33,11 +33,11 @@ class mysql_builder implements sql_builder {
         return $this->database->execute_multiple($sql_queries, $variables);
     }
     
-    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', int $limit = 0) : object|null {
+    public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null {
         $select_str = $this->build_columns($columns);
         $sql = "select $select_str from {$this->table}";
         if ($where) {
-            $sql .= ' ' . $this->build_where($where, $comparitor);
+            $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
         }
         if ($limit) {
             $sql .= ' limit ' . $limit;
@@ -56,18 +56,18 @@ class mysql_builder implements sql_builder {
         return 0;
     }
 
-    public function update(array $columns, array $where = []) : bool {
+    public function update(array $columns, array $where = [], string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
         $sql = "update {$this->table} set {$this->build_set($columns)}";
         if ($where) {
-            $sql .= ' ' . $this->build_where($where);
+            $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
         }
         return $this->database->execute($sql, array_merge($columns, $where));
     }
 
-    public function delete(array $where) : bool {
+    public function delete(array $where, string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
         $sql = "delete from {$this->table}";
         if ($where) {
-            $sql .= ' ' . $this->build_where($where);
+            $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
         }
         return $this->database->execute($sql, $where);
     }
