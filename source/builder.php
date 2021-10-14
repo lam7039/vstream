@@ -35,7 +35,7 @@ class mysql_builder implements sql_builder {
     }
     
     public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null {
-        $select_str = $this->build_columns($columns);
+        $select_str = implode(', ', $columns);
         $sql = "select $select_str from {$this->table}";
         if ($where) {
             $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
@@ -48,8 +48,8 @@ class mysql_builder implements sql_builder {
 
     public function insert(array $columns) : int {
         $columns_keys = array_keys($columns);
-        $columns_str = $this->build_columns($columns_keys);
-        $values_str = $this->build_columns($columns_keys, true);
+        $columns_str = implode(', ', $columns_keys);
+        $values_str = ':' . implode(', :', $columns_keys);
         $sql = "insert into {$this->table} ($columns_str) values ($values_str)";
         if ($this->database->execute($sql, $columns)) {
             return $this->database->last_inserted_id;
@@ -71,20 +71,6 @@ class mysql_builder implements sql_builder {
             $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
         }
         return $this->database->execute($sql, $where);
-    }
-
-    private function build_columns(string|array $columns, bool $colon = false) : string {
-        if (!is_array($columns)) {
-            return $columns;
-        }
-        $select_str = '';
-        foreach ($columns as $column) {
-            if ($colon) {
-                $select_str .= ':';
-            }
-            $select_str .= $column . ', ';
-        }
-        return substr($select_str, 0, -2);
     }
 
     private function build_where(array $where, string|array $comparitor = '=', string|array $conjunctor = 'and') : string {
