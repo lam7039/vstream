@@ -17,13 +17,11 @@ class authentication extends controller {
 
 	public function register(string $username, string $password, string $confirm) : array {
 		//TODO: refine page error checking
-		$error = '';
-		if (!$username || !$password || !$confirm) {
-			$error = 'A required field is empty';
-		}
-		if ($password !== $confirm) {
-			$error = 'Password mismatch';
-		}
+		$error = match (true) {
+			!$username || !$password || !$confirm => 'A required field is empty',
+			$password !== $confirm => 'Password mismatch',
+			default => '',
+		};
 		if ($error) {
 			return [
 				'path' => '/register',
