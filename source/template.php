@@ -2,16 +2,6 @@
 
 namespace source;
 
-class file_buffer {
-    public string $body;
-    public int $size;
-
-    public function __construct(public string $path) {
-        $this->body = file_get_contents($path);
-        $this->size = strlen($this->body);
-    }
-}
-
 class token_node {
     public function __construct(
         public string $type, 
@@ -154,8 +144,8 @@ class template {
         if (!$if_expression) {
             return '';
         }
-        $not = $if_expression[0] === '!';
-        $node->expression = $not ? substr($if_expression, 1) : '!' . $if_expression;
+        //$not = $if_expression[0] === '!';
+        $node->expression = str_starts_with($if_expression, '!') ? substr($if_expression, 1) : '!' . $if_expression;
         return $this->interpret_if($node);
     }
 
@@ -172,7 +162,7 @@ class template {
 
     private function apply_function(string $expression) : mixed {
         [$name, $parameters] = explode('(', rtrim($expression, ')'), 2);
-        $not = $name[0] === '!';
+        $not = str_starts_with($name, '!'); //$name[0] === '!';
         $name = $not ? substr($name, 1) : $name;
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);

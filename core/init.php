@@ -14,26 +14,26 @@ function directory_files(string $directory, array $except = []) : array {
     });
 }
 
-$source_files = directory_files('source');
-foreach ($source_files as $source_file) {
-    require "source/$source_file";
+function include_files(string $directory, array $load_first = []) : void {
+    if ($load_first) {
+        foreach ($load_first as $file) {
+            require "$directory/$file";
+        }
+    }
+    $files = directory_files($directory, $load_first);
+    foreach ($files as $file) {
+        require "$directory/$file";
+    }
 }
+
+include_files('source', ['buffers.php']);
 
 if (!session_isset('SESSION_TEMP')) {
     session_set('SESSION_TEMP', []);
 }
 
-require 'models/model.php';
-$model_files = directory_files('models', ['model.php']);
-foreach ($model_files as $model_file) {
-    require "models/$model_file";
-}
-
-require 'controllers/controller.php';
-$controller_files = directory_files('controllers', ['controller.php']);
-foreach ($controller_files as $controller_file) {
-    require "controllers/$controller_file";
-}
+include_files('models', ['model.php']);
+include_files('controllers', ['controller.php']);
 
 $log = new log;
 function LOG_INFO(string $string) : void {
