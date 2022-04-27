@@ -7,33 +7,33 @@ use function source\session_set;
 
 session_start();
 
-function directory_files(string $directory, array $except = []) : array {
-    $cwd = getcwd();
-    return array_filter(array_diff(scandir($directory), ['..', '.', ...$except]), function ($item) use ($directory, $cwd) {
-        return !is_dir("$cwd/$directory/$item");
+function directory_files(string $path, array $except = []) : array {
+    return array_filter(array_diff(scandir($path), ['..', '.', ...$except]), function ($item) use ($path) {
+        return !is_dir("$path/$item");
     });
 }
 
-function include_files(string $directory, array $load_first = []) : void {
+function require_files(string $directory, array $load_first = []) : void {
+    $path = getcwd() . "/$directory";
     if ($load_first) {
         foreach ($load_first as $file) {
-            require "$directory/$file";
+            require "$path/$file";
         }
     }
-    $files = directory_files($directory, $load_first);
+    $files = directory_files($path, $load_first);
     foreach ($files as $file) {
-        require "$directory/$file";
+        require "$path/$file";
     }
 }
 
-include_files('source', ['buffers.php']);
+require_files('source', ['buffers.php']);
 
 if (!session_isset('SESSION_TEMP')) {
     session_set('SESSION_TEMP', []);
 }
 
-include_files('models', ['model.php']);
-include_files('controllers', ['controller.php']);
+require_files('models', ['model.php']);
+require_files('controllers', ['controller.php']);
 
 $log = new log;
 function LOG_INFO(string $string) : void {
