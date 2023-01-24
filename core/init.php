@@ -68,17 +68,15 @@ function dump($x) : void {
     <pre>' . var_export($x, true) . '</pre>';
 }
 
-function dd() : void {
-    array_map(function($x) { 
-        dump($x); 
-    }, func_get_args());
-    exit;
-}
-
 function output() : void {
     array_map(function($x) { 
         dump($x); 
     }, func_get_args());
+}
+
+function dd() : void {
+    output();
+    exit;
 }
 
 function redirect(string $to) : void {
