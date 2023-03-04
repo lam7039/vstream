@@ -10,7 +10,7 @@ $router = new router;
 
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {
-    $router->bind($page, "public/html/$page.html");
+    $router->bind($page, "./public/html/$page.html");
 }
 
 $router->bind('do_register', '\controllers\authentication@register');

@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 use source\config;
 use source\log;
@@ -75,7 +77,9 @@ function output() : void {
 }
 
 function dd() : void {
-    output();
+    array_map(function($x) { 
+        dump($x); 
+    }, func_get_args());
     exit;
 }
 

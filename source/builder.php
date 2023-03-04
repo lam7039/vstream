@@ -35,7 +35,7 @@ class mysql_builder implements sql_builder {
     }
     
     public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null {
-        $select_str = implode(', ', $columns);
+        $select_str = is_array($columns) ? implode(', ', $columns) : $columns;
         $sql = "select $select_str from {$this->table}";
         if ($where) {
             $sql .= ' ' . $this->build_where($where, $comparitor, $conjunctor);
