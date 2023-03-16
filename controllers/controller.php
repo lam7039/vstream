@@ -11,7 +11,7 @@ abstract class controller {
         'page_style' => 'layout.css',
         'page_script' => 'script.js',
     ];
-    protected $templating = null;
+    protected template $templating;
 
     public function __construct(string $url_page = '') {
         $this->parameters['page_title'] = 'vstream' . ($url_page ? "| $url_page" : '');

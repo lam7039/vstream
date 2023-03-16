@@ -10,6 +10,16 @@ class token_node {
     ) {}
 }
 
+class page_buffer {
+    public string $body;
+    public int $size;
+
+    public function __construct(public string $path) {
+        $this->body = file_get_contents($path);
+        $this->size = strlen($this->body);
+    }
+}
+
 class template {
     private page_buffer $layout;
     private array $parameters = [];

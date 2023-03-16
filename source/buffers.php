@@ -70,13 +70,3 @@ class image_buffer extends media_buffer {
         parent::__construct($source_path, 'images');
     }
 }
-
-class page_buffer {
-    public string $body;
-    public int $size;
-
-    public function __construct(public string $path) {
-        $this->body = file_get_contents($path);
-        $this->size = strlen($this->body);
-    }
-}
