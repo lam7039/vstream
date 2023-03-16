@@ -14,7 +14,7 @@ abstract class controller {
     protected template $templating;
 
     public function __construct(string $url_page = '') {
-        $this->parameters['page_title'] = 'vstream' . ($url_page ? "| $url_page" : '');
+        $this->parameters['page_title'] = 'vstream' . ($url_page ? " | $url_page" : '');
         $this->templating = new template($this->parameters);
     }
     

@@ -2,14 +2,6 @@
 
 namespace source;
 
-class token_node {
-    public function __construct(
-        public string $type, 
-        public string $expression, 
-        public array $branches = []
-    ) {}
-}
-
 class page_buffer {
     public string $body;
     public int $size;
@@ -18,6 +10,14 @@ class page_buffer {
         $this->body = file_get_contents($path);
         $this->size = strlen($this->body);
     }
+}
+
+class token_node {
+    public function __construct(
+        public string $type, 
+        public string $expression, 
+        public array $branches = []
+    ) {}
 }
 
 class template {
@@ -132,26 +132,36 @@ class template {
     private function interpret_if(token_node $node, string &$if_expression = '') : string {
         $if_expression = $node->expression;
         $type = match (true) {
-            str_contains($node->expression, '==') => '==',
-            str_contains($node->expression, '!=') => '!=',
+            str_contains($if_expression, '==') => '==',
+            str_contains($if_expression, '!=') => '!=',
+            str_contains($if_expression, '<') => '<',
+            str_contains($if_expression, '<=') => '<=',
+            str_contains($if_expression, '>') => '>',
+            str_contains($if_expression, '>=') => '>=',
             default => '',
         };
+
         if ($type) {
-            [$first, $second] = explode($type, $node->expression, 2);
-            //todo: no limit on explode, split everything up in 2, then loop through it
+            [$first, $second] = explode($type, $if_expression, 2);
+            //TODO: no limit on explode, split everything up in 2, then loop through it
             $first = $this->get($first) ?? str_replace('\'', '', trim($first));
             $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         }
         $check = match ($type) {
             '==' => $first === $second,
             '!=' => $first !== $second,
-            default => $this->apply_function($node->expression) ?? '',
+            '<' => $first < $second,
+            '<=' => $first <= $second,
+            '>' => $first > $second,
+            '>=' => $first >= $second,
+            default => $this->apply_function($if_expression) ?? '',
         };
         return $check ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_else(token_node $node, string $if_expression) : string {
         if (!$if_expression) {
+            LOG_WARNING('No if statement detected');
             return '';
         }
         $node->expression = str_starts_with($if_expression, '!') ? substr($if_expression, 1) : '!' . $if_expression;
