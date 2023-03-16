@@ -16,7 +16,6 @@ class request {
             unset($this->parameters['token']);
         }
         
-        // dd($_GET['request']);
         $parameters = explode('/', $_GET['request'] ?? '');
         $this->current_page = array_pop($parameters) ?: $default_page ?: env('HOMEPAGE');
         $this->parameters = array_merge($parameters, $this->parameters);

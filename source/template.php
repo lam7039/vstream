@@ -11,11 +11,11 @@ class token_node {
 }
 
 class template {
-    private file_buffer $layout;
+    private page_buffer $layout;
     private array $parameters = [];
 
     public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
-        $this->layout = new file_buffer($template_path);
+        $this->layout = new page_buffer($template_path);
         $this->bind_parameters($parameters);
     }
 
@@ -23,7 +23,7 @@ class template {
         $this->parameters = array_merge($this->parameters, $parameters);
     }
 
-    public function render(file_buffer $buffer, bool $cache = false) : string {
+    public function render(page_buffer $buffer, bool $cache = false) : string {
         //TODO: re-cache affected files when changes occur instead of detecting it on page load 
         if ($cache /* && $file !== $buffer->body */) {
             $file = 'tmp/cache/' . md5($buffer->path);
@@ -96,7 +96,7 @@ class template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, file_buffer $buffer = null) : string {
+    private function interpret_tree(token_node $node, page_buffer $buffer = null) : string {
         $output = '';
         $if_expression = '';
         foreach ($node->branches as $branch) {
@@ -113,7 +113,7 @@ class template {
         return $output;
     }
 
-    private function interpret_html(file_buffer $layout, file_buffer $body = null) : string {
+    private function interpret_html(page_buffer $layout, page_buffer $body = null) : string {
         $tokens = $this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
         return $this->interpret_tree($tree, $body);

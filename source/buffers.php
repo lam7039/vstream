@@ -71,8 +71,7 @@ class image_buffer extends media_buffer {
     }
 }
 
-//rename to page_buffer ?
-class file_buffer {
+class page_buffer {
     public string $body;
     public int $size;
 

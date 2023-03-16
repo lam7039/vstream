@@ -4,6 +4,9 @@ namespace controllers;
 
 use models\user;
 
+use function source\auth_check;
+use function source\csrf_create;
+use function source\session_get;
 use function source\session_isset;
 use function source\session_set;
 use function source\session_remove;
@@ -11,8 +14,15 @@ use function source\session_remove;
 class authentication extends controller {
 	private user $user;
 
-	public function __construct() {
-		$this->user = new user;
+	public function __construct(string $url_page = '') {
+        $this->user = new user;
+		if (auth_check()) {
+            $this->user = $this->user->find(['id' => session_get(env('SESSION_AUTH'))]);
+            $this->parameters['username'] = $this->user->username;
+        }
+		$this->parameters['error'] = session_get('error') ?? '';
+		$this->parameters['token'] = csrf_create();
+		parent::__construct($url_page);
 	}
 
 	public function register(string $username, string $password, string $confirm) : array {

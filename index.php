@@ -5,53 +5,34 @@ set_include_path(__DIR__);
 require('core/init.php');
 require('routing.php');
 
-use source\file_buffer;
-use source\template;
-use models\user;
+use controllers\browse;
+use controllers\account;
+use controllers\authentication;
 
-use function source\auth_check;
-use function source\csrf_create;
-use function source\session_get;
+use source\request;
 use function source\session_clear_temp;
+use function source\session_once;
 
-$user = null;
-if (auth_check()) {
-    $user = new user;
-    $user = $user->find(['id' => session_get(env('SESSION_AUTH'))]);
+$request = new request;
+$url_page = $request->current_page;
+$response = $router->get($url_page, $request->parameters);
+
+if (isset($response['error'])) {
+    session_once('error', $response['error']);
 }
 
-$templating = new template([
-    'page_title' => "vstream | $url_page",
-    'page_favicon' => 'favicon-32x32.png',
-    'page_style' => 'layout.css',
-    'page_script' => 'script.js',
-    'username' => $user ? $user->username : '',
-]);
+if (!$response || (is_string($response) && !is_file($response)) || isset($response['path'])) {
+    redirect($response['path'] ?? env('HOMEPAGE'));
+}
 
-$parameters = match ($url_page) {
-    'login' => [
-        'error' => session_get('error') ?? '',
-        'token' => csrf_create(),
-    ],
-    'register' => [
-        'error' => session_get('error') ?? '',
-        'token' => csrf_create(),
-    ],
-    'account' => [
-        'ip' => $user ? long2ip($user->ip_address) : '',
-        'testfor' => [
-            'first',
-            'second',
-            'third',
-        ],
-    ],
-    default => [],
+$output = match($url_page) {
+    'login' => new authentication($url_page),
+    'register' => new authentication($url_page),
+    'account' => new account($url_page),
+    default => new browse($url_page)
 };
 
-//TODO: use observer pattern for caching pages, subscribe pages to events that change the page
-
-$templating->bind_parameters($parameters);
-echo $templating->render(new file_buffer($response));
+echo $output->index($response);
 
 session_clear_temp();
 echo microtime(true) - $start;
