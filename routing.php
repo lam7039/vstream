@@ -1,15 +1,23 @@
 <?php
 
+use controllers\authentication;
+use controllers\transcode;
+use source\request;
 use source\router;
 
-$router = new router;
+$request = new request;
+$router = new router($request);
 
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {
-    $router->bind($page, "./public/html/$page.html");
+    $router->get($page, "./public/html/$page.html");
 }
 
-$router->bind('do_register', '\controllers\authentication@register');
-$router->bind('do_login', '\controllers\authentication@login');
-$router->bind('do_logout', '\controllers\authentication@logout');
-$router->bind('do_transcode', '\controllers\transcode@run');
+$router->get('test', function() {
+    return 'this is a test';
+});
+
+$router->post('do_register', [authentication::class, 'register']);
+$router->post('do_login', [authentication::class, 'login']);
+$router->post('do_logout', [authentication::class, 'logout']);
+$router->post('do_transcode', [transcode::class, 'run']);

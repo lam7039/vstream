@@ -6,6 +6,10 @@ use source\page_buffer;
 use source\template;
 
 abstract class controller {
+    
+}
+
+abstract class page_controller extends controller {
     protected $parameters = [
         'page_favicon' => 'favicon-32x32.png',
         'page_style' => 'layout.css',
@@ -13,8 +17,8 @@ abstract class controller {
     ];
     protected template $templating;
 
-    public function __construct(string $url_page = '') {
-        $this->parameters['page_title'] = 'vstream' . ($url_page ? " | $url_page" : '');
+    public function __construct (string $url_page = '') {
+        $this->parameters['page_title'] = env('PROJECT_NAME') . ($url_page ? " | $url_page" : '');
         $this->templating = new template($this->parameters);
     }
     

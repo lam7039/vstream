@@ -2,6 +2,6 @@
 
 namespace controllers;
 
-class browse extends controller {
+class browse extends page_controller {
 
 }

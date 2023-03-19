@@ -11,7 +11,7 @@ use function source\session_isset;
 use function source\session_set;
 use function source\session_remove;
 
-class authentication extends controller {
+class authentication extends page_controller {
 	private user $user;
 
 	public function __construct(string $url_page = '') {

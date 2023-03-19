@@ -2,7 +2,7 @@
 
 namespace controllers;
 
-class account extends controller {
+class account extends page_controller {
     private $user = null;
 
     public function __construct(string $url_page) {
