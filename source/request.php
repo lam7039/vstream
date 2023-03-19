@@ -45,12 +45,10 @@ class request {
         return isset($this->parameters[$key]);
     }
 
-    //TODO: test this one
     public function except(array $keys) : array {
-        return array_diff_key(array_flip($keys), $this->parameters);
+        return array_diff_key($this->parameters, array_flip($keys));
     }
     
-    //TODO: test this one
     public function only(array $keys) : array {
         return array_intersect_key($this->parameters, array_flip($keys));
     }
