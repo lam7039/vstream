@@ -2,7 +2,7 @@
 
 namespace source;
 
-use ReflectionClass;
+use ReflectionMethod;
 
 class route_buffer {
     public bool $is_page = false;
@@ -53,7 +53,7 @@ class router {
         $this->store_buffer($page, $destination);
     }
 
-    public function response() : array|string|null {
+    public function response() : string|null {
         $page = $this->request->page();
         if (!isset($this->routes[$page])) {
             http_response_code(404);
@@ -69,8 +69,7 @@ class router {
         if (!empty($route->class)) {
             $class = $this->initiated_classes[$route->class];
 
-            $reflected_class = new ReflectionClass($route->class);
-            $reflected_method = $reflected_class->getMethod($route->method);
+            $reflected_method = new ReflectionMethod($route->class, $route->method);
             $reflected_parameters = $reflected_method->getParameters();
 
             $parameters = [];
