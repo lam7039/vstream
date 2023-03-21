@@ -12,7 +12,6 @@ use controllers\authentication;
 use function source\session_clear_temp;
 use function source\session_once;
 
-$url_page = $request->page();
 $response = $router->response();
 
 if (isset($response['error'])) {

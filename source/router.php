@@ -2,15 +2,14 @@
 
 namespace source;
 
-use ReflectionMethod;
-
 class route_buffer {
     public bool $is_page = false;
     public string $path;
     public string $class;
     public string $method;
+    public array $parameters;
 
-    public function __construct(string|array|callable $destination) {
+    public function __construct(string|array|callable $destination, array $parameters = []) {
         if (is_string($destination) && !str_contains($destination, '@')) {
             $this->path = $destination;
             $this->is_page = true;
@@ -22,6 +21,7 @@ class route_buffer {
         }
 
         [$this->class, $this->method] = is_array($destination) ? $destination : explode('@', $destination, 2);
+        $this->parameters = $parameters;
     }
 }
 
@@ -37,20 +37,21 @@ class router {
             return;
         }
 
-        $buffer = new route_buffer($destination);
+        $buffer = new route_buffer($destination, $parameters);
         $this->routes[$page] = $buffer;
         
         if (!$buffer->is_page && !isset($this->initiated_classes[$buffer->class])) {
-            $this->initiated_classes[$buffer->class] = new $buffer->class(...$parameters);
+            // $this->initiated_classes[$buffer->class] = new $buffer->class(...$parameters);
+            $this->container->set($buffer->class);
         }
     }
 
-    public function get(string $page, string|array|callable $destination) : void {
-        $this->store_buffer($page, $destination);
+    public function get(string $page, string|array|callable $destination, array $parameters = []) : void {
+        $this->store_buffer($page, $destination, $parameters);
     }
 
-    public function post(string $page, string|array|callable $destination) : void {
-        $this->store_buffer($page, $destination);
+    public function post(string $page, string|array|callable $destination, array $parameters = []) : void {
+        $this->store_buffer($page, $destination, $parameters);
     }
 
     public function response() : string|null {
@@ -81,14 +82,19 @@ class router {
         // }
 
         if (!empty($route->class)) {
-            $class = $this->container->get($route->class);
-            return $class->{$route->method}();
+            $class = $this->container->get($route->class, $route->parameters);
+            return $class->{$route->method}(...$this->request->only($this->container->getMethodParams($route->class, $route->method)));
         }
 
         if (!empty($route->method)) {
             return $route->method();
         }
 
+        return null;
+    }
+
+    public function resolve() : string|null {
+        //TODO: move resolving the route in response to this separate function
         return null;
     }
 }

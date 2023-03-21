@@ -15,11 +15,13 @@ foreach ($pages as $page) {
     $router->get($page, "./public/html/$page.html");
 }
 
+$url_page = $request->page();
+
 $router->get('test', function() {
     return 'this is a test';
 });
 
-$router->post('do_register', [authentication::class, 'register']);
-$router->post('do_login', [authentication::class, 'login']);
-$router->post('do_logout', [authentication::class, 'logout']);
-$router->post('do_transcode', [transcode::class, 'run']);
+$router->post('do_register', [authentication::class, 'register'], ['url_page' => $url_page]);
+$router->post('do_login', [authentication::class, 'login'], ['url_page' => $url_page]);
+$router->post('do_logout', [authentication::class, 'logout'], ['url_page' => $url_page]);
+$router->post('do_transcode', [transcode::class, 'run'], ['url_page' => $url_page]);
