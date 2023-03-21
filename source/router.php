@@ -29,7 +29,7 @@ class router {
     private array $routes = [];
     private array $initiated_classes = [];
 
-    public function __construct(private request $request) {}
+    public function __construct(private request $request, private container $container) {}
 
     private function store_buffer(string $page, string|array|callable $destination, array $parameters = []) : void {
         if (is_callable($destination)) {
@@ -66,18 +66,23 @@ class router {
             return $route->path;
         }
 
+        // if (!empty($route->class)) {
+        //     $class = $this->initiated_classes[$route->class];
+
+        //     $reflected_method = new ReflectionMethod($route->class, $route->method);
+        //     $reflected_parameters = $reflected_method->getParameters();
+
+        //     $parameters = [];
+        //     foreach ($reflected_parameters as $reflected_parameter) {
+        //         $parameters[] = $reflected_parameter->name;
+        //     }
+
+        //     return $class->{$route->method}(...$this->request->only($parameters));
+        // }
+
         if (!empty($route->class)) {
-            $class = $this->initiated_classes[$route->class];
-
-            $reflected_method = new ReflectionMethod($route->class, $route->method);
-            $reflected_parameters = $reflected_method->getParameters();
-
-            $parameters = [];
-            foreach ($reflected_parameters as $reflected_parameter) {
-                $parameters[] = $reflected_parameter->name;
-            }
-
-            return $class->{$route->method}(...$this->request->only($parameters));
+            $class = $this->container->get($route->class);
+            return $class->{$route->method}();
         }
 
         if (!empty($route->method)) {

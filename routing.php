@@ -2,11 +2,13 @@
 
 use controllers\authentication;
 use controllers\transcode;
+use source\container;
 use source\request;
 use source\router;
 
+$container = new container;
 $request = new request;
-$router = new router($request);
+$router = new router($request, $container);
 
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {

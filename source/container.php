@@ -4,58 +4,75 @@ namespace source;
 
 use Exception;
 use ReflectionClass;
+use ReflectionIntersectionType;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
 
-class Container {
+class container {
     private array $instances = [];
 
-    public function set(string $key, string|object|callable $instance = null) : void {
-        if (!$instance) {
-            $instance = $key;
+    public function set(string $abstract, callable|string $concrete = null) : void {
+        if (!$concrete) {
+            $concrete = $abstract;
         }
-        $this->instances[$key] = $instance;
+        $this->instances[$abstract] = $concrete;
     }
 
-    public function get(string $key, array $parameters = []) {
-        if (!isset($this->instances[$key])) {
-            $this->set($key);
+    public function get(string $abstract, array $parameters = []) : object {
+        if (!$this->has($abstract)) {
+            throw new Exception("Could not find class $abstract");
         }
-        return $this->resolve($this->instances[$key], $parameters);
+        return $this->resolve($this->instances[$abstract], $parameters);
     }
 
-    private function resolve(string|object|callable $instance, array $parameters) {
-        if (is_callable($instance)) {
-            return $instance(...$parameters);
+    public function has(string $abstract) : bool {
+        return isset($this->instances[$abstract]);
+    }
+
+    private function resolve(callable|string $abstract, array $parameters) : object {
+        if (is_callable($abstract)) {
+            return $abstract($this, $parameters);
         }
 
-        $reflector = new ReflectionClass($instance);
+        $reflector = new ReflectionClass($abstract);
         if (!$reflector->isInstantiable()) {
-            throw new Exception("Class $instance is not instantiable");
+            throw new Exception("Class $abstract is not instantiable");
         }
 
         $constructor = $reflector->getConstructor();
-        if (is_null($constructor)) {
-            return $reflector->newInstance();
+        $parameters = $constructor->getParameters();
+        if (!$constructor || !$parameters) {
+            return new $abstract;
         }
 
-        $parameters = $constructor->getParameters();
-        $dependencies = $this->dependencies($parameters);
-
-        return $reflector->newInstance(...$dependencies);
+        $dependencies = $this->dependencies($parameters, $abstract);
+        return new $abstract(...$dependencies);
     }
 
-    private function dependencies(array $parameters) : array {
-        $dependencies = [];
-        foreach ($parameters as $parameter) {
-            $dependency = $parameter->getClass();
-            if ($dependency) {
-                $dependencies[] = $this->get($dependency->name);
-                continue;
+    private function dependencies(array $parameters, string $abstract) : array {
+        return array_map(function (ReflectionParameter $parameter) use ($abstract) {
+            $name = $parameter->getName();
+            $type = $parameter->getType();
+
+            if (!$type) {
+                throw new Exception("Failed to resolve class $abstract because parameter $name is missing a type hint");
             }
-            if (!$parameter->isDefaultValueAvailable()) {
-                throw new Exception("Can not resolve class dependency {$parameter->name}");
+
+            if ($type instanceof ReflectionUnionType) {
+                throw new Exception("Failed to resolve class $abstract because of union type for parameter $name");
             }
-            $dependencies[] = $parameter->getDefaultValue();
-        }
-        return $dependencies;
+
+            if ($type instanceof ReflectionIntersectionType) {
+                throw new Exception("Failed to resolve class $abstract because of intersection type for parameter $name");
+            }
+
+            if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+                //TODO: implement default values and builtIn types (maybe also even union and intersection)
+                return $this->get($name);
+            }
+
+            throw new Exception("Failed to resolve class $abstract because of invalid param $name");
+        }, $parameters);
     }
 }
