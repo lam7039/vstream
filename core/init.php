@@ -76,14 +76,14 @@ function output() : void {
     }, func_get_args());
 }
 
-function dd() : void {
+function dd() : never {
     array_map(function($x) { 
         dump($x); 
     }, func_get_args());
     exit;
 }
 
-function redirect(string $to) : void {
+function redirect(string $to) : never {
     header('Location: ' . $to);
     exit;
 }
