@@ -40,6 +40,8 @@ class container {
             foreach ($reflected_parameters as $reflected_parameter) {
                 $parameters[] = $reflected_parameter->name;
             }
+        //TODO: test if array_column works instead of the foreach
+        //return array_column($reflected_parameters, 'name');
         return $parameters;
     }
 
