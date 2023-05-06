@@ -60,25 +60,53 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function dump($x) : void {
+function dump(mixed $x) : void {
     echo '<style>
         body {
             padding: 10px;
             background-color: #202021;
             color: white;
         }
-    </style>
-    <pre>' . var_export($x, true) . '</pre>';
+        th {
+            text-align: left;
+        }
+        td {
+            padding: 5px;
+        }
+    </style>';
+    if (is_array($x) && !empty($x)) {
+        echo '<table>
+            <tr>
+                <th>Class</th>
+                <th>Function</th>
+                <th>Type</th>
+                <th>File</th>
+                <th>Line</th>
+            </tr>';
+        for ($i = count($x) - 1; $i >= 0; $i--) {
+            $stack = $x[$i];
+            echo '<tr>
+                    <td>' . $stack['class'] . '</td>
+                    <td>' . $stack['function'] . '</td>
+                    <td>' . $stack['type'] . '</td>
+                    <td>' . $stack['file'] . '</td>
+                    <td>' . $stack['line'] . '</td>
+                </tr>';
+        }
+        echo '</table>';
+        return;
+    }
+    echo '<pre>' . var_export($x, true) . '</pre>';
 }
 
 function output() : void {
-    array_map(function($x) { 
+    array_map(function(mixed $x) { 
         dump($x); 
     }, func_get_args());
 }
 
 function dd() : never {
-    array_map(function($x) { 
+    array_map(function(mixed $x) { 
         dump($x); 
     }, func_get_args());
     exit;
@@ -110,6 +138,5 @@ set_exception_handler(function(\Throwable $e) {
     global $log;
     $message = $e->getMessage();
     $log->append($message, error_type::Warning, $e->getFile(), $e->getLine());
-    //TODO: make a stack trace in dump
     dd($message, $e->getTrace());
 });

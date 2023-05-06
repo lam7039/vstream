@@ -24,8 +24,7 @@ class database {
         ];
         try {
             $this->connection = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
-        } catch (PDOException $e) {
-            LOG_CRITICAL($e->getMessage());
+        } catch (DatabaseException) {
         }
     }
 
