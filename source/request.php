@@ -2,9 +2,11 @@
 
 namespace source;
 
-enum request_type : string {
-    case get = 'GET';
-    case post = 'POST';
+enum HttpMethod : string {
+    case Get = 'GET';
+    case Post = 'POST';
+    case Put = 'PUT';
+    case Head = 'HEAD';
 };
 
 class request {
@@ -12,7 +14,7 @@ class request {
     private string $page;
 
     public function __construct(public string $default_page = '') {
-        if ($this->check_request_method(request_type::post)) {
+        if ($this->check_request_method(HttpMethod::Post)) {
             if (!csrf_check()) {
                 http_response_code(500);
                 exit;
@@ -23,14 +25,14 @@ class request {
 
         $parameters = explode('/', $_GET['request'] ?? '');
         $this->page = array_pop($parameters) ?: $default_page ?: env('HOMEPAGE');
-        $this->parameters = array_merge($parameters, $this->parameters);
+        $this->parameters = array_merge_recursive($parameters, $this->parameters);
     }
 
     public function page() : string {
         return $this->page;
     }
 
-    private function check_request_method(request_type $type) : bool {
+    private function check_request_method(HttpMethod $type) : bool {
         return $_SERVER['REQUEST_METHOD'] === $type->value;
     }
 

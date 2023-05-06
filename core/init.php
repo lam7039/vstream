@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 use source\config;
+use source\error_type;
 use source\log;
 use function source\session_isset;
 use function source\session_set;
@@ -40,15 +41,15 @@ require_files('controllers', ['controller.php']);
 $log = new log;
 function LOG_INFO(string $string) : void {
     global $log;
-    $log->append($string, 'info');
+    $log->append($string, error_type::Log);
 }
 function LOG_WARNING(string $string) : void {
     global $log;
-    $log->append($string, 'warning');
+    $log->append($string, error_type::Warning);
 }
 function LOG_CRITICAL(string $string) : void {
     global $log;
-    $log->append($string, 'critical');
+    $log->append($string, error_type::Critical);
 }
 
 $config = new config;
@@ -91,3 +92,24 @@ function redirect(string $to) : void {
 function is_64bit() : int {
     return PHP_INT_SIZE === 8;
 }
+
+set_exception_handler(function(\Throwable $e) {
+    //TODO: refactor exception handling (currently comment out code gets no code and always outputs as info)
+    // $message = $e->getMessage();
+    // $code = $e->getCode();
+    // match($code) {
+    //     0 => LOG_INFO($message),
+    //     1 => LOG_WARNING($message),
+    //     2 => LOG_CRITICAL($message)
+    // };
+    // if (!$code) {
+    //     output($message);
+    // } else {
+    //     dd($e->getMessage());
+    // }
+    global $log;
+    $message = $e->getMessage();
+    $log->append($message, error_type::Warning, $e->getFile(), $e->getLine());
+    //TODO: make a stack trace in dump
+    dd($message, $e->getTrace());
+});

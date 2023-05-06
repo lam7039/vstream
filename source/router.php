@@ -54,7 +54,7 @@ class router {
         $this->store_buffer($page, $destination, $parameters);
     }
 
-    public function response() : string|null {
+    public function response() : string|array|object|null {
         $page = $this->request->page();
         if (!isset($this->routes[$page])) {
             http_response_code(404);

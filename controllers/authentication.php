@@ -14,7 +14,7 @@ use function source\session_remove;
 class authentication extends page_controller {
 	private user $user;
 
-	public function __construct(string $url_page = '') {
+	public function __construct(array $parameters = []) {
         $this->user = new user;
 		if (auth_check()) {
             $this->user = $this->user->find(['id' => session_get(env('SESSION_AUTH'))]);
@@ -22,7 +22,7 @@ class authentication extends page_controller {
         }
 		$this->parameters['error'] = session_get('error') ?? '';
 		$this->parameters['token'] = csrf_create();
-		parent::__construct($url_page);
+		parent::__construct($parameters);
 	}
 
 	public function register(string $username, string $password, string $confirm) : array {
