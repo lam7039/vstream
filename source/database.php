@@ -8,8 +8,8 @@ use PDOStatement;
 
 class database {
     private PDO $connection;
-    public readonly int $last_inserted_id = 0;
-    public readonly int $rows_affected = 0;
+    private int $last_inserted_id = 0;
+    private int $rows_affected = 0;
 
     public function __construct() {
         $host = env('DB_HOST');
@@ -27,6 +27,14 @@ class database {
         } catch (PDOException $e) {
             LOG_CRITICAL($e->getMessage());
         }
+    }
+
+    public function last_inserted_id() : int {
+        return $this->last_inserted_id;
+    }
+
+    public function rows_affected() : int {
+        return $this->rows_affected;
     }
 
     private function find_param_type($value) : int {

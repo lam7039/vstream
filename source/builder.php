@@ -52,7 +52,7 @@ class mysql_builder implements sql_builder {
         $values_str = ':' . implode(', :', $columns_keys);
         $sql = "insert into {$this->table} ($columns_str) values ($values_str)";
         if ($this->database->execute($sql, $columns)) {
-            return $this->database->last_inserted_id;
+            return $this->database->last_inserted_id();
         }
         return 0;
     }
