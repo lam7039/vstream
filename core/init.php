@@ -60,7 +60,7 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function dump(mixed $x) : void {
+function dump(mixed $param) : void {
     echo '<style>
         body {
             padding: 10px;
@@ -69,46 +69,55 @@ function dump(mixed $x) : void {
         }
         th {
             text-align: left;
+            border-bottom: 1px solid;
+            padding: 5px;
         }
         td {
             padding: 5px;
         }
     </style>';
-    if (is_array($x) && !empty($x)) {
-        echo '<table>
-            <tr>
-                <th>Class</th>
-                <th>Function</th>
-                <th>Type</th>
-                <th>File</th>
-                <th>Line</th>
-            </tr>';
-        for ($i = count($x) - 1; $i >= 0; $i--) {
-            $stack = $x[$i];
-            echo '<tr>
-                    <td>' . $stack['class'] . '</td>
-                    <td>' . $stack['function'] . '</td>
-                    <td>' . $stack['type'] . '</td>
-                    <td>' . $stack['file'] . '</td>
-                    <td>' . $stack['line'] . '</td>
-                </tr>';
-        }
-        echo '</table>';
+    
+    if (!is_array($param)) {
+        echo '<pre>' . var_export($param, true) . '</pre>';
         return;
     }
-    echo '<pre>' . var_export($x, true) . '</pre>';
+
+    $table = '<table>
+        <tr>
+            <th>Class</th>
+            <th>Function</th>
+            <th>Type</th>
+            <th>File</th>
+            <th>Line</th>
+        </tr>';
+
+    for ($i = count($param) - 1; $i >= 0; $i--) {
+        [
+            'class' => $class,
+            'function' => $function,
+            'type' => $type,
+            'file' => $file,
+            'line' => $line
+        ] = $param[$i];
+
+        $table .= "<tr>
+            <td>$class</td>
+            <td>$function</td>
+            <td>$type</td>
+            <td>$file</td>
+            <td>$line</td>
+        </tr>";
+    }
+    
+    echo $table . '</table>';
 }
 
-function output() : void {
-    array_map(function(mixed $x) { 
-        dump($x); 
-    }, func_get_args());
+function output(...$params) : void {
+    array_map(fn(mixed $param) => dump($param), $params);
 }
 
-function dd() : never {
-    array_map(function(mixed $x) { 
-        dump($x); 
-    }, func_get_args());
+function dd(...$params) : never {
+    output(...$params);
     exit;
 }
 
@@ -137,6 +146,8 @@ set_exception_handler(function(\Throwable $e) {
     // }
     global $log;
     $message = $e->getMessage();
+    dd($e);
     $log->append($message, error_type::Warning, $e->getFile(), $e->getLine());
+    //TODO: loop through previous throwables with $e->getPrevious()
     dd($message, $e->getTrace());
 });
