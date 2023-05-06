@@ -19,7 +19,7 @@ if (isset($response['error'])) {
 }
 
 if (!$response || (is_string($response) && !is_file($response)) || isset($response['path'])) {
-    // redirect($response['path'] ?? env('HOMEPAGE'));
+    redirect($response['path'] ?? env('HOMEPAGE'));
 }
 
 $output = match($url_page) {

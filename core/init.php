@@ -61,6 +61,7 @@ function env(string $key) : string|null {
 date_default_timezone_set(env('TIMEZONE'));
 
 function dump(mixed $param) : void {
+    //TODO: see if you can unify this and the file logger
     echo '<style>
         body {
             padding: 10px;
@@ -69,11 +70,18 @@ function dump(mixed $param) : void {
         }
         th {
             text-align: left;
-            border-bottom: 1px solid;
-            padding: 5px;
+            border-bottom: 2px solid #222222;
+            background: #0A0A0A;
+            color: #A0A0A0;
+            padding: 4px 8px 4px 8px;
+            font-family: Monospace;
         }
         td {
-            padding: 5px;
+            border-bottom: 1px solid #333333;
+            background: #282828;
+            color: #A0A0A0;
+            padding: 4px 8px 4px 8px;
+            font-family: Monospace;
         }
     </style>';
     
@@ -91,14 +99,14 @@ function dump(mixed $param) : void {
             <th>Line</th>
         </tr>';
 
-    for ($i = count($param) - 1; $i >= 0; $i--) {
+    foreach ($param as $value) {
         [
             'class' => $class,
             'function' => $function,
             'type' => $type,
             'file' => $file,
             'line' => $line
-        ] = $param[$i];
+        ] = $value;
 
         $table .= "<tr>
             <td>$class</td>
