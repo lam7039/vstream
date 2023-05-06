@@ -8,8 +8,8 @@ use PDOStatement;
 
 class database {
     private PDO $connection;
-    private int $last_inserted_id = 0;
     private int $rows_affected = 0;
+    private int $last_inserted_id = 0;
 
     public function __construct() {
         $host = env('DB_HOST');
@@ -37,7 +37,7 @@ class database {
         return $this->rows_affected;
     }
 
-    private function find_param_type($value) : int {
+    private function find_param_type(mixed $value) : int {
         return match (gettype($value)) {
             'integer' => PDO::PARAM_INT,
             'boolean' => PDO::PARAM_BOOL,
