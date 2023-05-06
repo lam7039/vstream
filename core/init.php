@@ -94,7 +94,6 @@ function dump(mixed $param) : void {
         <tr>
             <th>Class</th>
             <th>Function</th>
-            <th>Type</th>
             <th>File</th>
             <th>Line</th>
         </tr>';
@@ -103,7 +102,6 @@ function dump(mixed $param) : void {
         [
             'class' => $class,
             'function' => $function,
-            'type' => $type,
             'file' => $file,
             'line' => $line
         ] = $value;
@@ -111,7 +109,6 @@ function dump(mixed $param) : void {
         $table .= "<tr>
             <td>$class</td>
             <td>$function</td>
-            <td>$type</td>
             <td>$file</td>
             <td>$line</td>
         </tr>";
