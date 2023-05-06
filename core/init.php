@@ -108,7 +108,7 @@ function dump(mixed $param) : void {
             <td>$line</td>
         </tr>";
     }
-    
+
     echo $table . '</table>';
 }
 
@@ -146,8 +146,10 @@ set_exception_handler(function(\Throwable $e) {
     // }
     global $log;
     $message = $e->getMessage();
-    dd($e);
     $log->append($message, error_type::Warning, $e->getFile(), $e->getLine());
-    //TODO: loop through previous throwables with $e->getPrevious()
-    dd($message, $e->getTrace());
+
+    do {
+        output($message, $e->getTrace());
+    } while ($e = $e->getPrevious());
+    exit;
 });
