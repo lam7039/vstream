@@ -68,20 +68,14 @@ function dump(mixed $param) : void {
             background-color: #202021;
             color: white;
         }
-        th {
-            text-align: left;
-            border-bottom: 2px solid #222222;
-            background: #0A0A0A;
-            color: #A0A0A0;
-            padding: 4px 8px 4px 8px;
-            font-family: Monospace;
-        }
         td {
-            border-bottom: 1px solid #333333;
             background: #282828;
             color: #A0A0A0;
             padding: 4px 8px 4px 8px;
             font-family: Monospace;
+        }
+        .colhead td {
+            background: #0A0A0A;
         }
     </style>';
     
@@ -91,11 +85,11 @@ function dump(mixed $param) : void {
     }
 
     $table = '<table>
-        <tr>
-            <th>Class</th>
-            <th>Function</th>
-            <th>File</th>
-            <th>Line</th>
+        <tr class="colhead">
+            <td>Class</th>
+            <td>Function</th>
+            <td>File</th>
+            <td>Line</th>
         </tr>';
 
     foreach ($param as $value) {
