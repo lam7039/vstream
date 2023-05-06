@@ -126,10 +126,6 @@ function redirect(string $to) : never {
     exit;
 }
 
-function is_64bit() : int {
-    return PHP_INT_SIZE === 8;
-}
-
 set_exception_handler(function(\Throwable $e) {
     //TODO: refactor exception handling (currently comment out code gets no code and always outputs as info)
     // $message = $e->getMessage();
@@ -145,11 +141,9 @@ set_exception_handler(function(\Throwable $e) {
     //     dd($e->getMessage());
     // }
     global $log;
-    $message = $e->getMessage();
-    $log->append($message, error_type::Warning, $e->getFile(), $e->getLine());
-
     do {
-        output($message, $e->getTrace());
+        $log->append($e->getMessage(), error_type::Warning, $e->getFile(), $e->getLine());
+        output($e->getMessage(), $e->getTrace());
     } while ($e = $e->getPrevious());
     exit;
 });
