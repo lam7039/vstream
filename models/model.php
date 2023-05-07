@@ -2,8 +2,7 @@
 
 namespace models;
 
-use source\sql_builder;
-use source\mysql_builder;
+use source\{sql_builder, mysql_builder};
 
 //TODO: add encryption
 abstract class model implements sql_builder {

@@ -2,11 +2,8 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-use source\config;
-use source\error_type;
-use source\log;
-use function source\session_isset;
-use function source\session_set;
+use source\{config, error_type, log};
+use function source\{session_isset, session_set};
 
 session_start();
 

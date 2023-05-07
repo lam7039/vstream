@@ -2,9 +2,7 @@
 
 namespace controllers;
 
-use source\mysql_builder;
-use source\media_buffer;
-use source\transcoder;
+use source\{mysql_builder, media_buffer, transcoder};
 
 class transcode extends controller {
     private transcoder $transcoder;

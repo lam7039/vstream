@@ -2,8 +2,7 @@
 
 namespace controllers;
 
-use source\page_buffer;
-use source\template;
+use source\{page_buffer, template};
 
 abstract class controller {
     

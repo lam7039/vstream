@@ -4,12 +4,8 @@ namespace controllers;
 
 use models\user;
 
-use function source\auth_check;
-use function source\csrf_create;
-use function source\session_get;
-use function source\session_isset;
-use function source\session_set;
-use function source\session_remove;
+use function source\{auth_check, csrf_create};
+use function source\{session_get, session_isset, session_set, session_remove};
 
 class authentication extends page_controller {
 	private user $user;
