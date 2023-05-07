@@ -136,8 +136,8 @@ class template {
             str_contains($if_expression, '==') => '==',
             str_contains($if_expression, '!=') => '!=',
             str_contains($if_expression, '<') => '<',
-            str_contains($if_expression, '<=') => '<=',
             str_contains($if_expression, '>') => '>',
+            str_contains($if_expression, '<=') => '<=',
             str_contains($if_expression, '>=') => '>=',
             default => '',
         };
@@ -153,8 +153,8 @@ class template {
             '==' => $first === $second,
             '!=' => $first !== $second,
             '<' => $first < $second,
-            '<=' => $first <= $second,
             '>' => $first > $second,
+            '<=' => $first <= $second,
             '>=' => $first >= $second,
             default => $this->apply_function($if_expression) ?? '',
         };
@@ -171,8 +171,8 @@ class template {
         //         str_contains($if_expression, '==') => '==',
         //         str_contains($if_expression, '!=') => '!=',
         //         str_contains($if_expression, '<') => '<',
-        //         str_contains($if_expression, '<=') => '<=',
         //         str_contains($if_expression, '>') => '>',
+        //         str_contains($if_expression, '<=') => '<=',
         //         str_contains($if_expression, '>=') => '>=',
         //         default => '',
         //     };
@@ -185,8 +185,8 @@ class template {
         //         '==' => $first === $second,
         //         '!=' => $first !== $second,
         //         '<' => $first < $second,
-        //         '<=' => $first <= $second,
         //         '>' => $first > $second,
+        //         '<=' => $first <= $second,
         //         '>=' => $first >= $second,
         //         default => $this->apply_function($statement) ?? '',
         //     };

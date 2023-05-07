@@ -115,10 +115,10 @@ function redirect(string $to) : never {
     exit;
 }
 
-set_exception_handler(function(\Throwable $e) {
+set_exception_handler(function(\Throwable $error) {
     //TODO: refactor exception handling (currently comment out code gets no code and always outputs as info)
-    // $message = $e->getMessage();
-    // $code = $e->getCode();
+    // $message = $error->getMessage();
+    // $code = $error->getCode();
     // match($code) {
     //     0 => LOG_INFO($message),
     //     1 => LOG_WARNING($message),
@@ -128,13 +128,13 @@ set_exception_handler(function(\Throwable $e) {
     // if (!$code) {
     //     output($message);
     // } else {
-    //     dd($e->getMessage());
+    //     dd($error->getMessage());
     // }
     //TODO: append to file in exception maybe?
     global $log;
     do {
-        $log->append($e->getMessage(), error_type::Warning, $e->getFile(), $e->getLine());
-        output($e->getMessage(), $e->getTrace());
-    } while ($e = $e->getPrevious());
+        $log->append($error->getMessage(), error_type::Warning, $error->getFile(), $error->getLine());
+        output($error->getMessage(), $error->getTrace());
+    } while ($error = $error->getPrevious());
     exit;
 });
