@@ -141,6 +141,7 @@ class template {
             str_contains($if_expression, '>=') => '>=',
             default => '',
         };
+        //TODO: str_contains vs preg_match, which would be the best/fastest?
 
         if ($comparitor) {
             [$first, $second] = explode($comparitor, $if_expression, 2);
@@ -148,7 +149,7 @@ class template {
             $first = $this->get($first) ?? str_replace('\'', '', trim($first));
             $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         }
-        $check = match ($comparitor) {
+        $comparison = match ($comparitor) {
             '==' => $first === $second,
             '!=' => $first !== $second,
             '<' => $first < $second,
@@ -166,21 +167,21 @@ class template {
         // };
         // $statements = explode($conjunctor, $if_expression);
         // foreach ($statements as $statement) {
-        //     $available_comparitors = ['==', '!=', '<', '<=', '>', '>='];
-        //     $comparitor = '';
-        //     foreach ($available_comparitors as $available_comparitor) {
-        //         if (str_contains($statement, $available_comparitor)) {
-        //             $comparitor = $available_comparitor;
-        //             break;
-        //         }
-        //     }
-    
+        //     $comparitor = match (true) {
+        //         str_contains($if_expression, '==') => '==',
+        //         str_contains($if_expression, '!=') => '!=',
+        //         str_contains($if_expression, '<') => '<',
+        //         str_contains($if_expression, '<=') => '<=',
+        //         str_contains($if_expression, '>') => '>',
+        //         str_contains($if_expression, '>=') => '>=',
+        //         default => '',
+        //     };
         //     if ($comparitor) {
         //         [$first, $second] = explode($comparitor, $statement, 2);
         //         $first = $this->get($first) ?? str_replace('\'', '', trim($first));
         //         $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         //     }
-        //     $check = match ($comparitor) {
+        //     $comparison = match ($comparitor) {
         //         '==' => $first === $second,
         //         '!=' => $first !== $second,
         //         '<' => $first < $second,
@@ -190,7 +191,7 @@ class template {
         //         default => $this->apply_function($statement) ?? '',
         //     };
         // }
-        return $check ? $this->interpret_tree($node) : '';
+        return $comparison ? $this->interpret_tree($node) : '';
     }
 
     private function interpret_else(token_node $node, string $if_expression) : string {
