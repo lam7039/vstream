@@ -131,7 +131,8 @@ class template {
 
     private function interpret_if(token_node $node, string &$if_expression = '') : string {
         $if_expression = $node->expression;
-        $type = match (true) {
+
+        $comparitor = match (true) {
             str_contains($if_expression, '==') => '==',
             str_contains($if_expression, '!=') => '!=',
             str_contains($if_expression, '<') => '<',
@@ -141,13 +142,13 @@ class template {
             default => '',
         };
 
-        if ($type) {
-            [$first, $second] = explode($type, $if_expression, 2);
+        if ($comparitor) {
+            [$first, $second] = explode($comparitor, $if_expression, 2);
             //TODO: no limit on explode, split everything up in 2, then loop through it
             $first = $this->get($first) ?? str_replace('\'', '', trim($first));
             $second = $this->get($second) ?? str_replace('\'', '', trim($second));
         }
-        $check = match ($type) {
+        $check = match ($comparitor) {
             '==' => $first === $second,
             '!=' => $first !== $second,
             '<' => $first < $second,
@@ -156,6 +157,39 @@ class template {
             '>=' => $first >= $second,
             default => $this->apply_function($if_expression) ?? '',
         };
+        
+        //TODO: make conjunctors work and also take into account parentheses
+        // $conjunctor = match (true) {
+        //     str_contains($if_expression, '&&') => '&&',
+        //     str_contains($if_expression, '||') => '||',
+        //     default => ''
+        // };
+        // $statements = explode($conjunctor, $if_expression);
+        // foreach ($statements as $statement) {
+        //     $available_comparitors = ['==', '!=', '<', '<=', '>', '>='];
+        //     $comparitor = '';
+        //     foreach ($available_comparitors as $available_comparitor) {
+        //         if (str_contains($statement, $available_comparitor)) {
+        //             $comparitor = $available_comparitor;
+        //             break;
+        //         }
+        //     }
+    
+        //     if ($comparitor) {
+        //         [$first, $second] = explode($comparitor, $statement, 2);
+        //         $first = $this->get($first) ?? str_replace('\'', '', trim($first));
+        //         $second = $this->get($second) ?? str_replace('\'', '', trim($second));
+        //     }
+        //     $check = match ($comparitor) {
+        //         '==' => $first === $second,
+        //         '!=' => $first !== $second,
+        //         '<' => $first < $second,
+        //         '<=' => $first <= $second,
+        //         '>' => $first > $second,
+        //         '>=' => $first >= $second,
+        //         default => $this->apply_function($statement) ?? '',
+        //     };
+        // }
         return $check ? $this->interpret_tree($node) : '';
     }
 

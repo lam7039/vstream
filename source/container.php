@@ -36,18 +36,8 @@ class container {
         return $reflected_method->getParameters();
     }
 
-    //TODO: refactor this method
     public function getMethodParams(string $class, string $method) : array {
-        $reflected_method = new ReflectionMethod($class, $method);
-        $reflected_parameters = $reflected_method->getParameters();
-
-        $parameters = [];
-        foreach ($reflected_parameters as $reflected_parameter) {
-            $parameters[] = $reflected_parameter->name;
-        }
-        //TODO: test if array_column works instead of the foreach
-        //return array_column($reflected_parameters, 'name');
-        return $parameters;
+        return array_column($this->reflectParams($class, $method), 'name');
     }
 
     private function resolve(mixed $abstract, array $parameters) : object {

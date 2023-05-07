@@ -125,13 +125,15 @@ set_exception_handler(function(\Throwable $e) {
     // match($code) {
     //     0 => LOG_INFO($message),
     //     1 => LOG_WARNING($message),
-    //     2 => LOG_CRITICAL($message)
+    //     2 => LOG_CRITICAL($message),
+    //     default => LOG_WARNING($message)
     // };
     // if (!$code) {
     //     output($message);
     // } else {
     //     dd($e->getMessage());
     // }
+    //TODO: append to file in exception maybe?
     global $log;
     do {
         $log->append($e->getMessage(), error_type::Warning, $e->getFile(), $e->getLine());
