@@ -92,20 +92,13 @@ function dump(mixed $param) : void {
             <td>Line</th>
         </tr>';
 
-    foreach ($param as $value) {
-        [
-            'class' => $class,
-            'function' => $function,
-            'file' => $file,
-            'line' => $line
-        ] = $value;
-
-        $table .= "<tr>
-            <td>$class</td>
-            <td>$function</td>
-            <td>$file</td>
-            <td>$line</td>
-        </tr>";
+    foreach ($param as $array) {
+        $table .= '<tr>
+            <td>' . ($array['class'] ?? '') . '</td>
+            <td>' . ($array['function'] ?? '') . '</td>
+            <td>' . ($array['file'] ?? '') . '</td>
+            <td>' . ($array['line'] ?? '') . '</td>
+        </tr>';
     }
 
     echo $table . '</table>';
