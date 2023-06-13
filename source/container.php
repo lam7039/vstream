@@ -32,6 +32,7 @@ class container {
         return isset($this->instances[$abstract]);
     }
 
+    //TODO: reflectParams and getMethodParams are very similar, maybe make it 1 function?
     private function reflectParams(string $class, string $method) : array {
         $reflected_method = new ReflectionMethod($class, $method);
         return $reflected_method->getParameters();
