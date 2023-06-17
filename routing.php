@@ -6,28 +6,32 @@ use source\container;
 use source\request;
 use source\router;
 
-// class Fdsa {
-//     public function __construct() {
+class Fdsa {
+    public function __construct() {
         
-//     }
-// }
+    }
 
-// class Test {
-//     public function __construct(string|int|Fdsa $a) {
+    public function fdsatest() {
+        echo 'fdsatest';
+    }
+}
+
+class Test {
+    public function __construct(Fdsa $a) {
+        $a->fdsatest();
+    }
+
+    public function asdf(string $b) {
         
-//     }
+    }
 
-//     public function asdf(string $b) {
-
-//     }
-
-// }
+}
 
 $container = new container;
 
-// $container->set('Fdsa', Fdsa::class);
-// $container->set('test', Test::class);
-// dd($container->get('test', ['a' => 'test']));
+$container->set('Fdsa', Fdsa::class);
+$container->set('test', Test::class);
+dd($container->get('test'));
 
 $request = new request;
 $router = new router($request, $container);
