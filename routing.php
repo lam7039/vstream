@@ -6,7 +6,29 @@ use source\container;
 use source\request;
 use source\router;
 
+// class Fdsa {
+//     public function __construct() {
+        
+//     }
+// }
+
+// class Test {
+//     public function __construct(string|int|Fdsa $a) {
+        
+//     }
+
+//     public function asdf(string $b) {
+
+//     }
+
+// }
+
 $container = new container;
+
+// $container->set('Fdsa', Fdsa::class);
+// $container->set('test', Test::class);
+// dd($container->get('test', ['a' => 'test']));
+
 $request = new request;
 $router = new router($request, $container);
 
