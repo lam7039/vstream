@@ -8,10 +8,14 @@ use function source\{session_isset, session_set};
 session_start();
 
 function directory_files(string $path, array $except = []) : array {
-    return array_filter(array_diff(scandir($path), ['..', '.', ...$except]), function ($item) use ($path) {
-        return !is_dir("$path/$item");
-    });
+    return array_filter(array_diff(scandir($path), $except), fn ($item) => !is_dir("$path/$item"));
 }
+
+// function directory_files(string $path, array $except = []) : array {
+//     return array_filter(array_diff(scandir($path), ['..', '.', ...$except]), function ($item) use ($path) {
+//         return !is_dir("$path/$item");
+//     });
+// }
 
 function require_files(string $directory, array $load_first = []) : void {
     $path = getcwd() . "/$directory";
