@@ -31,7 +31,7 @@ $container = new container;
 
 $container->set('Fdsa', Fdsa::class);
 $container->set('test', Test::class);
-dd($container->get('test'));
+// dd($container->get('test'));
 
 $request = new request;
 $router = new router($request, $container);
