@@ -2,6 +2,7 @@
 
 namespace source;
 
+//TODO: put csrf in request class
 function csrf_create() : string {
     session_remove('token');
     if (!session_isset('token')) {
