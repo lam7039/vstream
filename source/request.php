@@ -26,17 +26,11 @@ class Request {
     }
 
     public function post(string $key) : mixed {
-        if (!isset($this->post[$key])) {
-            return null;
-        }
-        return $this->post[$key];
+        return $this->post[$key] ?? null;
     }
 
     public function query(string $key) : mixed {
-        if (!isset($this->query[$key])) {
-            return null;
-        }
-        return $this->query[$key];
+        return $this->query[$key] ?? null;
     }
 
     public function input(string $key) : mixed {
