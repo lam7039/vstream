@@ -20,7 +20,7 @@ class token_node {
     ) {}
 }
 
-class template {
+class Template {
     private page_buffer $layout;
     private array $parameters = [];
 
@@ -34,7 +34,7 @@ class template {
     }
 
     public function render(page_buffer $buffer, bool $cache = false) : string {
-        //TODO: re-cache affected files when changes occur instead of detecting it on page load 
+        //TODO: re-cache affected files when changes occur instead of detecting it on page load || or generate static html files with a script
         if ($cache /* && $file !== $buffer->body */) {
             $file = 'tmp/cache/' . md5($buffer->path);
             if (file_exists($file) && (filemtime($file) + 3600) > time()) {

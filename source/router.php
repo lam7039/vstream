@@ -49,7 +49,7 @@ class Router {
         $action = $this->routes[$method->value][$identifier] ?? null;
 
         if (!$action) {
-            throw new RouteNotFoundException;
+            throw new RouteNotFoundException($identifier);
         }
 
         if (is_string($action->destination)) {
@@ -72,6 +72,6 @@ class Router {
             }
         }
 
-        throw new RouteNotFoundException;
+        throw new RouteNotFoundException($identifier);
     }
 }
