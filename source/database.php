@@ -13,8 +13,8 @@ class database {
 
     public function __construct() {
         $host = env('DB_HOST');
-        $dbname = env('DB_DATABASE');
         $port = env('DB_PORT');
+        $dbname = env('DB_DATABASE');
         $charset = env('DB_CHARSET');
         $username = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
@@ -24,8 +24,7 @@ class database {
         ];
         try {
             $this->connection = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
-        } catch (DatabaseException) {
-        }
+        } catch (DatabaseException) {}
     }
 
     public function last_inserted_id() : int {

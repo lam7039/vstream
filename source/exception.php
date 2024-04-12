@@ -10,3 +10,9 @@ class DatabaseException extends PDOException {
         LOG_CRITICAL($this->getMessage());
     }
 };
+
+class RouteNotFoundException extends Exception {
+    public function __construct(string $path) {
+        LOG_CRITICAL('Route not found: ' . $path);
+    }
+}
