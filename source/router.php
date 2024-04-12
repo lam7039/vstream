@@ -2,99 +2,76 @@
 
 namespace source;
 
-class route_buffer {
-    public bool $is_page = false;
-    public string $path;
-    public string $class;
-    public string $method;
-    public array $parameters;
+use ArrayObject;
+use InvalidArgumentException;
 
-    public function __construct(string|array|callable $destination, array $parameters = []) {
-        if (is_string($destination) && !str_contains($destination, '@')) {
-            $this->path = $destination;
-            $this->is_page = true;
-            return;
-        }
+class RouteBuffer {
+    public string $identifier = '';
 
-        if (is_callable($destination)) {
-            $this->method = $destination();
-        }
-
-        [$this->class, $this->method] = is_array($destination) ? $destination : explode('@', $destination, 2);
-        $this->parameters = $parameters;
+    public function __construct(public RequestMethod $method, string $requestUri, public mixed $destination) {
+        [$this->identifier] = explode('?', $requestUri);
     }
 }
 
-class router {
+class RoutePool extends ArrayObject {
+    public function offsetSet(mixed $key, mixed $value) : void
+    {
+        if (!($value instanceof RouteBuffer)) {
+            throw new InvalidArgumentException('Value must be instance of RouteBuffer');
+        }
+        parent::offsetSet($key, $value);
+    }
+}
+
+class Router {
     private array $routes = [];
-    private array $initiated_classes = [];
 
-    public function __construct(private request $request, private container $container) {}
-
-    private function store_buffer(string $page, string|array|callable $destination, array $parameters = []) : void {
-        if (is_callable($destination)) {
-            $this->routes[$page] = $destination();
-            return;
-        }
-
-        $buffer = new route_buffer($destination, $parameters);
-        $this->routes[$page] = $buffer;
-        
-        if (!$buffer->is_page && !isset($this->initiated_classes[$buffer->class])) {
-            // $this->initiated_classes[$buffer->class] = new $buffer->class(...$parameters);
-            $this->container->set($buffer->class);
-        }
+    public function __construct() {
+        $this->routes[RequestMethod::Post->value] = new RoutePool;
+        $this->routes[RequestMethod::Get->value] = new RoutePool;
     }
 
-    public function get(string $page, string|array|callable $destination, array $parameters = []) : void {
-        $this->store_buffer($page, $destination, $parameters);
+    private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
+        $buffer = new RouteBuffer($method, $identifier, $destination);
+        $this->routes[$method->value][$identifier] = $buffer;
     }
 
-    public function post(string $page, string|array|callable $destination, array $parameters = []) : void {
-        $this->store_buffer($page, $destination, $parameters);
+    public function get(string $identifier, string|array|callable $destination) : void {
+        $this->store_buffer(RequestMethod::Get, $identifier, $destination);
     }
 
-    public function response() : string|array|object|null {
-        $page = $this->request->page();
-        if (!isset($this->routes[$page])) {
-            http_response_code(404);
-            return null;
-        }
-
-        $route = $this->routes[$page];
-
-        if ($route->is_page) {
-            return $route->path;
-        }
-
-        // if (!empty($route->class)) {
-        //     $class = $this->initiated_classes[$route->class];
-
-        //     $reflected_method = new ReflectionMethod($route->class, $route->method);
-        //     $reflected_parameters = $reflected_method->getParameters();
-
-        //     $parameters = [];
-        //     foreach ($reflected_parameters as $reflected_parameter) {
-        //         $parameters[] = $reflected_parameter->name;
-        //     }
-
-        //     return $class->{$route->method}(...$this->request->only($parameters));
-        // }
-
-        if (!empty($route->class)) {
-            $class = $this->container->get($route->class, $route->parameters);
-            return $class->{$route->method}(...$this->request->only($this->container->getMethodParams($route->class, $route->method)));
-        }
-
-        if (!empty($route->method)) {
-            return $route->method();
-        }
-
-        return null;
+    public function post(string $identifier, string|array|callable $destination) : void {
+        $this->store_buffer(RequestMethod::Post, $identifier, $destination);
     }
 
-    public function resolve() : string|null {
-        //TODO: move resolving the route in response to this separate function
-        return null;
+    //TODO: resolve variables in routes by detecting {(?)varname}
+    public function resolve(RequestMethod $method, string $identifier) : string|null {
+        $action = $this->routes[$method->value][$identifier] ?? null;
+
+        if (!$action) {
+            throw new RouteNotFoundException;
+        }
+
+        if (is_string($action->destination)) {
+            return $action->destination;
+        }
+
+        if (is_callable($action->destination)) {
+            return ($action->destination)();
+        }
+
+        if (is_array($action->destination)) {
+            [$class, $method] = $action->destination;
+    
+            if (class_exists($class)) {
+                $class = new $class();
+    
+                if (method_exists($class, $method)) {
+                    return $class->$method();
+                }
+            }
+        }
+
+        throw new RouteNotFoundException;
     }
 }
