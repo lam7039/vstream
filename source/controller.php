@@ -1,8 +1,6 @@
 <?php
 
-namespace controllers;
-
-use source\{page_buffer, template};
+namespace source;
 
 abstract class controller {
     
