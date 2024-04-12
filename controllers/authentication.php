@@ -3,8 +3,17 @@
 namespace controllers;
 
 use models\user;
+use source\page_controller;
+use SensitiveParameter;
 
-use function source\{session_get, session_isset, session_set, session_remove, auth_check, csrf_create};
+use function source\{
+	session_get,
+	session_isset,
+	session_set,
+	session_remove,
+	auth_check,
+	csrf_create
+};
 
 class authentication extends page_controller {
 	private user $user;
@@ -20,7 +29,7 @@ class authentication extends page_controller {
 		parent::__construct($parameters);
 	}
 
-	public function register(string $username, string $password, string $confirm) : array {
+	public function register(string $username, #[SensitiveParameter] string $password, #[SensitiveParameter] string $confirm) : array {
 		//TODO: refine page error checking
 		$error = match (true) {
 			!$username || !$password || !$confirm => 'A required field is empty',
@@ -40,7 +49,7 @@ class authentication extends page_controller {
 		return $this->login($username, $password);
 	}
 
-	public function login(string $username, string $password) : array {
+	public function login(string $username, #[SensitiveParameter] string $password) : array {
 		if (session_isset(env('SESSION_AUTH'))) {
 			return ['path' => '/account'];
 		}

@@ -2,6 +2,8 @@
 
 namespace controllers;
 
+use source\page_controller;
+
 class account extends page_controller {
     private $user = null;
 
