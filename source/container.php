@@ -10,30 +10,31 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 
-class container {
-    private array $instances = [];
+class Container {
+    public function __construct(private array $object_pool = []) {}
 
-    public function set(string $abstract, callable|string|null $concrete = null) : void {
-        //TODO: figure out why $concrete is callable|string|null and not bool = false
+    public function set(string $identifier, callable|string|null $concrete = null) : void {
         if (!$concrete) {
-            $concrete = $abstract;
+            $concrete = $identifier;
         }
-        $this->instances[$abstract] = $concrete;
+        $this->object_pool[$identifier] = $concrete;
     }
 
-    public function get(string $abstract, array $parameters = []) : object {
-        if (!$this->has($abstract)) {
-            throw new Exception("Could not find class $abstract");
+    public function get(string $identifier, array $parameters = []) : object {
+        if (!$this->has($identifier)) {
+            throw new Exception("Could not find class $identifier");
         }
-        return $this->resolve($this->instances[$abstract], $parameters);
+        return $this->resolve($this->object_pool[$identifier], $parameters);
     }
 
-    public function has(string $abstract) : bool {
-        return isset($this->instances[$abstract]);
+    public function has(string $identifier) : bool {
+        return isset($this->object_pool[$identifier]);
     }
 
-    //TODO: reflectParams and getMethodParams are very similar, maybe make it 1 function?
     private function reflectParams(string $class, string $method) : array {
+        if (!method_exists($class, $method)) {
+            return [];
+        }
         $reflected_method = new ReflectionMethod($class, $method);
         return $reflected_method->getParameters();
     }
@@ -96,6 +97,10 @@ class container {
 
     private function dependencies(array $reflected_parameters, array $parameters) : array {
         return array_map(function (ReflectionParameter $reflected_parameter) use ($parameters) {
+            if ($reflected_parameter->isDefaultValueAvailable()) {
+                return $reflected_parameter->getDefaultValue();
+            }
+
             $parameterName = $reflected_parameter->getName();
             $parameterType = $reflected_parameter->getType();
             $class = $reflected_parameter->getDeclaringClass()->name;
@@ -106,7 +111,7 @@ class container {
                 // $parameterType instanceof ReflectionIntersectionType => $this->resolveIntersectionType($parameterType, $parameterName, $parameters),
                 $parameterType instanceof ReflectionIntersectionType => throw new Exception("Failed to resolve class $class because of intersection type for parameter $parameterName"),
                 // !$parameterType => throw new Exception("Failed to resolve class $class because parameter $parameterName is missing a type hint"),
-                default => $reflected_parameter->isDefaultValueAvailable() ? $reflected_parameter->getDefaultValue() : throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
+                default => throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
             };
         }, $reflected_parameters);
     }
