@@ -13,7 +13,7 @@ $container = new Container([
     Router::class => Router::class,
     Template::class => Template::class,
 
-    //Controllers
+    //Controllers (TODO: register controllers automatically)
     browse::class => browse::class,
     account::class => account::class,
     authentication::class => authentication::class
