@@ -38,7 +38,7 @@ if (!session_isset('SESSION_TEMP')) {
 }
 
 require_files('models', ['model.php']);
-require_files('controllers', ['controller.php']);
+require_files('controllers');
 
 $log = new log;
 function LOG_INFO(string $string) : void {
@@ -62,7 +62,7 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function dump(mixed $param) : void {
+function output(mixed $param) : void {
     //TODO: see if you can unify this and the file logger
     echo '<style>
         body {
@@ -106,12 +106,12 @@ function dump(mixed $param) : void {
     echo $table . '</table>';
 }
 
-function output(...$params) : void {
-    array_map(fn(mixed $param) => dump($param), $params);
+function dump(...$params) : void {
+    array_map(fn(mixed $param) => output($param), $params);
 }
 
 function dd(...$params) : never {
-    output(...$params);
+    dump(...$params);
     exit;
 }
 
@@ -121,25 +121,16 @@ function redirect(string $to) : never {
 }
 
 set_exception_handler(function(\Throwable $error) {
-    //TODO: refactor exception handling (currently comment out code gets no code and always outputs as info)
-    // $message = $error->getMessage();
-    // $code = $error->getCode();
-    // match($code) {
-    //     0 => LOG_INFO($message),
-    //     1 => LOG_WARNING($message),
-    //     2 => LOG_CRITICAL($message),
-    //     default => LOG_WARNING($message)
-    // };
-    // if (!$code) {
-    //     output($message);
-    // } else {
-    //     dd($error->getMessage());
-    // }
-    //TODO: append to file in exception maybe?
-    global $log;
+    $message = $error->getMessage();
+    $code = $error->getCode();
+    match($code) {
+        0 => LOG_INFO($message),
+        1 => LOG_WARNING($message),
+        2 => LOG_CRITICAL($message),
+        default => LOG_WARNING($message)
+    };
     do {
-        $log->append($error->getMessage(), error_type::Warning, $error->getFile(), $error->getLine());
-        output($error->getMessage(), $error->getTrace());
+        dump($message, $error->getTrace());
     } while ($error = $error->getPrevious());
     exit;
 });
