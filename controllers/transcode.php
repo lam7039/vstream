@@ -2,9 +2,9 @@
 
 namespace controllers;
 
-use source\{mysql_builder, media_buffer, page_controller, transcoder};
+use source\{controller, mysql_builder, media_buffer, transcoder};
 
-class transcode extends page_controller {
+class transcode extends controller {
     private transcoder $transcoder;
 
     public function __construct() {
