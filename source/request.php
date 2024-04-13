@@ -41,6 +41,14 @@ class Request {
         return array_merge($this->query, $this->post);
     }
 
+    public function except(array $keys) : array {
+        return array_diff_key($this->all(), array_flip($keys));
+    }
+    
+    public function only(array $keys) : array {
+        return array_intersect_key($this->all(), array_flip($keys));
+    }
+
     public function method() : RequestMethod {
         return match ($_SERVER['REQUEST_METHOD']) {
             'POST' => RequestMethod::Post,
