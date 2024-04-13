@@ -50,7 +50,7 @@ class Router {
 
         if (is_array($action->destination)) {
             [$class, $method] = $action->destination + [null, 'index'];
-            return $container->get($class)->$method();
+            return $container->get($class)->$method(...$this->request->only($container->getMethodParams($class, $method)));
         }
 
         throw new RouteNotFoundException($this->request->uri());
