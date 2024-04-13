@@ -38,7 +38,7 @@ class Request {
     }
 
     public function all() : array {
-        return array_merge_recursive($this->post, $this->query);
+        return array_merge($this->query, $this->post);
     }
 
     public function method() : RequestMethod {
