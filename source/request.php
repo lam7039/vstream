@@ -14,7 +14,7 @@ class Request {
     private array $query = [];
 
     public function __construct() {
-        if ($this->check_request_method(RequestMethod::Post)) {
+        if ($this->method() === RequestMethod::Post) {
             if (!csrf_check()) {
                 http_response_code(500);
                 exit;
@@ -58,10 +58,6 @@ class Request {
     
     public function uri() : string {
         return $_SERVER['REQUEST_URI'];
-    }
-
-    private function check_request_method(RequestMethod $type) : bool {
-        return $_SERVER['REQUEST_METHOD'] === $type->value;
     }
 
     public function csrf_create() : string {
