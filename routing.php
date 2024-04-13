@@ -1,5 +1,8 @@
 <?php
 
+use controllers\account;
+use controllers\authentication;
+use controllers\browse;
 use source\Container;
 use source\Request;
 use source\Router;
@@ -8,22 +11,21 @@ use source\Template;
 $container = new Container([
     Request::class => Request::class,
     Router::class => Router::class,
-    Template::class => Template::class
-]);
+    Template::class => Template::class,
 
-$controllers = ['browse', 'register', 'login', 'account'];
-foreach ($controllers as $controller) {
-    $container->bind("controllers\\$controller", "controllers\\$controller");
-}
+    //Controllers
+    browse::class => browse::class,
+    account::class => account::class,
+    authentication::class => authentication::class
+]);
 
 $request = $container->get(Request::class);
 $router = $container->get(Router::class);
 
-$pages = ['browse', 'register', 'login', 'account'];
-foreach ($pages as $page) {
-    $router->get("/$page", ["controllers\\$page", 'index']);
-    // $router->get("/$page", "./public/html/$page.html");
-}
+$router->get('/browse', [browse::class, 'index']);
+$router->get('/account', [account::class, 'index']);
+$router->get('/login', [authentication::class, 'index']);
+$router->get('/register', [authentication::class, 'index']);
 
 // $router->post('do_register', [authentication::class, 'register']);
 // $router->post('do_login', [authentication::class, 'login']);

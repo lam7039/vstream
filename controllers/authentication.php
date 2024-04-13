@@ -5,6 +5,8 @@ namespace controllers;
 use models\user;
 use source\page_controller;
 use SensitiveParameter;
+use source\Request;
+use source\Template;
 
 use function source\{
 	session_get,
@@ -18,7 +20,7 @@ use function source\{
 class authentication extends page_controller {
 	private user $user;
 
-	public function __construct(array $parameters = []) {
+	public function __construct(Template $templating, Request $request) {
         $this->user = new user;
 		if (auth_check()) {
             $this->user = $this->user->find(['id' => session_get(env('SESSION_AUTH'))]);
@@ -26,7 +28,7 @@ class authentication extends page_controller {
         }
 		$this->parameters['error'] = session_get('error') ?? '';
 		$this->parameters['token'] = csrf_create();
-		parent::__construct($parameters);
+		parent::__construct($templating, $request);
 	}
 
 	public function register(string $username, #[SensitiveParameter] string $password, #[SensitiveParameter] string $confirm) : array {

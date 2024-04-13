@@ -13,6 +13,7 @@ abstract class page_controller extends controller {
         'page_script' => 'script.js',
     ];
 
+    //TODO: fix container loading so subclasses don't have to load the parent classes
     public function __construct (protected Template $templating, protected Request $request, array $parameters = []) {
         $this->parameters = array_merge($this->parameters, $parameters, [
             'page_title' => env('PROJECT_NAME') . " | " . $this->request->uri()

@@ -48,10 +48,9 @@ class Router {
             return ($action->destination)();
         }
 
-        //TODO: handle the destination method if it exists
         if (is_array($action->destination)) {
-            [$class, $method] = $action->destination;
-            return $container->get($class);
+            [$class, $method] = $action->destination + [null, 'index'];
+            return $container->get($class)->$method();
         }
 
         throw new RouteNotFoundException($this->request->uri());
