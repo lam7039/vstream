@@ -1,53 +1,30 @@
 <?php
 
-use controllers\authentication;
-use controllers\transcode;
-use source\container;
-use source\request;
-use source\router;
+use source\Container;
+use source\Request;
+use source\Router;
+use source\Template;
 
-class Fdsa {
-    public function __construct() {
-        
-    }
+$container = new Container([
+    Request::class => Request::class,
+    Router::class => Router::class,
+    Template::class => Template::class
+]);
 
-    public function fdsatest() {
-        echo 'fdsatest';
-    }
+$controllers = ['browse', 'register', 'login', 'account'];
+foreach ($controllers as $controller) {
+    $container->bind("controllers\\$controller", "controllers\\$controller");
 }
 
-class Test {
-    public function __construct(Fdsa $a) {
-        $a->fdsatest();
-    }
-
-    public function asdf(string $b) {
-        
-    }
-
-}
-
-$container = new container;
-
-$container->set('Fdsa', Fdsa::class);
-$container->set('test', Test::class);
-// dd($container->get('test'));
-
-$request = new request;
-$router = new router($request, $container);
+$request = $container->get(Request::class);
+$router = $container->get(Router::class);
 
 $pages = ['browse', 'register', 'login', 'account'];
 foreach ($pages as $page) {
-    $router->get($page, "./public/html/$page.html");
+    $router->get("/$page", ["controllers\\$page", 'index']);
+    // $router->get("/$page", "./public/html/$page.html");
 }
 
-$url_page = $request->page();
-
-$router->get('test', function() {
-    return 'this is a test';
-});
-
-$router->post('do_register', [authentication::class, 'register'], ['url_page' => $url_page]);
-$router->post('do_login', [authentication::class, 'login'], ['url_page' => $url_page]);
-$router->post('do_logout', [authentication::class, 'logout'], ['url_page' => $url_page]);
-$router->post('do_transcode', [transcode::class, 'run'], ['url_page' => $url_page]);
+// $router->post('do_register', [authentication::class, 'register']);
+// $router->post('do_login', [authentication::class, 'login']);
+// $router->post('do_logout', [authentication::class, 'logout']);

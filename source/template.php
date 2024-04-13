@@ -24,7 +24,7 @@ class Template {
     private page_buffer $layout;
     private array $parameters = [];
 
-    public function __construct(array $parameters = [], string $template_path = 'public/templates/layout.html') {
+    public function __construct(array $parameters = [], string $template_path = './public/templates/layout.html') {
         $this->layout = new page_buffer($template_path);
         $this->bind_parameters($parameters);
     }
@@ -221,6 +221,7 @@ class Template {
         $parameters = explode(',', $parameters);
         // $function = (__NAMESPACE__ . '\\' . $function)(...$parameters);
         $function = match ($name) {
+            //TODO: I splat the parameters array where the get() function only supports a single parameter
             'isset' => $this->get(...$parameters),
             'auth_check' => auth_check(),
         };

@@ -2,9 +2,6 @@
 
 namespace source;
 
-use ArrayObject;
-use InvalidArgumentException;
-
 class RouteBuffer {
     public string $identifier = '';
 
@@ -13,22 +10,13 @@ class RouteBuffer {
     }
 }
 
-class RoutePool extends ArrayObject {
-    public function offsetSet(mixed $key, mixed $value) : void
-    {
-        if (!($value instanceof RouteBuffer)) {
-            throw new InvalidArgumentException('Value must be instance of RouteBuffer');
-        }
-        parent::offsetSet($key, $value);
-    }
-}
-
 class Router {
     private array $routes = [];
 
-    public function __construct() {
-        $this->routes[RequestMethod::Post->value] = new RoutePool;
-        $this->routes[RequestMethod::Get->value] = new RoutePool;
+    public function __construct(public Request $request) {
+        if ($this->request->uri() === '/') {
+            redirect(env('HOMEPAGE'));
+        }
     }
 
     private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
@@ -45,11 +33,11 @@ class Router {
     }
 
     //TODO: resolve variables in routes by detecting {(?)varname}
-    public function resolve(RequestMethod $method, string $identifier) : string|null {
-        $action = $this->routes[$method->value][$identifier] ?? null;
+    public function resolve(Container $container) : string|controller|null {
+        $action = $this->routes[$this->request->method()->value][$this->request->uri()] ?? null;
 
         if (!$action) {
-            throw new RouteNotFoundException($identifier);
+            throw new RouteNotFoundException($this->request->uri());
         }
 
         if (is_string($action->destination)) {
@@ -60,18 +48,12 @@ class Router {
             return ($action->destination)();
         }
 
+        //TODO: handle the destination method if it exists
         if (is_array($action->destination)) {
             [$class, $method] = $action->destination;
-    
-            if (class_exists($class)) {
-                $class = new $class();
-    
-                if (method_exists($class, $method)) {
-                    return $class->$method();
-                }
-            }
+            return $container->get($class);
         }
 
-        throw new RouteNotFoundException($identifier);
+        throw new RouteNotFoundException($this->request->uri());
     }
 }

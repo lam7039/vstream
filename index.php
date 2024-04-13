@@ -1,9 +1,14 @@
 <?php
+
+use source\Framework;
+
 $start = microtime(true);
 set_include_path(__DIR__);
 
 require('core/init.php');
 require('routing.php');
+
+/*
 
 use controllers\browse;
 use controllers\account;
@@ -22,20 +27,13 @@ if (!$response || (is_string($response) && !is_file($response)) || isset($respon
     redirect($response['path'] ?? env('HOMEPAGE'));
 }
 
-$output = match($url_page) {
-    'login' => new authentication(['url_page' => $url_page]),
-    'register' => new authentication(['url_page' => $url_page]),
-    'account' => new account(['url_page' => $url_page]),
-    'browse' => new browse(['url_page' => $url_page]),
-    default => new browse(['url_page' => $url_page])
+$output = match($identifier['url_page']) {
+    'login' => new authentication($identifier),
+    'register' => new authentication($identifier),
+    'account' => new account($identifier),
+    'browse' => new browse($identifier),
+    default => new browse($identifier)
 };
-
-//TODO: router can return response as array, object or null even
-// dd($response);
-echo $output->index($response);
-
-session_clear_temp();
-echo microtime(true) - $start;
 
 /*
 TODO: rearrange the classes like this
@@ -46,11 +44,13 @@ $router = new router($container);
 $router->registerRoutesFromControllerAttributes([
     authentication::class
 ]);
-
-(new App(
-    $container,
-    $router,
-    ['uri' => $_SERVER['REQUEST_URI], 'method' => $_SERVER['REQUEST_METHOD']],
-    //config?
-))->run();
 */
+
+(new Framework(
+    $container,
+    $request,
+    $router
+))->run();
+
+// session_clear_temp();
+echo microtime(true) - $start;

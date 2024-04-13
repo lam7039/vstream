@@ -13,7 +13,7 @@ use ReflectionUnionType;
 class Container {
     public function __construct(private array $object_pool = []) {}
 
-    public function set(string $identifier, callable|string|null $concrete = null) : void {
+    public function bind(string $identifier, callable|string|null $concrete = null) : void {
         if (!$concrete) {
             $concrete = $identifier;
         }
@@ -116,3 +116,35 @@ class Container {
         }, $reflected_parameters);
     }
 }
+
+/////////////// IMPLEMENTATION EXAMPLE //////////////////
+//
+// interface AbstractTestClass {
+//
+// }
+//
+// class InjectionTestClass implements AbstractTestClass {
+//     public function testOutput() {
+//         echo 'test output';
+//     }
+// }
+//
+// class TestClass {
+//     public function __construct(InjectionTestClass $test) {
+//         $test->testOutput();
+//     }
+//
+//     public function asdf(string $b) {
+//     
+//     }
+//
+// }
+//
+// $container = new container([
+//     InjectionTestClass::class => InjectionTestClass::class,
+//     'test' => TestClass::class
+// ]);
+//
+// $testClass = $container->get('test');
+//
+/////////////////////////////////////////////////////////
