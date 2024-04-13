@@ -58,7 +58,7 @@ class Container {
             return new $abstract;
         }
 
-        $constructor_dependencies = $this->dependencies($reflected_parameters, $parameters);
+        $constructor_dependencies = $this->resolveDependencies($reflected_parameters, $parameters);
         return new $abstract(...$constructor_dependencies);
     }
 
@@ -95,7 +95,7 @@ class Container {
     //     return $value;
     // }
 
-    private function dependencies(array $reflected_parameters, array $parameters) : array {
+    private function resolveDependencies(array $reflected_parameters, array $parameters) : array {
         return array_map(function (ReflectionParameter $reflected_parameter) use ($parameters) {
             if ($reflected_parameter->isDefaultValueAvailable()) {
                 return $reflected_parameter->getDefaultValue();
