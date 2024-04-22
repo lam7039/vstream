@@ -9,7 +9,7 @@ function token_generate() : string {
 }
 
 function token_check(string $token) : bool {
-    if (session_get(env('SESSION_CSRF')) === $token) {
+    if ($token === session_get(env('SESSION_CSRF'))) {
         session_remove(env('SESSION_CSRF'));
         return true;
     }

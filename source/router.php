@@ -33,7 +33,7 @@ class Router {
     }
 
     //TODO: resolve variables in routes by detecting {(?)varname}
-    public function resolve(Container $container) : string|controller|null {
+    public function resolve(Container $container) : string|controller|array|null {
         $action = $this->routes[$this->request->method()->value][$this->request->uri()] ?? null;
 
         if (!$action) {
@@ -49,8 +49,13 @@ class Router {
         }
 
         if (is_array($action->destination)) {
-            [$class, $method] = $action->destination + [null, 'index'];
-            return $container->get($class)->$method(...$this->request->only($container->getMethodParams($class, $method)));
+            [$class, $method, $parameters] = $action->destination + [null, 'index', []];
+
+            if (RequestMethod::Post === $this->request->method()) {
+                return $container->get($class)->$method(...$this->request->only($container->getMethodParams($class, $method)));
+            }
+            
+            return $container->get($class)->$method(parameters: $parameters);
         }
 
         throw new RouteNotFoundException($this->request->uri());

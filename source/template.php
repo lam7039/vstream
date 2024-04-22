@@ -34,7 +34,8 @@ class Template {
     }
 
     public function render(page_buffer $buffer, bool $cache = false) : string {
-        //TODO: re-cache affected files when changes occur instead of detecting it on page load || or generate static html files with a script
+        //TODO: re-cache affected files when changes occur instead of detecting it on page load || or generate static html files with a script (use weakreferences, weakmaps?)
+        //TODO: perhaps also implement lazy loading with generator classes
         if ($cache /* && $file !== $buffer->body */) {
             $file = 'tmp/cache/' . md5($buffer->path);
             if (file_exists($file) && (filemtime($file) + 3600) > time()) {
@@ -76,12 +77,12 @@ class Template {
                 continue;
             }
             $type = match (true) {
-                $token === 'yield' => 'yield',
-                $token === 'endif' => 'endif',
-                $token === 'endfor' => 'endfor',
-                $token === 'else' => 'else',
-                substr($token, 0, 3) === 'if:' => 'if',
-                substr($token, 0, 4) === 'for:' => 'for',
+                'yield' === $token => 'yield',
+                'endif' === $token => 'endif',
+                'endfor' === $token => 'endfor',
+                'else' === $token => 'else',
+                'if:' === substr($token, 0, 3) => 'if',
+                'for:' === substr($token, 0, 4) => 'for',
                 default => 'var',
             };
             if (in_array($type, ['endif', 'else', 'endfor']) && $stack) {

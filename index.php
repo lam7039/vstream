@@ -21,18 +21,11 @@ $container = new Container([
 
 require('routing.php');
 
-// use function source\session_clear_temp;
-// use function source\session_once;
-
-// if (isset($response['error'])) {
-//     session_once('error', $response['error']);
-// }
-
 (new Framework(
     $container,
     $container->get(source\Request::class),
     $router
 ))->run();
 
-// session_clear_temp();
+source\session_clear_temp();
 echo microtime(true) - $start;
