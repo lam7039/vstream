@@ -5,11 +5,13 @@ use controllers\account;
 use controllers\authentication;
 
 $router = $container->get(source\Router::class);
+$request = $container->get(source\Request::class);
 
 $default_parameters = [
     'page_favicon' => 'favicon-32x32.png',
     'page_style' => 'layout.css',
     'page_script' => 'script.js',
+    'page_title' => env('PROJECT_NAME') . ' | ' . ltrim($request->uri(), '/')
 ];
 
 $router->get('/browse', [browse::class, 'index', $default_parameters]);

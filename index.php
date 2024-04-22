@@ -23,7 +23,7 @@ require('routing.php');
 
 (new Framework(
     $container,
-    $container->get(source\Request::class),
+    $request,
     $router
 ))->run();
 
