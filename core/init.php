@@ -34,7 +34,7 @@ if (!session_isset('SESSION_TEMP')) {
 require_files('models', ['model.php']);
 require_files('controllers');
 
-$log = new log;
+$log = new log(true);
 function LOG_INFO(string $string) : void {
     global $log;
     $log->append($string, error_type::Log);

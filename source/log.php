@@ -9,8 +9,10 @@ enum error_type : string {
 };
 
 class log {
-    private $template_path = 'public/templates/debug.html';
-    private $debug_file = 'debug.html';
+    private string $template_path = 'public/templates/debug.html';
+    private string $debug_file = 'debug.html';
+
+    public function __construct(private bool $reset = false) {}
 
     private function create_debug_file() : void {
         $template_contents = file_get_contents($this->template_path);
@@ -39,6 +41,10 @@ class log {
     public function append(string $string, error_type $type, string $file = '', int $line = 0) : void {
         if (!is_file($this->debug_file)) {
             $this->create_debug_file();
+        }
+
+        if ($this->reset) {
+            unlink($this->debug_file);
         }
 
         $content = $this->generate_debug($string, $type, $file, $line);
