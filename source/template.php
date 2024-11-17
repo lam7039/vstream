@@ -107,7 +107,7 @@ class Template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, page_buffer $buffer = null) : string {
+    private function interpret_tree(token_node $node, ?page_buffer $buffer = null) : string {
         $output = '';
         $if_expression = '';
         foreach ($node->branches as $branch) {
@@ -124,7 +124,7 @@ class Template {
         return $output;
     }
 
-    private function interpret_html(page_buffer $layout, page_buffer $body = null) : string {
+    private function interpret_html(page_buffer $layout, ?page_buffer $body = null) : string {
         $tokens = $this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
         return $this->interpret_tree($tree, $body);

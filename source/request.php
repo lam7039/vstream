@@ -14,13 +14,11 @@ class Request {
     private array $query = [];
 
     public function __construct() {
-        if ($this->method() === RequestMethod::Post) {
-            if (!csrf_check()) {
-                http_response_code(500);
-                exit;
+        if (RequestMethod::Post === $this->method()) {
+            if (!$this->csrf_check()) {
+                throw new CsrfFailedException;
             }
             $this->post = &$_POST;
-            unset($this->post['token']);
         }
         $this->query = &$_GET;
     }
@@ -63,13 +61,17 @@ class Request {
     public function csrf_create() : string {
         session_remove('token');
         if (!session_isset('token')) {
-            $token = session_set('token', bin2hex(random_bytes(32)));
+            session_set('token', bin2hex(random_bytes(32)));
         }
         return session_get('token');
     }
     
-    public function csrf_check(string $token) : bool {
-        return hash_equals(session_get('token'), $token);
+    public function csrf_check() : bool {
+        return hash_equals(session_get('token'), $_POST['token'] ?? '');
+    }
+
+    public function auth_check() : bool {
+        return session_isset(env('SESSION_AUTH'));
     }
 
     public function request(RequestMethod $method, string $url, array $data = []) : mixed {
