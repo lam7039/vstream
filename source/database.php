@@ -5,25 +5,20 @@ namespace source;
 use PDO;
 use PDOException;
 use PDOStatement;
+use SensitiveParameter;
 
 class database {
     private PDO $connection;
     private int $rows_affected = 0;
     private int $last_inserted_id = 0;
 
-    public function __construct() {
-        $host = env('DB_HOST');
-        $port = env('DB_PORT');
-        $dbname = env('DB_DATABASE');
-        $charset = env('DB_CHARSET');
-        $username = env('DB_USERNAME');
-        $password = env('DB_PASSWORD');
+    public function __construct(string $type, string $host, int $port, string $dbname, string $charset, string $username, #[SensitiveParameter] string $password) {
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
         try {
-            $this->connection = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
+            $this->connection = new PDO("$type:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
         } catch (DatabaseException) {}
     }
 
@@ -119,13 +114,21 @@ class database {
     }
 }
 
-class db {
+class mysql_db {
     private static database $database;
 
     private function __construct() {}
     private function __clone() {}
 
     public static function get() : database {
-        return self::$database ?? new database;
+        return self::$database ?? new database(
+            'mysql',
+            env('DB_HOST'),
+            env('DB_PORT'),
+            env('DB_DATABASE'),
+            env('DB_CHARSET'),
+            env('DB_USERNAME'),
+            env('DB_PASSWORD')
+        );
     }
 }
