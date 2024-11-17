@@ -19,7 +19,7 @@ class mysql_builder implements sql_builder {
 
     //TODO: implement joins for find
     public function __construct(private string|array $table) {
-        $this->database = db::get();
+        $this->database = mysql_db::get();
     }
     
     public function fetch(string $sql, array $variables = []) : object|null {

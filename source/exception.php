@@ -16,3 +16,9 @@ class RouteNotFoundException extends Exception {
         parent::__construct('Route not found: ' . $path, 3);
     }
 }
+
+class CsrfFailedException extends Exception {
+    public function __construct() {
+        parent::__construct('CSRF check has failed', 3);
+    }
+}

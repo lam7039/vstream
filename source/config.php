@@ -7,7 +7,7 @@ class config {
 
     public function __construct() {
         $environment_file = file_get_contents('.env', true);
-        $lines = explode("\n", $environment_file);
+        $lines = explode(PHP_EOL, $environment_file);
 
         foreach ($lines as $line) {
             $line = trim($line);
