@@ -3,9 +3,10 @@
 use controllers\browse;
 use controllers\account;
 use controllers\authentication;
+use source\Router;
 
-$router = $container->get(source\Router::class);
 $request = $container->get(source\Request::class);
+$router = new Router($request, $container);
 
 $default_parameters = [
     'page_favicon' => 'favicon-32x32.png',

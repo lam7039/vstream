@@ -10,25 +10,41 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 
+// class ServiceProvider {
+//     private static array $services = [];
+
+//     public function __construct(private Container $container) {
+//         $container->bind()
+//     }
+
+//     public static function get(string $class) : object|null {
+//         return self::$container->get($class);
+//     }
+
+//     public static function add(string $identifier, callable|string|null $concrete = null) : void {
+//         self::$container->bind($identifier, $concrete);
+//     }
+// }
+
 class Container {
-    public function __construct(private array $object_pool = []) {}
+    public function __construct(private array $instances = []) {}
 
     public function bind(string $identifier, callable|string|null $concrete = null) : void {
         if (!$concrete) {
             $concrete = $identifier;
         }
-        $this->object_pool[$identifier] = $concrete;
+        $this->instances[$identifier] = $concrete;
     }
 
-    public function get(string $identifier, array $parameters = []) : object {
+    public function get(string $identifier, array $parameters = []) {
         if (!$this->has($identifier)) {
             throw new Exception("Could not find class $identifier");
         }
-        return $this->resolve($this->object_pool[$identifier], $parameters);
+        return $this->resolve($this->instances[$identifier], $parameters);
     }
 
-    public function has(string $identifier) : bool {
-        return isset($this->object_pool[$identifier]);
+    public function has(string $id) {
+        return isset($this->instances[$id]);
     }
 
     private function reflectParams(string $class, string $method) : array {
@@ -53,13 +69,37 @@ class Container {
             throw new Exception("Class $abstract is not instantiable");
         }
 
+        //TODO: make instanced classes fetchable from instances so it won't have to re-instance over and over again
         $reflected_parameters = $this->reflectParams($abstract, '__construct');
         if (!$reflected_parameters) {
             return new $abstract;
         }
 
         $constructor_dependencies = $this->resolveDependencies($reflected_parameters, $parameters);
+        // echo '<pre>';
+        // var_dump($constructor_dependencies);
+        // exit;
         return new $abstract(...$constructor_dependencies);
+    }
+
+    private function resolveDependencies(array $reflected_parameters, array $parameters) : array {
+        return array_map(function (ReflectionParameter $reflected_parameter) use ($parameters) {
+            if ($reflected_parameter->isDefaultValueAvailable()) {
+                return $reflected_parameter->getDefaultValue();
+            }
+
+            $parameterName = $reflected_parameter->getName();
+            $parameterType = $reflected_parameter->getType();
+            $class = $reflected_parameter->getDeclaringClass()->name;
+
+            return match (true) {
+                $parameterType instanceof ReflectionNamedType => $this->resolveNamedType($parameterType, $parameterName, $parameters),
+                $parameterType instanceof ReflectionUnionType => $this->resolveUnionType($parameterType, $parameterName, $parameters),
+                // $parameterType instanceof ReflectionIntersectionType => $this->resolveIntersectionType($parameterType, $parameterName, $parameters),
+                $parameterType instanceof ReflectionIntersectionType => throw new Exception("Failed to resolve class $class because of intersection type for parameter $parameterName"),
+                default => throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
+            };
+        }, $reflected_parameters);
     }
 
     private function resolveNamedType(ReflectionNamedType $namedType, string $parameterName, array $parameters) : mixed {
@@ -94,27 +134,6 @@ class Container {
     //     }
     //     return $value;
     // }
-
-    private function resolveDependencies(array $reflected_parameters, array $parameters) : array {
-        return array_map(function (ReflectionParameter $reflected_parameter) use ($parameters) {
-            if ($reflected_parameter->isDefaultValueAvailable()) {
-                return $reflected_parameter->getDefaultValue();
-            }
-
-            $parameterName = $reflected_parameter->getName();
-            $parameterType = $reflected_parameter->getType();
-            $class = $reflected_parameter->getDeclaringClass()->name;
-
-            return match (true) {
-                $parameterType instanceof ReflectionNamedType => $this->resolveNamedType($parameterType, $parameterName, $parameters),
-                $parameterType instanceof ReflectionUnionType => $this->resolveUnionType($parameterType, $parameterName, $parameters),
-                // $parameterType instanceof ReflectionIntersectionType => $this->resolveIntersectionType($parameterType, $parameterName, $parameters),
-                $parameterType instanceof ReflectionIntersectionType => throw new Exception("Failed to resolve class $class because of intersection type for parameter $parameterName"),
-                // !$parameterType => throw new Exception("Failed to resolve class $class because parameter $parameterName is missing a type hint"),
-                default => throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
-            };
-        }, $reflected_parameters);
-    }
 }
 
 /////////////// IMPLEMENTATION EXAMPLE //////////////////
