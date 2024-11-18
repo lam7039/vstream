@@ -10,12 +10,7 @@ require('core/init.php');
 
 $container = new Container([
     source\Request::class => source\Request::class,
-    source\Template::class => source\Template::class,
-
-    //Controllers (TODO: register controllers automatically via implicit registration to the container in the router)
-    controllers\browse::class => controllers\browse::class,
-    controllers\account::class => controllers\account::class,
-    controllers\authentication::class => controllers\authentication::class
+    source\Template::class => source\Template::class
 ]);
 
 require('routing.php');

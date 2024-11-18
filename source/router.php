@@ -21,10 +21,12 @@ class Router {
 
     private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
         $buffer = new RouteBuffer($method, $identifier, $destination);
-        if (!$this->container->has($buffer->identifier)) {
-            [$class] = $buffer->destination + [null];
-            $this->container->bind($buffer->identifier, $class);
+
+        [$class] = $buffer->destination + [null];
+        if (!$this->container->has($class)) {
+            $this->container->bind($class, $class);
         }
+
         $this->routes[$method->value][$identifier] = $buffer;
     }
 

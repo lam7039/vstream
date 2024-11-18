@@ -10,22 +10,6 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 
-// class ServiceProvider {
-//     private static array $services = [];
-
-//     public function __construct(private Container $container) {
-//         $container->bind()
-//     }
-
-//     public static function get(string $class) : object|null {
-//         return self::$container->get($class);
-//     }
-
-//     public static function add(string $identifier, callable|string|null $concrete = null) : void {
-//         self::$container->bind($identifier, $concrete);
-//     }
-// }
-
 class Container {
     public function __construct(private array $instances = []) {}
 
