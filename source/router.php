@@ -56,7 +56,10 @@ class Router {
 
         if (is_array($action->destination)) {
             [$class, $method, $parameters] = $action->destination + [null, 'index', []];
-            return RequestMethod::Post === $this->request->method() ? $this->fetch_controller_post($class, $method) : $this->fetch_controller_get($class, $method, $parameters);
+            return match($this->request->method()) {
+                RequestMethod::Get => $this->fetch_controller_get($class, $method, $parameters),
+                RequestMethod::Post => $this->fetch_controller_post($class, $method)
+            };
         }
 
         throw new RouteNotFoundException($this->request->uri());
