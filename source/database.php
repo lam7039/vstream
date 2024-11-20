@@ -11,7 +11,14 @@ class database {
     private PDO $connection;
     private int $rows_affected = 0;
     private int $last_inserted_id = 0;
-
+    
+    // FULL //
+    // public private(set) int $rows_affected = 0;
+    // public private(set) int $last_inserted_id = 0;
+    // SHORTHAND //
+    // private(set) int $rows_affected = 0;
+    // private(set) int $last_inserted_id = 0;
+    
     public function __construct(string $type, string $host, int $port, string $dbname, string $charset, string $username, #[SensitiveParameter] string $password) {
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

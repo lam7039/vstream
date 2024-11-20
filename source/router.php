@@ -5,6 +5,7 @@ namespace source;
 class RouteBuffer {
     public string $identifier = '';
 
+    // public function __construct(private(set) RequestMethod $method, string $requestUri, private(set) mixed $destination) {
     public function __construct(public RequestMethod $method, string $requestUri, public mixed $destination) {
         [$this->identifier] = explode('?', $requestUri);
     }
@@ -21,13 +22,16 @@ class Router {
 
     private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
         $buffer = new RouteBuffer($method, $identifier, $destination);
+        $this->routes[$method->value][$identifier] = $buffer;
 
-        [$class] = $buffer->destination + [null];
+        if (is_string($destination) || is_callable($destination)) {
+            return;
+        }
+
+        [$class] = $destination + [null];
         if (!$this->container->has($class)) {
             $this->container->bind($class, $class);
         }
-
-        $this->routes[$method->value][$identifier] = $buffer;
     }
 
     public function get(string $identifier, string|array|callable $destination) : void {

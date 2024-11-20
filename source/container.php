@@ -31,7 +31,7 @@ class Container {
         return isset($this->instances[$id]);
     }
 
-    private function reflectParams(string $class, string $method) : array {
+    private function reflectedParameters(string $class, string $method) : array {
         if (!method_exists($class, $method)) {
             return [];
         }
@@ -40,7 +40,7 @@ class Container {
     }
 
     public function getMethodParams(string $class, string $method) : array {
-        return array_column($this->reflectParams($class, $method), 'name');
+        return array_column($this->reflectedParameters($class, $method), 'name');
     }
 
     private function resolve(mixed $abstract, array $parameters) : object {
@@ -54,7 +54,7 @@ class Container {
         }
 
         //TODO: make instanced classes fetchable from instances so it won't have to re-instance over and over again
-        $reflected_parameters = $this->reflectParams($abstract, '__construct');
+        $reflected_parameters = $this->reflectedParameters($abstract, '__construct');
         if (!$reflected_parameters) {
             return new $abstract;
         }
