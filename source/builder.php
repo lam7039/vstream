@@ -22,18 +22,22 @@ class mysql_builder implements sql_builder {
         $this->database = mysql_db::get();
     }
     
+    #[\Override]
     public function fetch(string $sql, array $variables = []) : object|null {
         return $this->database->fetch($sql, $variables);
     }
     
+    #[\Override]
     public function execute(string $sql, array $variables = []) : bool {
         return $this->database->execute($sql, $variables);
     }
 
+    #[\Override]
     public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         return $this->database->execute_multiple($sql_queries, $variables);
     }
     
+    #[\Override]
     public function find(array $where = [], string|array $columns = '*', string|array $comparitor = '=', string|array $conjunctor = 'and', int $limit = 0) : object|null {
         $select_str = is_array($columns) ? implode(', ', $columns) : $columns;
         $sql = "select $select_str from {$this->table}";
@@ -46,6 +50,7 @@ class mysql_builder implements sql_builder {
         return $this->database->fetch($sql, $where) ?? null;
     }
 
+    #[\Override]
     public function insert(array $columns) : int {
         $columns_keys = array_keys($columns);
         $columns_str = implode(', ', $columns_keys);
@@ -57,6 +62,7 @@ class mysql_builder implements sql_builder {
         return 0;
     }
 
+    #[\Override]
     public function update(array $columns, array $where = [], string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
         $sql = "update {$this->table} set {$this->build_set($columns)}";
         if ($where) {
@@ -65,6 +71,7 @@ class mysql_builder implements sql_builder {
         return $this->database->execute($sql, array_merge($columns, $where));
     }
 
+    #[\Override]
     public function delete(array $where, string|array $comparitor = '=', string|array $conjunctor = 'and') : bool {
         $sql = "delete from {$this->table}";
         if ($where) {
