@@ -23,7 +23,7 @@ class Router {
     private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
         $buffer = new RouteBuffer($method, $identifier, $destination);
         $this->routes[$method->value][$identifier] = $buffer;
-
+        
         if (is_string($destination) || is_callable($destination)) {
             return;
         }

@@ -15,11 +15,11 @@ $container = new Container([
 
 require('routing.php');
 
-(new Framework(
+new Framework(
     $container,
     $request,
     $router
-))->run();
+)->run();
 
 source\session_clear_temp();
 echo microtime(true) - $start;
