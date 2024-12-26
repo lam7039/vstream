@@ -9,11 +9,19 @@ abstract class model implements sql_builder {
     protected string $table;
     protected sql_builder $builder;
 
-    public function __construct(array $columns = []) {
-        $this->builder = new mysql_builder($this->table);
-        if ($columns) {
+    public function __construct(private array $columns = [], bool $insert = false) {
+        $this->builder = new mysql_builder($this->table, get_called_class());
+        if ($insert && $columns) {
             $this->insert($columns);
         }
+    }
+
+    public function __set(string $name, mixed $value) : void {
+        $this->columns[$name] = $value;
+    }
+
+    public function __get(string $name) : mixed {
+        return $this->columns[$this->$name] ?? null;
     }
 
     #[\Override]

@@ -10,6 +10,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 
+//TODO: make container work for all functions, not just the constructor
 class Container {
     public function __construct(private array $instances = []) {}
 
@@ -54,6 +55,10 @@ class Container {
         }
 
         //TODO: make instanced classes fetchable from instances so it won't have to re-instance over and over again
+        // if ($this->has($abstract)) {
+        //     return $this->get($abstract, $parameters);
+        // }
+
         $reflected_parameters = $this->reflectedParameters($abstract, '__construct');
         if (!$reflected_parameters) {
             return new $abstract;

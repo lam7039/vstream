@@ -2,10 +2,17 @@
 
 namespace source;
 
+use models\model;
 use PDO;
 use PDOException;
 use PDOStatement;
 use SensitiveParameter;
+
+enum ResponseMode : int {
+    case Array = PDO::FETCH_ASSOC;
+    case Object = PDO::FETCH_OBJ;
+    case Model = PDO::FETCH_CLASS;
+};
 
 class database {
     private PDO $connection;
@@ -32,14 +39,14 @@ class database {
         };
     }
 
-    private function query(string $sql, array $variables = []) : PDOStatement {
-        $query = $this->connection->prepare($sql);
+    private function statement(string $sql, array $variables = []) : PDOStatement {
+        $statement = $this->connection->prepare($sql);
         foreach ($variables as $key => $value) {
-            if (!$query->bindValue(":$key", $value, $this->find_param_type($value))) {
+            if (!$statement->bindValue(":$key", $value, $this->find_param_type($value))) {
                 LOG_WARNING("Failed to bind $key with $value");
             }
         }
-        return $query;
+        return $statement;
     }
 
     public function transaction() : bool {
@@ -72,9 +79,9 @@ class database {
 
     public function execute(string $sql, array $variables = []) : bool {
         try {
-            $query = $this->query($sql, $variables);
-            $executed = $query->execute();
-            $this->rows_affected = $query->rowCount();
+            $statement = $this->statement($sql, $variables);
+            $executed = $statement->execute();
+            $this->rows_affected = $statement->rowCount();
             $this->last_inserted_id = $this->connection->lastInsertId();
             return $executed;
         } catch (PDOException $e) {
@@ -86,17 +93,23 @@ class database {
     public function execute_multiple(array $sql_queries, array $variables = []) : bool {
         $this->transaction();
         $sql = implode(';', $sql_queries);
-        if (!$this->query($sql, $variables)) {
+        if (!$this->statement($sql, $variables)) {
             $this->rollback();
             return false;
         }
         return $this->commit();
     }
 
-    public function fetch(string $sql, array $variables = []) : object|null {
+    public function fetch(string $sql, array $variables = [], ResponseMode $mode = ResponseMode::Object, string|null $model = null) : array|object|null {
         try {
-            $query = $this->query($sql, $variables);
-            if ($query->execute() && $response = $query->fetch(PDO::FETCH_OBJ)) {
+            $statement = $this->statement($sql, $variables);
+            
+            match ($mode) {
+                ResponseMode::Model => $statement->setFetchMode($mode->value, $model),
+                default => $statement->setFetchMode($mode->value)
+            };
+
+            if ($statement->execute() && $response = $statement->fetch()) {
                 return $response;
             }
         } catch (PDOException $e) {

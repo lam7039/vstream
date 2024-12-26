@@ -22,4 +22,4 @@ $router->get('/register', [authentication::class, 'index', $default_parameters])
 
 $router->post('/do_register', [authentication::class, 'register']);
 $router->post('/do_login', [authentication::class, 'login']);
-$router->post('/do_logout', [authentication::class, 'logout']);
+$router->get('/do_logout', [authentication::class, 'logout']);

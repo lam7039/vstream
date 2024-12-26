@@ -18,7 +18,7 @@ class mysql_builder implements sql_builder {
     private database $database;
 
     //TODO: implement joins for find
-    public function __construct(private string|array $table) {
+    public function __construct(private string|array $table, private string|null $model = null) {
         $this->database = mysql_db::get();
     }
     
@@ -46,6 +46,9 @@ class mysql_builder implements sql_builder {
         }
         if ($limit) {
             $sql .= ' limit ' . $limit;
+        }
+        if ($this->model) {
+            return $this->database->fetch($sql, $where, ResponseMode::Model, $this->model) ?? null;
         }
         return $this->database->fetch($sql, $where) ?? null;
     }

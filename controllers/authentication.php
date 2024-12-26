@@ -23,6 +23,7 @@ class authentication extends page_controller {
 
 	public function __construct(Template $templating, Request $request) {
 		parent::__construct($templating, $request);
+		//TODO: use databse class directly instead of user model
         $this->user = new user;
 		$parameters = [];
 		if ($this->request->auth_check()) {
@@ -45,6 +46,7 @@ class authentication extends page_controller {
 			session_once('errors', [
 				'register' => $error
 			]);
+			redirect('/register');
 		}
 
 		$password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -79,5 +81,6 @@ class authentication extends page_controller {
 
 	public function logout() : void {
 		session_remove(env('SESSION_AUTH'));
+		redirect('/login');
 	}
 }

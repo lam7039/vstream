@@ -5,8 +5,7 @@ namespace source;
 class RouteBuffer {
     public string $identifier = '';
 
-    // public function __construct(private(set) RequestMethod $method, string $requestUri, private(set) mixed $destination) {
-    public function __construct(public RequestMethod $method, string $requestUri, public mixed $destination) {
+    public function __construct(private(set) RequestMethod $method, string $requestUri, private(set) mixed $destination) {
         [$this->identifier] = explode('?', $requestUri);
     }
 }
@@ -20,10 +19,11 @@ class Router {
         }
     }
 
-    private function store_buffer(RequestMethod $method, string $identifier, string|array|callable $destination) : void {
+    //TODO: resolve View class in router?
+    private function store_buffer(RequestMethod $method, string $identifier, array|callable $destination) : void {
         $buffer = new RouteBuffer($method, $identifier, $destination);
         $this->routes[$method->value][$identifier] = $buffer;
-        
+
         if (is_string($destination) || is_callable($destination)) {
             return;
         }
@@ -34,11 +34,11 @@ class Router {
         }
     }
 
-    public function get(string $identifier, string|array|callable $destination) : void {
+    public function get(string $identifier, array|callable $destination) : void {
         $this->store_buffer(RequestMethod::Get, $identifier, $destination);
     }
 
-    public function post(string $identifier, string|array|callable $destination) : void {
+    public function post(string $identifier, array|callable $destination) : void {
         $this->store_buffer(RequestMethod::Post, $identifier, $destination);
     }
 
@@ -70,6 +70,9 @@ class Router {
     }
 
     private function fetch_controller_get(string $class, string $method, array $parameters) : string|controller {
+        if (empty($parameters)) {
+            return $this->container->get($class)->$method();
+        }
         return $this->container->get($class)->$method(parameters: $parameters);
     }
 
