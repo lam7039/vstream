@@ -15,6 +15,10 @@ class account extends page_controller {
 
     public function __construct(Template $templating, Request $request) {
         parent::__construct($templating, $request);
+
+        if (!$this->request->auth_check()) {
+            redirect('/browse');
+        }
         
         $this->user = new user()->find(['id' => session_get(env('SESSION_AUTH'))]);
 

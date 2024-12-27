@@ -35,6 +35,15 @@ class authentication extends page_controller {
 		$templating->bind_parameters($parameters);
 	}
 
+	#[\Override]
+	public function index(array $parameters = []) : string {
+		if ($this->request->auth_check()) {
+			redirect('/account');
+		}
+
+		return parent::index($parameters);
+	}
+
 	public function register(string $username, #[SensitiveParameter] string $password, #[SensitiveParameter] string $confirm) : never {
 		//TODO: refine page error checking
 		$error = match (true) {
