@@ -2,7 +2,6 @@
 
 namespace source;
 
-use models\model;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -25,7 +24,7 @@ class database {
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
         try {
-            $this->connection = new PDO("$type:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
+            $this->connection = PDO::connect("$type:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password, $options);
         } catch (DatabaseException) {}
     }
 

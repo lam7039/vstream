@@ -22,17 +22,17 @@ class authentication extends page_controller {
 	private user $user;
 
 	public function __construct(Template $templating, Request $request) {
-		parent::__construct($templating, $request);
-		//TODO: use databse class directly instead of user model
+		//TODO: use database class directly instead of user model
         $this->user = new user;
 		$parameters = [];
-		if ($this->request->auth_check()) {
+		if ($request->auth_check()) {
             $this->user = $this->user->find(['id' => session_get(env('SESSION_AUTH'))]);
             $parameters['username'] = $this->user->username;
         }
 		$parameters['error'] = session_get('error') ?? '';
-		$parameters['token'] = $this->request->csrf_create();
-		$templating->bind_parameters($parameters);
+		$parameters['token'] = $request->csrf_create();
+
+		parent::__construct($templating, $request, $parameters);
 	}
 
 	#[\Override]

@@ -15,6 +15,8 @@ $default_parameters = [
     'page_title' => env('PROJECT_NAME') . ' | ' . ltrim($request->uri(), '/')
 ];
 
+//TODO: create middleware as an inbetween for code and page loading (for example authentication and csrf protection)
+
 $router->get('/browse', [browse::class, 'index', $default_parameters]);
 $router->get('/account', [account::class, 'index', $default_parameters]);
 $router->get('/login', [authentication::class, 'index', $default_parameters]);

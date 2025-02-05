@@ -7,6 +7,7 @@ abstract class controller {
 }
 
 abstract class page_controller extends controller {
+    //TODO: return view instead of templating or redirect in subclasses
     //TODO: fix container loading so subclasses don't have to load the parent classes
     public function __construct (protected Template $templating, protected Request $request, array $parameters = []) {
         $this->templating->bind_parameters($parameters);

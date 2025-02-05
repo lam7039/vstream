@@ -66,6 +66,7 @@ class Request {
         return session_get('token');
     }
     
+    //TODO: separate csrf to middleware
     public function csrf_check() : bool {
         return hash_equals(session_get('token'), $_POST['token'] ?? '');
     }
