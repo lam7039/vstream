@@ -86,7 +86,10 @@ function output(mixed $param) : void {
     if (
         !is_array($param) ||
         (!array_is_list($param) && empty(array_intersect_key($param, $defaults))) ||
-        (array_is_list($param) && empty(array_intersect_key($param[0], $defaults)))
+        (
+            (array_is_list($param) && empty(array_intersect_key($param, $defaults))) &&
+            (array_is_list($param) && empty(array_intersect_key($param[0], $defaults)))
+        )
     ) {
         echo '<pre>' . var_export($param, true) . '</pre>';
         return;
