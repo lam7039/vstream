@@ -74,8 +74,20 @@ function output(mixed $param) : void {
             background: #0A0A0A;
         }
     </style>';
-    
-    if (!is_array($param)) {
+
+    $defaults = [
+        'class' => 'n/a',
+        'function' => 'n/a',
+        'file' => 'n/a',
+        'line' => 'n/a'
+    ];
+
+    //Check if the param isn't part of a stack trace
+    if (
+        !is_array($param) ||
+        (!array_is_list($param) && empty(array_intersect_key($param, $defaults))) ||
+        (array_is_list($param) && empty(array_intersect_key($param[0], $defaults)))
+    ) {
         echo '<pre>' . var_export($param, true) . '</pre>';
         return;
     }
@@ -88,12 +100,19 @@ function output(mixed $param) : void {
             <td>Line</th>
         </tr>';
 
-    foreach ($param as $array) {
+    foreach ($param as $trace) {
+        [
+            'class' => $class,
+            'function' => $function,
+            'file' => $file,
+            'line' => $line
+        ] = array_merge($defaults, $trace);
+
         $table .= '<tr>
-            <td>' . ($array['class'] ?? '') . '</td>
-            <td>' . ($array['function'] ?? '') . '</td>
-            <td>' . ($array['file'] ?? '') . '</td>
-            <td>' . ($array['line'] ?? '') . '</td>
+            <td>' . $class . '</td>
+            <td>' . $function . '</td>
+            <td>' . $file . '</td>
+            <td>' . $line . '</td>
         </tr>';
     }
 
