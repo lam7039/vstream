@@ -11,7 +11,7 @@ class DatabaseException extends PDOException {
             parent::__construct($this->getMessage(), 3);
         }
     }
-};
+}
 
 class RouteNotFoundException extends Exception {
     public function __construct(string $path) {

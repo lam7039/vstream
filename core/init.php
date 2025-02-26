@@ -57,7 +57,7 @@ function env(string $key) : string|null {
 date_default_timezone_set(env('TIMEZONE'));
 
 function output(mixed $param) : void {
-    //TODO: see if you can unify this and the file logger
+    //TODO: see if this can be unified with the file logger
     echo '<style>
         body {
             padding: 10px;
@@ -117,7 +117,7 @@ function output(mixed $param) : void {
 }
 
 function dump(...$params) : void {
-    array_map(fn(mixed $param) => output($param), $params);
+    array_map(fn(mixed $param) => output(is_string($param) ? htmlspecialchars($param) : $param), $params);
 }
 
 function dd(...$params) : never {
