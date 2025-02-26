@@ -3,7 +3,6 @@
 namespace source;
 
 use PDO;
-use PDOException;
 use PDOStatement;
 use SensitiveParameter;
 
@@ -51,9 +50,7 @@ class database {
     public function transaction() : bool {
         try {
             return $this->connection->beginTransaction();
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
-        }
+        } catch (DatabaseException $e) {}
         return false;
     }
 
@@ -61,18 +58,14 @@ class database {
         try {
             $this->last_inserted_id = $this->connection->lastInsertId();
             return $this->connection->commit();
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
-        }
+        } catch (DatabaseException $e) {}
         return false;
     }
 
     public function rollback() : bool {
         try {
             return $this->connection->rollBack();
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
-        }
+        } catch (DatabaseException $e) {}
         return false;
     }
 
@@ -83,9 +76,7 @@ class database {
             $this->rows_affected = $statement->rowCount();
             $this->last_inserted_id = $this->connection->lastInsertId();
             return $executed;
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
-        }
+        } catch (DatabaseException $e) {}
         return false;
     }
 
@@ -111,9 +102,7 @@ class database {
             if ($statement->execute() && $response = $statement->fetch()) {
                 return $response;
             }
-        } catch (PDOException $e) {
-            LOG_WARNING($e->getMessage());
-        }
+        } catch (DatabaseException $e) {}
         return null;
     }
 }
