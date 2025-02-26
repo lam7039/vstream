@@ -115,6 +115,9 @@ function redirect(string $to) : never {
 }
 
 set_exception_handler(function(\Throwable $error) {
+    if (!DEBUG) {
+        return;
+    }
     $message = $error->getMessage();
     $code = $error->getCode();
     match($code) {
