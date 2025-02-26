@@ -3,8 +3,12 @@
 use source\Container;
 use source\Framework;
 
-$start = microtime(true);
-set_include_path(__DIR__);
+const DEBUG = true;
+
+if (DEBUG) {
+    $start = microtime(true);
+    set_include_path(__DIR__);
+}
 
 require('core/init.php');
 
@@ -22,4 +26,7 @@ new Framework(
 )->run();
 
 source\session_clear_temp();
-echo microtime(true) - $start;
+
+if (DEBUG) {
+    echo microtime(true) - $start;
+}
