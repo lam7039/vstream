@@ -5,8 +5,8 @@ use controllers\account;
 use controllers\authentication;
 use source\Router;
 
+$router = new Router($container);
 $request = $container->get(source\Request::class);
-$router = new Router($request, $container);
 
 $default_parameters = [
     'page_favicon' => 'favicon-32x32.png',

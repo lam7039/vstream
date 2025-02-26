@@ -12,8 +12,10 @@ class RouteBuffer {
 
 class Router {
     private array $routes = [];
+    private Request $request;
 
-    public function __construct(private Request $request, private Container $container) {
+    public function __construct(private Container $container) {
+        $this->request = $container->get(\source\Request::class);
         if ($this->request->uri() === '/') {
             redirect(env('HOMEPAGE'));
         }
