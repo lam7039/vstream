@@ -9,8 +9,8 @@ enum error_type : string {
 };
 
 class log {
-    private string $template_path = 'public/templates/debug.html';
-    private string $debug_file = 'debug.html';
+    private string $template_path = './public/templates/debug.html';
+    private string $debug_file = './debug.html';
 
     public function __construct(private bool $reset = false) {}
 
@@ -45,6 +45,7 @@ class log {
 
         if ($this->reset) {
             unlink($this->debug_file);
+            $this->create_debug_file();
         }
 
         $content = $this->generate_debug($string, $type, $file, $line);
