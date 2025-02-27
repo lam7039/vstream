@@ -37,7 +37,7 @@ require_files('controllers');
 $log = new log(true);
 function LOG_INFO(string $string) : void {
     global $log;
-    $log->append($string, error_type::Log);
+    $log->append($string, error_type::Info);
 }
 function LOG_WARNING(string $string) : void {
     global $log;
@@ -138,7 +138,7 @@ set_exception_handler(function(\Throwable $error) {
     global $log;
     [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
     match($error->getCode()) {
-        0 => $log->append($message, error_type::Log, $file, $line),
+        0 => $log->append($message, error_type::Info, $file, $line),
         1 => $log->append($message, error_type::Warning, $file, $line),
         2 => $log->append($message, error_type::Critical, $file, $line),
         default => $log->append($message, error_type::Warning, $file, $line)
