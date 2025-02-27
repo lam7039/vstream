@@ -39,12 +39,11 @@ class log {
     }
 
     public function append(string $string, error_type $type, string $file = '', int $line = 0) : void {
-        if (!is_file($this->debug_file)) {
-            $this->create_debug_file();
+        if (is_file($this->debug_file) && $this->reset) {
+            unlink($this->debug_file);
         }
 
-        if ($this->reset) {
-            unlink($this->debug_file);
+        if (!is_file($this->debug_file) || $this->reset) {
             $this->create_debug_file();
         }
 
