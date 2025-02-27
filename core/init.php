@@ -83,6 +83,7 @@ function output(mixed $param) : void {
     unset($param['is_trace']);
 
     $defaults = [
+        'message' => 'n/a',
         'class' => 'n/a',
         'function' => 'n/a',
         'file' => 'n/a',
@@ -91,6 +92,7 @@ function output(mixed $param) : void {
 
     $table = '<table>
         <tr class="colhead">
+            <td>Message</th>
             <td>Class</th>
             <td>Function</th>
             <td>File</th>
@@ -99,6 +101,7 @@ function output(mixed $param) : void {
 
     foreach ($param as $trace) {
         [
+            'message' => $message,
             'class' => $class,
             'function' => $function,
             'file' => $file,
@@ -106,6 +109,7 @@ function output(mixed $param) : void {
         ] = array_merge($defaults, $trace);
 
         $table .= '<tr>
+            <td>' . $message . '</td>
             <td>' . $class . '</td>
             <td>' . $function . '</td>
             <td>' . $file . '</td>
@@ -131,15 +135,25 @@ function redirect(string $to) : never {
 }
 
 set_exception_handler(function(\Throwable $error) {
-    $message = $error->getMessage();
+    global $log;
+    [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
     match($error->getCode()) {
-        0 => LOG_INFO($message),
-        1 => LOG_WARNING($message),
-        2 => LOG_CRITICAL($message),
-        default => LOG_WARNING($message)
+        0 => $log->append($message, error_type::Log, $file, $line),
+        1 => $log->append($message, error_type::Warning, $file, $line),
+        2 => $log->append($message, error_type::Critical, $file, $line),
+        default => $log->append($message, error_type::Warning, $file, $line)
     };
+
+    $trace = $error->getTrace();
+    array_unshift($trace, [
+        'message' => $message,
+        'class' => get_class($error),
+        'file' => $file,
+        'line' => $line
+    ]);
+
     do {
-        dump($message, array_merge(['is_trace' => true], $error->getTrace()));
+        dump(array_merge(['is_trace' => true], $trace));
     } while ($error = $error->getPrevious());
     exit;
 });
