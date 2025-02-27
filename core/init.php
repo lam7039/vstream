@@ -58,22 +58,7 @@ date_default_timezone_set(env('TIMEZONE'));
 
 function output(mixed $param) : void {
     //TODO: see if this can be unified with the file logger
-    echo '<style>
-        body {
-            padding: 10px;
-            background-color: #202021;
-            color: white;
-        }
-        td {
-            background: #282828;
-            color: #A0A0A0;
-            padding: 4px 8px 4px 8px;
-            font-family: Monospace;
-        }
-        .colhead td {
-            background: #0A0A0A;
-        }
-    </style>';
+    echo file_get_contents('./public/templates/debug.html');
 
     if (!is_array($param) || (is_array($param) && !array_key_exists('is_trace', $param))) {
         echo '<pre>' . var_export($param, true) . '</pre>';
@@ -83,35 +68,32 @@ function output(mixed $param) : void {
     unset($param['is_trace']);
 
     $defaults = [
+        'code' => 1,
         'message' => 'n/a',
-        'class' => 'n/a',
-        'function' => 'n/a',
         'file' => 'n/a',
         'line' => 'n/a'
     ];
 
-    $table = '<table>
-        <tr class="colhead">
-            <td>Message</th>
-            <td>Class</th>
-            <td>Function</th>
-            <td>File</th>
-            <td>Line</th>
-        </tr>';
+    $classes = [
+        1 => 'info',
+        2 => 'warning',
+        3 => 'critical'
+    ];
 
+    $table = '';
+    $timestamp = date('d/m/Y H:i:s', time());
+    
     foreach ($param as $trace) {
         [
+            'code' => $code,
             'message' => $message,
-            'class' => $class,
-            'function' => $function,
             'file' => $file,
             'line' => $line
         ] = array_merge($defaults, $trace);
 
-        $table .= '<tr>
+        $table .= '<tr class="' . $classes[$code] . '">
+            <td>' . $timestamp . '</td>
             <td>' . $message . '</td>
-            <td>' . $class . '</td>
-            <td>' . $function . '</td>
             <td>' . $file . '</td>
             <td>' . $line . '</td>
         </tr>';
@@ -136,20 +118,20 @@ function redirect(string $to) : never {
 
 set_exception_handler(function(\Throwable $error) {
     global $log;
-    [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
-    match($error->getCode()) {
-        0 => $log->append($message, error_type::Info, $file, $line),
-        1 => $log->append($message, error_type::Warning, $file, $line),
-        2 => $log->append($message, error_type::Critical, $file, $line),
+    [$code, $message, $file, $line] = [$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine()];
+    match($code) {
+        1 => $log->append($message, error_type::Info, $file, $line),
+        2 => $log->append($message, error_type::Warning, $file, $line),
+        3 => $log->append($message, error_type::Critical, $file, $line),
         default => $log->append($message, error_type::Warning, $file, $line)
     };
 
     $trace = $error->getTrace();
     array_unshift($trace, [
+        'code' => $code,
         'message' => $message,
-        'class' => get_class($error),
         'file' => $file,
-        'line' => $line
+        'line' => $line,
     ]);
 
     do {

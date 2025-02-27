@@ -19,7 +19,8 @@ class log {
         file_put_contents($this->debug_file, $template_contents);
     }
 
-    private function generate_debug(string $string, error_type $type, string $file, int $line) : string {
+    public function generate_debug(string $string, error_type $type, string $file, int $line) : string {
+        //TODO: include full stack trace as collapsible item in debug file
         $stacktrace = debug_backtrace()[2];
         $timestamp = date('d/m/Y H:i:s', time());
         if (!$file) {

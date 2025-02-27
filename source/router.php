@@ -15,7 +15,7 @@ class Router {
     private Request $request;
 
     public function __construct(private Container $container) {
-        $this->request = $container->get(\source\Request::class);
+        $this->request = $container->get(Request::class);
         if ($this->request->uri() === '/') {
             redirect(env('HOMEPAGE'));
         }
