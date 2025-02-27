@@ -3,7 +3,7 @@
 namespace source;
 
 enum error_type : string {
-    case Log = 'info';
+    case Info = 'info';
     case Warning = 'warning';
     case Critical = 'critical';
 };
