@@ -22,7 +22,7 @@ class RouteNotFoundException extends Exception {
             return;
         }
         //TODO: $path is at risk of query injection
-        parent::__construct('Route not found: ' . $path, 3);
+        parent::__construct('Route not found: ' . $path, 1);
     }
 }
 
@@ -32,6 +32,6 @@ class CsrfFailedException extends Exception {
             //TODO: display generic 500 error page
             return;
         }
-        parent::__construct('CSRF check has failed', 3);
+        parent::__construct('CSRF check has failed', 2);
     }
 }

@@ -57,41 +57,53 @@ function env(string $key) : string|null {
 date_default_timezone_set(env('TIMEZONE'));
 
 function output(mixed $param) : void {
-    //TODO: see if this can be unified with the file logger
-    echo file_get_contents('./public/templates/debug.html');
-
-    if (!is_array($param) || (is_array($param) && !array_key_exists('is_trace', $param))) {
+    if (!$param instanceof \Throwable) {
+        //TODO: use unified style with log but without table
         echo '<pre>' . var_export($param, true) . '</pre>';
         return;
     }
 
-    unset($param['is_trace']);
+    //TODO: see if this can be unified with the file logger
+    echo file_get_contents('./public/templates/debug.html');
 
     $defaults = [
-        'code' => 1,
         'message' => 'n/a',
         'file' => 'n/a',
         'line' => 'n/a'
     ];
-
-    $classes = [
-        1 => 'info',
-        2 => 'warning',
-        3 => 'critical'
-    ];
-
-    $table = '';
-    $timestamp = date('d/m/Y H:i:s', time());
     
-    foreach ($param as $trace) {
+    [$message, $file, $line] = array_merge($defaults, [$param->getMessage(), $param->getFile(), $param->getLine()]);
+
+    $timestamp = date('Y-m-d H:i:s', time());
+    $route = explode('/', $file);
+    $file = array_pop($route);
+
+    $type = match($param->getCode()) {
+        1 => error_type::Info,
+        2 => error_type::Warning,
+        3 => error_type::Critical,
+        default => error_type::Warning
+    };
+
+    //TODO: collapsible trace
+    $table = '<tr class="' . $type->value . '">
+        <td>' . $timestamp . '</td>
+        <td>' . $message . '</td>
+        <td>' . $file . '</td>
+        <td>' . $line . '</td>
+    </tr>';
+
+    foreach ($param->getTrace() as $trace) {
         [
-            'code' => $code,
             'message' => $message,
             'file' => $file,
             'line' => $line
         ] = array_merge($defaults, $trace);
+        
+        $route = explode('/', $file);
+        $file = array_pop($route);
 
-        $table .= '<tr class="' . $classes[$code] . '">
+        $table .= '<tr class="' . $type->value . '">
             <td>' . $timestamp . '</td>
             <td>' . $message . '</td>
             <td>' . $file . '</td>
@@ -118,24 +130,15 @@ function redirect(string $to) : never {
 
 set_exception_handler(function(\Throwable $error) {
     global $log;
-    [$code, $message, $file, $line] = [$error->getCode(), $error->getMessage(), $error->getFile(), $error->getLine()];
-    match($code) {
+    [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
+    match($error->getCode()) {
         1 => $log->append($message, error_type::Info, $file, $line),
         2 => $log->append($message, error_type::Warning, $file, $line),
         3 => $log->append($message, error_type::Critical, $file, $line),
         default => $log->append($message, error_type::Warning, $file, $line)
     };
-
-    $trace = $error->getTrace();
-    array_unshift($trace, [
-        'code' => $code,
-        'message' => $message,
-        'file' => $file,
-        'line' => $line,
-    ]);
-
     do {
-        dump(array_merge(['is_trace' => true], $trace));
+        dump($error);
     } while ($error = $error->getPrevious());
     exit;
 });
