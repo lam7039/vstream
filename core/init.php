@@ -131,13 +131,8 @@ function redirect(string $to) : never {
 }
 
 set_exception_handler(function(\Throwable $error) {
-    if (!DEBUG) {
-        //TODO: display generic error page
-        return;
-    }
     $message = $error->getMessage();
-    $code = $error->getCode();
-    match($code) {
+    match($error->getCode()) {
         0 => LOG_INFO($message),
         1 => LOG_WARNING($message),
         2 => LOG_CRITICAL($message),
