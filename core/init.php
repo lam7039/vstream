@@ -94,11 +94,7 @@ function output(mixed $param) : void {
     </tr>';
 
     foreach ($param->getTrace() as $trace) {
-        [
-            'message' => $message,
-            'file' => $file,
-            'line' => $line
-        ] = array_merge($defaults, $trace);
+        ['message' => $message, 'file' => $file, 'line' => $line] = array_merge($defaults, $trace);
         
         $route = explode('/', $file);
         $file = array_pop($route);
