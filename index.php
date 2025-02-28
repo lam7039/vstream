@@ -13,8 +13,8 @@ if (DEBUG) {
 require('core/init.php');
 
 $container = new Container([
-    source\Request::class => source\Request::class,
-    source\Template::class => source\Template::class
+    source\Request::class,
+    source\Template::class
 ]);
 
 require('routing.php');
