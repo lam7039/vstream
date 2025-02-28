@@ -2,7 +2,7 @@
 
 namespace source;
 
-enum error_type : string {
+enum ErrorType : string {
     case Info = 'info';
     case Warning = 'warning';
     case Critical = 'critical';
@@ -19,7 +19,7 @@ class log {
         file_put_contents($this->debug_file, $template_contents);
     }
 
-    private function generate_debug(string $string, error_type $type, string $file, int $line) : string {
+    private function generate_debug(string $string, ErrorType $type, string $file, int $line) : string {
         //TODO: include full stack trace as collapsible item in debug file
         $stacktrace = debug_backtrace()[2];
         $timestamp = date('Y-m-d H:i:s', time());
@@ -39,7 +39,7 @@ class log {
                 </tr>";
     }
 
-    public function append(string $string, error_type $type, string $file = '', int $line = 0) : void {
+    public function append(string $string, ErrorType $type, string $file = '', int $line = 0) : void {
         if (is_file($this->debug_file) && $this->reset) {
             unlink($this->debug_file);
         }

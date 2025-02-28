@@ -3,7 +3,7 @@ declare(strict_types=1);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-use source\{config, error_type, log};
+use source\{config, ErrorType, log};
 use function source\{session_isset, session_set};
 
 session_start();
@@ -37,15 +37,15 @@ require_files('controllers');
 $log = new log(false);
 function LOG_INFO(string $string) : void {
     global $log;
-    $log->append($string, error_type::Info);
+    $log->append($string, ErrorType::Info);
 }
 function LOG_WARNING(string $string) : void {
     global $log;
-    $log->append($string, error_type::Warning);
+    $log->append($string, ErrorType::Warning);
 }
 function LOG_CRITICAL(string $string) : void {
     global $log;
-    $log->append($string, error_type::Critical);
+    $log->append($string, ErrorType::Critical);
 }
 
 $config = new config;
@@ -56,12 +56,12 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function get_error_type(int $code) : error_type {
+function get_error_type(int $code) : ErrorType {
     return match($code) {
-        1 => error_type::Info,
-        2 => error_type::Warning,
-        3 => error_type::Critical,
-        default => error_type::Warning
+        1 => ErrorType::Info,
+        2 => ErrorType::Warning,
+        3 => ErrorType::Critical,
+        default => ErrorType::Warning
     };
 }
 
