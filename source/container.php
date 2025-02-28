@@ -32,7 +32,7 @@ class Container {
         return isset($this->instances[$id]);
     }
 
-    private function reflectedParameters(string $class, string $method) : array {
+    private function reflected_parameters(string $class, string $method) : array {
         if (!method_exists($class, $method)) {
             return [];
         }
@@ -40,8 +40,8 @@ class Container {
         return $reflected_method->getParameters();
     }
 
-    public function getMethodParams(string $class, string $method) : array {
-        return array_column($this->reflectedParameters($class, $method), 'name');
+    public function get_method_params(string $class, string $method) : array {
+        return array_column($this->reflected_parameters($class, $method), 'name');
     }
 
     private function resolve(mixed $abstract, array $parameters) : object {
@@ -59,19 +59,19 @@ class Container {
         //     return $this->get($abstract, $parameters);
         // }
 
-        $reflected_parameters = $this->reflectedParameters($abstract, '__construct');
+        $reflected_parameters = $this->reflected_parameters($abstract, '__construct');
         if (!$reflected_parameters) {
             return new $abstract;
         }
 
-        $constructor_dependencies = $this->resolveDependencies($reflected_parameters, $parameters);
+        $constructor_dependencies = $this->resolve_dependencies($reflected_parameters, $parameters);
         // echo '<pre>';
         // var_dump($constructor_dependencies);
         // exit;
         return new $abstract(...$constructor_dependencies);
     }
 
-    private function resolveDependencies(array $reflected_parameters, array $parameters) : array {
+    private function resolve_dependencies(array $reflected_parameters, array $parameters) : array {
         return array_map(function (ReflectionParameter $reflected_parameter) use ($parameters) {
             if ($reflected_parameter->isDefaultValueAvailable()) {
                 return $reflected_parameter->getDefaultValue();
@@ -82,16 +82,16 @@ class Container {
             $class = $reflected_parameter->getDeclaringClass()->name;
 
             return match (true) {
-                $parameterType instanceof ReflectionNamedType => $this->resolveNamedType($parameterType, $parameterName, $parameters),
-                $parameterType instanceof ReflectionUnionType => $this->resolveUnionType($parameterType, $parameterName, $parameters),
-                // $parameterType instanceof ReflectionIntersectionType => $this->resolveIntersectionType($parameterType, $parameterName, $parameters),
+                $parameterType instanceof ReflectionNamedType => $this->resolve_named_type($parameterType, $parameterName, $parameters),
+                $parameterType instanceof ReflectionUnionType => $this->resolve_union_type($parameterType, $parameterName, $parameters),
+                // $parameterType instanceof ReflectionIntersectionType => $this->resolve_intersection_type($parameterType, $parameterName, $parameters),
                 $parameterType instanceof ReflectionIntersectionType => throw new Exception("Failed to resolve class $class because of intersection type for parameter $parameterName"),
                 default => throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
             };
         }, $reflected_parameters);
     }
 
-    private function resolveNamedType(ReflectionNamedType $namedType, string $parameterName, array $parameters) : mixed {
+    private function resolve_named_type(ReflectionNamedType $namedType, string $parameterName, array $parameters) : mixed {
         if ($namedType->isBuiltIn() && isset($parameters[$parameterName])) {
             return $parameters[$parameterName];
         }
@@ -101,17 +101,17 @@ class Container {
         throw new Exception("Could not find parameter $parameterName");
     }
 
-    private function resolveUnionType(ReflectionUnionType $unionType, string $parameterName, array $parameters) : mixed {
+    private function resolve_union_type(ReflectionUnionType $unionType, string $parameterName, array $parameters) : mixed {
         $namedTypes = $unionType->getTypes();
         $value = null;
         foreach ($namedTypes as $namedType) {
-            $value = $this->resolveNamedType($namedType, $parameterName, $parameters);
+            $value = $this->resolve_named_type($namedType, $parameterName, $parameters);
         }
         return $value;
     }
 
     // //TODO: test intersection resolve
-    // private function resolveIntersectionType(ReflectionIntersectionType $intersectionType, string $parameterName, array $parameters) : mixed {
+    // private function resolve_intersection_type(ReflectionIntersectionType $intersectionType, string $parameterName, array $parameters) : mixed {
     //     $namedTypes = $intersectionType->getTypes();
     //     $reflector = new ReflectionClass($parameterName);
     //     $value = null;
