@@ -12,7 +12,20 @@ use ReflectionUnionType;
 
 //TODO: make container work for all functions, not just the constructor
 class Container {
-    public function __construct(private array $instances = []) {}
+    public function __construct(private array $instances = []) {
+        foreach ($this->instances as $key => $instance) {
+            if (!class_exists($instance)) {
+                throw new ContainerInstanceFailedException($instance);
+            }
+
+            if (isset($this->instances[$instance])) {
+                continue;
+            }
+
+            unset($this->instances[$key]);
+            $this->instances[$instance] = $instance;
+        }
+    }
 
     public function bind(string $identifier, callable|string|null $concrete = null) : void {
         if (!$concrete) {
