@@ -56,7 +56,7 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function getErrorType(int $code) : error_type {
+function get_error_type(int $code) : error_type {
     return match($code) {
         1 => error_type::Info,
         2 => error_type::Warning,
@@ -86,7 +86,7 @@ function output(mixed $param) : void {
     $timestamp = date('Y-m-d H:i:s', time());
     $route = explode('/', $file);
     $file = array_pop($route);
-    $type = getErrorType($param->getCode());
+    $type = get_error_type($param->getCode());
 
     //TODO: collapsible trace
     $table = '<tr class="' . $type->value . '">
@@ -130,7 +130,7 @@ function redirect(string $to) : never {
 set_exception_handler(function(\Throwable $error) {
     global $log;
     [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
-    $log->append($message, getErrorType($error->getCode()), $file, $line);
+    $log->append($message, get_error_type($error->getCode()), $file, $line);
     do {
         dump($error);
     } while ($error = $error->getPrevious());
