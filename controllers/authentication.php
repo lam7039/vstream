@@ -5,10 +5,7 @@ namespace controllers;
 use SensitiveParameter;
 
 use models\user;
-
-use source\page_controller;
-use source\Request;
-use source\Template;
+use source\{PageController, Template, Request};
 
 use function source\{
 	session_get,
@@ -18,7 +15,7 @@ use function source\{
 	session_remove,
 };
 
-class authentication extends page_controller {
+class authentication extends PageController {
 	private user $user;
 
 	public function __construct(Template $templating, Request $request) {

@@ -2,7 +2,7 @@
 
 namespace models;
 
-class user extends model {
+class User extends AbstractModel {
     protected string $table = 'users';
     private(set) int $id;
     private(set) string $username;

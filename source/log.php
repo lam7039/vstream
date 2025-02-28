@@ -8,7 +8,7 @@ enum ErrorType : string {
     case Critical = 'critical';
 };
 
-class log {
+class Log {
     private string $template_path = './public/templates/debug.html';
     private string $debug_file = './debug.html';
 

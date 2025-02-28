@@ -2,7 +2,7 @@
 
 namespace source;
 
-abstract class media_buffer {
+abstract class AbstractMediaBuffer {
     protected string $silence;
 
     public int $id = 0;
@@ -33,7 +33,7 @@ abstract class media_buffer {
     }
 }
 
-class video_buffer extends media_buffer {
+class VideoBuffer extends AbstractMediaBuffer {
     public int $duration;
     public string $duration_time;
     public string $audio_language;
@@ -53,7 +53,7 @@ class video_buffer extends media_buffer {
     }
 }
 
-class audio_buffer extends media_buffer {
+class AudioBuffer extends AbstractMediaBuffer {
     public string $visualize;
 
     public function __construct(string $source_path, bool $visualize = false, bool $silent = false) {
@@ -63,7 +63,7 @@ class audio_buffer extends media_buffer {
     }
 }
 
-class image_buffer extends media_buffer {
+class ImageBuffer extends AbstractMediaBuffer {
     public function __construct(string $source_path) {
         $this->type = 'image';
         $this->output_extension = 'webp';

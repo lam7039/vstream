@@ -4,7 +4,7 @@ namespace source;
 
 //TODO: loose singleton in container?
 class View {
-    private page_buffer $page_buffer;
+    private PageBuffer $page_buffer;
 
     //TODO: fix container loading so subclasses don't have to load the parent classes
     public function __construct(protected Template $templating, array $parameters = []) {
@@ -15,7 +15,7 @@ class View {
         if ($parameters) {
             $this->templating->bind_parameters($parameters);
         }
-        $this->page_buffer = new page_buffer($url);
+        $this->page_buffer = new PageBuffer($url);
     }
     
     public function render() : string {

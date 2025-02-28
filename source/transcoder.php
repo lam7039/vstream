@@ -2,7 +2,7 @@
 
 namespace source;
 
-class transcoder {
+class Transcoder {
     //TODO: figure out interrupting and continuing transcoding without redoing the transcode, also multistream encoding
     //TODO: do fully encoding and display which have and which haven't been encoded in the interface
     //TODO: use queue/pipelines for transcoding
@@ -51,7 +51,7 @@ class transcoder {
         $this->option_set('audio', 'bitratevideo', '-b:v 2000k');
     }
     
-    public function ffmpeg(media_buffer $buffer) : void {
+    public function ffmpeg(AbstractMediaBuffer $buffer) : void {
         $buffer->options = implode(' ', $this->options[$buffer->type]);
         $command = $this->{"build_{$buffer->type}_command"}($buffer);
 
@@ -70,14 +70,14 @@ class transcoder {
         $this->start_process_windows($command);
     }
 
-    public function build_audio_command(audio_buffer $buffer) : string {
+    public function build_audio_command(AudioBuffer $buffer) : string {
         if ($buffer->visualize) {
             $this->visualize_audio();
         }
         return "ffmpeg -i {$buffer->source_path} {$buffer->options} {$buffer->output_path_full}";
     }
 
-    public function build_video_command(video_buffer $buffer) : string {
+    public function build_video_command(VideoBuffer $buffer) : string {
         $command = "ffmpeg -i {$buffer->source_path} ";
         $subtitles = $buffer->subtitles_type === 'soft' ? $this->extract_subtitles($buffer) : '';
         if ($buffer->subtitles_type === 'hard') {
@@ -89,7 +89,7 @@ class transcoder {
         return "$command {$buffer->output_path_full}" . $subtitles;
     }
 
-    private function extract_subtitles(video_buffer $buffer) : string {
+    private function extract_subtitles(VideoBuffer $buffer) : string {
         // if (!$this->has_subtitles($buffer->source_path)) {
         //     return '';
         // }

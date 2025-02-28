@@ -3,7 +3,7 @@ declare(strict_types=1);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-use source\{config, ErrorType, log};
+use source\{Config, ErrorType, Log};
 use function source\{session_isset, session_set};
 
 session_start();
@@ -34,7 +34,7 @@ if (!session_isset('SESSION_TEMP')) {
 require_files('models', ['model.php']);
 require_files('controllers');
 
-$log = new log(false);
+$log = new Log(false);
 function LOG_INFO(string $string) : void {
     global $log;
     $log->append($string, ErrorType::Info);
@@ -48,7 +48,7 @@ function LOG_CRITICAL(string $string) : void {
     $log->append($string, ErrorType::Critical);
 }
 
-$config = new config;
+$config = new Config;
 function env(string $key) : string|null {
     global $config;
     return $config->get($key);

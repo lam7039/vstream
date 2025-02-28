@@ -2,7 +2,7 @@
 
 namespace source;
 
-interface sql_builder {
+interface SqlBuilderInterface {
     public function fetch(string $sql, array $variables = []) : object|null;
     public function execute(string $sql, array $variables = []) : bool;
     public function execute_multiple(array $sql_queries, array $variables = []) : bool;
@@ -14,12 +14,12 @@ interface sql_builder {
 }
 
 //TODO: implement caching here between the application and database
-class mysql_builder implements sql_builder {
-    private database $database;
+class MysqlBuilder implements SqlBuilderInterface {
+    private Database $database;
 
     //TODO: implement joins for find
     public function __construct(private string|array $table, private string|null $model = null) {
-        $this->database = mysql_db::get();
+        $this->database = MysqlDatabase::get();
     }
     
     #[\Override]

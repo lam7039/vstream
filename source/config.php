@@ -2,7 +2,7 @@
 
 namespace source;
 
-class config {
+class Config {
     private array $config = [];
 
     public function __construct() {

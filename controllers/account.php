@@ -2,15 +2,13 @@
 
 namespace controllers;
 
-use models\user;
-use source\page_controller;
-use source\Request;
-use source\Template;
+use models\User;
+use source\{PageController, Template, Request};
 
 use function source\session_get;
 
-class account extends page_controller {
-    private user $user; 
+class Account extends PageController {
+    private User $user; 
 
     public function __construct(Template $templating, Request $request) {
         parent::__construct($templating, $request);
@@ -19,7 +17,7 @@ class account extends page_controller {
             redirect('/browse');
         }
         
-        $this->user = new user()->find(['id' => session_get(env('SESSION_AUTH'))]);
+        $this->user = new User()->find(['id' => session_get(env('SESSION_AUTH'))]);
 
         $templating->bind_parameters([
             'username' => $this->user->username,

@@ -2,7 +2,7 @@
 
 namespace source;
 
-class validator {
+class Validator {
     public function __construct() {
         //read files with rules
         //parse and check the rules

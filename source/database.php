@@ -12,7 +12,7 @@ enum ResponseMode : int {
     case Model = PDO::FETCH_CLASS;
 };
 
-class database {
+class Database {
     private PDO $connection;
     private(set) int $rows_affected = 0;
     private(set) int $last_inserted_id = 0;
@@ -107,14 +107,14 @@ class database {
     }
 }
 
-class mysql_db {
-    private static database $database;
+class MysqlDatabase {
+    private static Database $database;
 
     private function __construct() {}
     private function __clone() {}
 
-    public static function get() : database {
-        return self::$database ?? new database(
+    public static function get() : Database {
+        return self::$database ?? new Database(
             'mysql',
             env('DB_HOST'),
             env('DB_PORT'),

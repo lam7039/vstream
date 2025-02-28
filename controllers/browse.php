@@ -3,13 +3,11 @@
 namespace controllers;
 
 use models\user;
-use source\page_controller;
-use source\Request;
-use source\Template;
+use source\{PageController, Template, Request};
 
 use function source\session_get;
 
-class browse extends page_controller {
+class browse extends PageController {
 
     public function __construct(Template $templating, Request $request) {
         parent::__construct($templating, $request);

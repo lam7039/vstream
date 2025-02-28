@@ -2,16 +2,16 @@
 
 namespace controllers;
 
-use source\{controller, mysql_builder, media_buffer, transcoder};
+use source\{AbstractController, MysqlBuilder, AbstractMediaBuffer, Transcoder};
 
-class transcode extends controller {
-    private transcoder $transcoder;
+class Transcode extends AbstractController {
+    private Transcoder $transcoder;
 
     public function __construct() {
-        $this->transcoder = new transcoder;
+        $this->transcoder = new Transcoder;
     }
 
-    public function run(media_buffer $buffer) : void {
+    public function run(AbstractMediaBuffer $buffer) : void {
         if (!in_array($buffer->type, ['video', 'audio'])) {
             LOG_WARNING('Type incompatible, cannot be transcoded');
             return;
@@ -19,8 +19,8 @@ class transcode extends controller {
 
         // TODO: ping database to check connection, if no connection, create new one (closes after 8 hours by default)
         // TODO: use singleton for transcoder?
-        $media_builder = new mysql_builder('media');
-        $jobs_builder = new mysql_builder('scheduled_jobs');
+        $media_builder = new MysqlBuilder('media');
+        $jobs_builder = new MysqlBuilder('scheduled_jobs');
         $jobs_builder->insert([]);
         $jobs = $jobs_builder->find();
 

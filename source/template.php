@@ -2,7 +2,7 @@
 
 namespace source;
 
-class page_buffer {
+class PageBuffer {
     public string $body;
     public int $size;
 
@@ -12,7 +12,7 @@ class page_buffer {
     }
 }
 
-class token_node {
+class TokenNode {
     public function __construct(
         public string $type, 
         public string $expression, 
@@ -21,11 +21,11 @@ class token_node {
 }
 
 class Template {
-    private page_buffer $layout;
+    private PageBuffer $layout;
     private array $parameters = [];
 
     public function __construct(array $parameters = [], string $template_path = './public/templates/layout.html') {
-        $this->layout = new page_buffer($template_path);
+        $this->layout = new PageBuffer($template_path);
         $this->bind_parameters($parameters);
     }
 
@@ -33,7 +33,7 @@ class Template {
         $this->parameters = array_merge($this->parameters, $parameters);
     }
 
-    public function render(page_buffer $buffer, bool $cache = false) : string {
+    public function render(PageBuffer $buffer, bool $cache = false) : string {
         //TODO: re-cache affected files when changes occur instead of detecting it on page load || or generate static html files with a script (use weakreferences, weakmaps?)
         //TODO: perhaps also implement lazy loading with generator classes
         if ($cache /* && $file !== $buffer->body */) {
@@ -67,13 +67,13 @@ class Template {
         return $tokens;
     }
 
-    private function build_tree(array $tokens) : token_node {
-        $root = new token_node('root', '');
+    private function build_tree(array $tokens) : TokenNode {
+        $root = new TokenNode('root', '');
         $current = $root;
         $stack = [];
         foreach ($tokens as $i => $token) {
             if (!($i % 2)) {
-                $current->branches[] = new token_node('html', $token);
+                $current->branches[] = new TokenNode('html', $token);
                 continue;
             }
             $type = match (true) {
@@ -96,7 +96,7 @@ class Template {
                     'var' => $token,
                     default => '',
                 };
-                $node = new token_node($type, trim($expression));
+                $node = new TokenNode($type, trim($expression));
                 $current->branches[] = $node;
                 if (!in_array($type, ['var', 'yield'])) {
                     $stack[] = $current;
@@ -107,7 +107,7 @@ class Template {
         return $root;
     }
 
-    private function interpret_tree(token_node $node, page_buffer|null $buffer = null) : string {
+    private function interpret_tree(TokenNode $node, PageBuffer|null $buffer = null) : string {
         $output = '';
         $if_expression = '';
         foreach ($node->branches as $branch) {
@@ -124,13 +124,13 @@ class Template {
         return $output;
     }
 
-    private function interpret_html(page_buffer $layout, page_buffer|null $body = null) : string {
+    private function interpret_html(PageBuffer $layout, PageBuffer|null $body = null) : string {
         $tokens = $this->tokenize($layout->body);
         $tree = $this->build_tree($tokens);
         return $this->interpret_tree($tree, $body);
     }
 
-    private function interpret_if(token_node $node, string &$if_expression = '') : string {
+    private function interpret_if(TokenNode $node, string &$if_expression = '') : string {
         $if_expression = $node->expression;
 
         $comparitor = match (true) {
@@ -195,7 +195,7 @@ class Template {
         return $comparison ? $this->interpret_tree($node) : '';
     }
 
-    private function interpret_else(token_node $node, string $if_expression) : string {
+    private function interpret_else(TokenNode $node, string $if_expression) : string {
         if (!$if_expression) {
             LOG_WARNING('No if statement detected');
             return '';
@@ -204,7 +204,7 @@ class Template {
         return $this->interpret_if($node);
     }
 
-    private function interpret_for(token_node $node) : string {
+    private function interpret_for(TokenNode $node) : string {
         [$local_name, $array_name] = explode(' in ', $node->expression, 2);
         $output = '';
         foreach ($this->get($array_name) as $value) {

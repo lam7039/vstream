@@ -2,15 +2,15 @@
 
 namespace models;
 
-use source\{sql_builder, mysql_builder};
+use source\{SqlBuilderInterface, MysqlBuilder};
 
 //TODO: add encryption
-abstract class model implements sql_builder {
+abstract class AbstractModel implements SqlBuilderInterface {
     protected string $table;
-    protected sql_builder $builder;
+    protected SqlBuilderInterface $builder;
 
     public function __construct(private array $columns = [], bool $insert = false) {
-        $this->builder = new mysql_builder($this->table, get_called_class());
+        $this->builder = new MysqlBuilder($this->table, get_called_class());
         if ($insert && $columns) {
             $this->insert($columns);
         }

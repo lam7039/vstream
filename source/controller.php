@@ -2,11 +2,11 @@
 
 namespace source;
 
-abstract class controller {
+abstract class AbstractController {
     
 }
 
-abstract class page_controller extends controller {
+abstract class PageController extends AbstractController {
     //TODO: return view instead of templating or redirect in subclasses
     //TODO: fix container loading so subclasses don't have to load the parent classes
     public function __construct (protected Template $templating, protected Request $request, array $parameters = []) {
@@ -17,6 +17,6 @@ abstract class page_controller extends controller {
         if ($parameters) {
             $this->templating->bind_parameters($parameters);
         }
-        return $this->templating->render(new page_buffer('./public/html' . $this->request->uri() . '.html'));
+        return $this->templating->render(new PageBuffer('./public/html' . $this->request->uri() . '.html'));
     }
 }

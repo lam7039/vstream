@@ -45,7 +45,7 @@ class Router {
     }
 
     //TODO: resolve variables in routes by detecting {(?)varname}
-    public function resolve() : string|controller|array|null {
+    public function resolve() : string|AbstractController|array|null {
         $action = $this->routes[$this->request->method()->value][$this->request->uri()] ?? null;
 
         if (!$action) {
@@ -71,14 +71,14 @@ class Router {
         throw new RouteNotFoundException($this->request->uri());
     }
 
-    private function fetch_controller_get(string $class, string $method, array $parameters) : string|controller {
+    private function fetch_controller_get(string $class, string $method, array $parameters) : string|AbstractController {
         if (empty($parameters)) {
             return $this->container->get($class)->$method();
         }
         return $this->container->get($class)->$method(parameters: $parameters);
     }
 
-    private function fetch_controller_post(string $class, string $method) : string|controller {
+    private function fetch_controller_post(string $class, string $method) : string|AbstractController {
         return $this->container->get($class)->$method(...$this->request->only($this->container->getMethodParams($class, $method)));
     }
 }
