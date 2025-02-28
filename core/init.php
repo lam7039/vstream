@@ -34,7 +34,7 @@ if (!session_isset('SESSION_TEMP')) {
 require_files('models', ['model.php']);
 require_files('controllers');
 
-$log = new log(true);
+$log = new log(false);
 function LOG_INFO(string $string) : void {
     global $log;
     $log->append($string, error_type::Info);
@@ -86,10 +86,10 @@ function output(mixed $param) : void {
     $timestamp = date('Y-m-d H:i:s', time());
     $route = explode('/', $file);
     $file = array_pop($route);
-    $type = get_error_type($param->getCode());
+    $error_type = get_error_type($param->getCode());
 
     //TODO: collapsible trace
-    $table = '<tr class="' . $type->value . '">
+    $table = '<tr class="' . $error_type->value . '">
         <td>' . $timestamp . '</td>
         <td>' . $message . '</td>
         <td>' . $file . '</td>
@@ -97,12 +97,16 @@ function output(mixed $param) : void {
     </tr>';
 
     foreach ($param->getTrace() as $trace) {
-        ['message' => $message, 'file' => $file, 'line' => $line] = array_merge($defaults, $trace);
+        ['message' => $message, 'file' => $file, 'line' => $line, 'class' => $class, 'type' => $type, 'function' => $function] = array_merge($defaults, $trace);
+
+        if ($message === 'n/a' && $class && $function) {
+            $message = $class . $type . $function;
+        }
         
         $route = explode('/', $file);
         $file = array_pop($route);
 
-        $table .= '<tr class="' . $type->value . '">
+        $table .= '<tr class="' . $error_type->value . '">
             <td>' . $timestamp . '</td>
             <td>' . $message . '</td>
             <td>' . $file . '</td>
@@ -127,12 +131,12 @@ function redirect(string $to) : never {
     exit;
 }
 
-set_exception_handler(function(\Throwable $error) {
+set_exception_handler(function(\Throwable $exception) {
     global $log;
-    [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
-    $log->append($message, get_error_type($error->getCode()), $file, $line);
+    [$message, $file, $line] = [$exception->getMessage(), $exception->getFile(), $exception->getLine()];
+    $log->append($message, get_error_type($exception->getCode()), $file, $line);
     do {
-        dump($error);
-    } while ($error = $error->getPrevious());
+        dump($exception);
+    } while ($exception = $exception->getPrevious());
     exit;
 });

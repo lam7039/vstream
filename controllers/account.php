@@ -8,7 +8,6 @@ use source\Request;
 use source\Template;
 
 use function source\session_get;
-use function source\session_isset;
 
 class account extends page_controller {
     private user $user; 
