@@ -56,6 +56,15 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
+function getErrorType(int $code) : error_type {
+    return match($code) {
+        1 => error_type::Info,
+        2 => error_type::Warning,
+        3 => error_type::Critical,
+        default => error_type::Warning
+    };
+}
+
 function output(mixed $param) : void {
     if (!$param instanceof \Throwable) {
         //TODO: use unified style with log but without table
@@ -77,13 +86,7 @@ function output(mixed $param) : void {
     $timestamp = date('Y-m-d H:i:s', time());
     $route = explode('/', $file);
     $file = array_pop($route);
-
-    $type = match($param->getCode()) {
-        1 => error_type::Info,
-        2 => error_type::Warning,
-        3 => error_type::Critical,
-        default => error_type::Warning
-    };
+    $type = getErrorType($param->getCode());
 
     //TODO: collapsible trace
     $table = '<tr class="' . $type->value . '">
@@ -110,11 +113,11 @@ function output(mixed $param) : void {
     echo $table . '</table>';
 }
 
-function dump(...$params) : void {
+function dump(mixed ...$params) : void {
     array_map(fn(mixed $param) => output(is_string($param) ? htmlspecialchars($param) : $param), $params);
 }
 
-function dd(...$params) : never {
+function dd(mixed ...$params) : never {
     dump(...$params);
     exit;
 }
@@ -127,12 +130,7 @@ function redirect(string $to) : never {
 set_exception_handler(function(\Throwable $error) {
     global $log;
     [$message, $file, $line] = [$error->getMessage(), $error->getFile(), $error->getLine()];
-    match($error->getCode()) {
-        1 => $log->append($message, error_type::Info, $file, $line),
-        2 => $log->append($message, error_type::Warning, $file, $line),
-        3 => $log->append($message, error_type::Critical, $file, $line),
-        default => $log->append($message, error_type::Warning, $file, $line)
-    };
+    $log->append($message, getErrorType($error->getCode()), $file, $line);
     do {
         dump($error);
     } while ($error = $error->getPrevious());

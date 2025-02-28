@@ -28,5 +28,6 @@ new Framework(
 source\session_clear_temp();
 
 if (DEBUG) {
+    //TODO: make toolbar for displaying this type of stuff
     echo microtime(true) - $start;
 }
