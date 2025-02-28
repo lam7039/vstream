@@ -65,9 +65,7 @@ class Container {
         }
 
         $constructor_dependencies = $this->resolve_dependencies($reflected_parameters, $parameters);
-        // echo '<pre>';
-        // var_dump($constructor_dependencies);
-        // exit;
+        // dd($constructor_dependencies);
         return new $abstract(...$constructor_dependencies);
     }
 

@@ -5,5 +5,3 @@ class ReallySimpleSyndication {
 
     }
 }
-
-class_alias(ReallySimpleSyndication::class, 'RSS');

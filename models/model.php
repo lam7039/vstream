@@ -7,7 +7,7 @@ use source\{SqlBuilderInterface, MysqlBuilder};
 //TODO: add encryption
 abstract class AbstractModel implements SqlBuilderInterface {
     protected string $table;
-    protected SqlBuilderInterface $builder;
+    private SqlBuilderInterface $builder;
 
     public function __construct(private array $columns = [], bool $insert = false) {
         $this->builder = new MysqlBuilder($this->table, get_called_class());
