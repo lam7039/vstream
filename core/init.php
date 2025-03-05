@@ -1,10 +1,21 @@
 <?php
 declare(strict_types=1);
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+
+if (DEBUG) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
+
+//TODO: log errors in background of user experience
+// if (!DEBUG) {
+//     ini_set('display_errors', 0);
+//     error_reporting(0);
+//     ini_set('log_errors', 1);
+//     ini_set('error_log', './debug.log');
+// }
 
 use source\{Config, ErrorType, Log};
-use function source\{session_isset, session_set};
+use function source\{get_error_type, session_isset, session_set};
 
 session_start();
 
@@ -56,15 +67,6 @@ function env(string $key) : string|null {
 
 date_default_timezone_set(env('TIMEZONE'));
 
-function get_error_type(int $code) : ErrorType {
-    return match($code) {
-        1 => ErrorType::Info,
-        2 => ErrorType::Warning,
-        3 => ErrorType::Critical,
-        default => ErrorType::Warning
-    };
-}
-
 function output(mixed $param) : void {
     if (!$param instanceof \Throwable) {
         //TODO: use unified style with log but without table
@@ -80,7 +82,7 @@ function output(mixed $param) : void {
         'file' => 'n/a',
         'line' => 'n/a'
     ];
-    
+
     [$message, $file, $line] = array_merge($defaults, [$param->getMessage(), $param->getFile(), $param->getLine()]);
 
     $timestamp = date('Y-m-d H:i:s', time());
@@ -102,7 +104,7 @@ function output(mixed $param) : void {
         if ($message === 'n/a' && $class && $function) {
             $message = $class . $type . $function;
         }
-        
+
         $route = explode('/', $file);
         $file = array_pop($route);
 

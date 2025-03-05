@@ -52,3 +52,12 @@ class Log {
         file_put_contents($this->debug_file, $content, FILE_APPEND | LOCK_EX);
     }
 }
+
+function get_error_type(int $code) : ErrorType {
+    return match($code) {
+        1 => ErrorType::Info,
+        2 => ErrorType::Warning,
+        3 => ErrorType::Critical,
+        default => ErrorType::Warning
+    };
+}
