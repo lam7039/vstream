@@ -16,7 +16,7 @@ class Request {
     public function __construct() {
         if (RequestMethod::Post === $this->method()) {
             if (!$this->csrf_check()) {
-                throw new CsrfFailedException;
+                throw RequestException::CsrfFailed();
             }
             $this->post = &$_POST;
         }
@@ -42,7 +42,7 @@ class Request {
     public function except(array $keys) : array {
         return array_diff_key($this->all(), array_flip($keys));
     }
-    
+
     public function only(array $keys) : array {
         return array_intersect_key($this->all(), array_flip($keys));
     }
@@ -53,7 +53,7 @@ class Request {
             'GET' => RequestMethod::Get
         };
     }
-    
+
     public function uri() : string {
         return $_SERVER['REQUEST_URI'];
     }
@@ -65,7 +65,7 @@ class Request {
         }
         return session_get('token');
     }
-    
+
     //TODO: separate csrf to middleware
     public function csrf_check() : bool {
         return hash_equals(session_get('token'), $_POST['token'] ?? '');
@@ -93,7 +93,7 @@ class Request {
         if ($error) {
             LOG_CRITICAL($error);
         }
-        
+
         return $response;
     }
 }

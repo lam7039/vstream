@@ -15,7 +15,7 @@ class Container {
     public function __construct(private array $instances = []) {
         foreach ($this->instances as $key => $instance) {
             if (!class_exists($instance)) {
-                throw new ContainerInstanceFailedException($instance);
+                throw ContainerException::InstanceFailed($instance);
             }
 
             if (isset($this->instances[$instance])) {
@@ -36,7 +36,7 @@ class Container {
 
     public function get(string $identifier, array $parameters = []) {
         if (!$this->has($identifier)) {
-            throw new Exception("Could not find class $identifier");
+            throw ContainerException::UnknownClass($identifier);
         }
         return $this->resolve($this->instances[$identifier], $parameters);
     }
@@ -61,10 +61,10 @@ class Container {
         if (is_callable($abstract)) {
             return $abstract($this, $parameters);
         }
-        
+
         $reflector = new ReflectionClass($abstract);
         if (!$reflector->isInstantiable()) {
-            throw new Exception("Class $abstract is not instantiable");
+            throw ContainerException::Uninstantiable($abstract);
         }
 
         //TODO: make instanced classes fetchable from instances so it won't have to re-instance over and over again
@@ -96,8 +96,8 @@ class Container {
                 $parameterType instanceof ReflectionNamedType => $this->resolve_named_type($parameterType, $parameterName, $parameters),
                 $parameterType instanceof ReflectionUnionType => $this->resolve_union_type($parameterType, $parameterName, $parameters),
                 // $parameterType instanceof ReflectionIntersectionType => $this->resolve_intersection_type($parameterType, $parameterName, $parameters),
-                $parameterType instanceof ReflectionIntersectionType => throw new Exception("Failed to resolve class $class because of intersection type for parameter $parameterName"),
-                default => throw new Exception("Failed to resolve class $class because of invalid parameter $parameterName")
+                $parameterType instanceof ReflectionIntersectionType => throw ContainerException::InvalidIntersection($class, $parameterName),
+                default => throw ContainerException::InvalidParameter($class, $parameterName)
             };
         }, $reflected_parameters);
     }
@@ -109,7 +109,7 @@ class Container {
         if (!$namedType->isBuiltin()) {
             return $this->get($namedType->getName(), $parameters);
         }
-        throw new Exception("Could not find parameter $parameterName");
+        throw ContainerException::UnknownParameter($parameterName);
     }
 
     private function resolve_union_type(ReflectionUnionType $unionType, string $parameterName, array $parameters) : mixed {
@@ -154,7 +154,7 @@ class Container {
 //     }
 //
 //     public function asdf(string $b) {
-//     
+//
 //     }
 //
 // }

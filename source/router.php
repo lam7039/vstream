@@ -49,7 +49,7 @@ class Router {
         $action = $this->routes[$this->request->method()->value][$this->request->uri()] ?? null;
 
         if (!$action) {
-            throw new RouteNotFoundException($this->request->uri());
+            throw RequestException::RouteNotFound($this->request->uri());
         }
 
         if (is_string($action->destination)) {
@@ -68,7 +68,7 @@ class Router {
             };
         }
 
-        throw new RouteNotFoundException($this->request->uri());
+        throw RequestException::RouteNotFound($this->request->uri());
     }
 
     private function fetch_controller_get(string $class, string $method, array $parameters) : string|AbstractController {

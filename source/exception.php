@@ -5,6 +5,7 @@ namespace source;
 use Exception;
 use PDOException;
 
+//TODO: change DatabaseException to static functions that return self with specific errors
 class DatabaseException extends PDOException {
     public function __construct() {
         if (!DEBUG) {
@@ -16,36 +17,50 @@ class DatabaseException extends PDOException {
     }
 }
 
-class RouteNotFoundException extends Exception {
-    public function __construct(string $path) {
+class RequestException extends Exception {
+    public static function RouteNotFound(string $route) : self {
         if (!DEBUG) {
             //TODO: display generic 404 error page
             redirect('/browse');
             exit;
         }
-        //TODO: $path is at risk of query injection
-        parent::__construct('Route not found: ' . $path, 1);
-    }
-}
 
-class CsrfFailedException extends Exception {
-    public function __construct() {
+        return new self('Route not found: ' . $route, 1);
+    }
+
+    public static function CsrfFailed() : self {
         if (!DEBUG) {
             //TODO: display generic 500 error page
             redirect('/browse');
             exit;
         }
-        parent::__construct('CSRF check has failed', 2);
+
+        return new self('CSRF check has failed', 2);
     }
 }
 
-class ContainerInstanceFailedException extends Exception {
-    public function __construct(string $instance) {
-        if (!DEBUG) {
-            //TODO: display generic 500 error page
-            redirect('/browse');
-            exit;
-        }
-        parent::__construct('Instance does not exist: ' . $instance, 3);
+class ContainerException extends Exception {
+    public static function InstanceFailed(string $instance) : self {
+        return new self('Instance does not exist: ' . $instance, 3);
+    }
+
+    public static function UnknownClass(string $class) : self {
+        return new self('Could not find class: ' . $class, 3);
+    }
+
+    public static function UnknownParameter(string $parameter) : self {
+        return new self('Could not find parameter: ' . $parameter, 3);
+    }
+
+    public static function Uninstantiable(string $instance) : self {
+        return new self('Could not instantiate: ' . $instance, 3);
+    }
+
+    public static function InvalidIntersection(string $class, string $parameter) : self {
+        return new self("Failed to resolve class '$class' because of intersection type for parameter '$parameter'", 3);
+    }
+
+    public static function InvalidParameter(string $class, string $parameter) : self {
+        return new self("Failed to resolve class '$class' because of invalid parameter '$parameter'", 3);
     }
 }
