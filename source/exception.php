@@ -40,10 +40,6 @@ class RequestException extends Exception {
 }
 
 class ContainerException extends Exception {
-    public static function InstanceFailed(string $instance) : self {
-        return new self('Instance does not exist: ' . $instance, 3);
-    }
-
     public static function UnknownClass(string $class) : self {
         return new self('Could not find class: ' . $class, 3);
     }
@@ -52,7 +48,11 @@ class ContainerException extends Exception {
         return new self('Could not find parameter: ' . $parameter, 3);
     }
 
-    public static function Uninstantiable(string $instance) : self {
+    public static function InstanceFailed(string $instance) : self {
+        return new self('Instance does not exist: ' . $instance, 3);
+    }
+
+    public static function InvalidInstance(string $instance) : self {
         return new self('Could not instantiate: ' . $instance, 3);
     }
 

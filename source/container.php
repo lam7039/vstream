@@ -64,7 +64,7 @@ class Container {
 
         $reflector = new ReflectionClass($abstract);
         if (!$reflector->isInstantiable()) {
-            throw ContainerException::Uninstantiable($abstract);
+            throw ContainerException::InvalidInstance($abstract);
         }
 
         //TODO: make instanced classes fetchable from instances so it won't have to re-instance over and over again
