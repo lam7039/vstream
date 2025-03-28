@@ -14,6 +14,7 @@ class PageBuffer {
 
 class TokenNode {
     public function __construct(
+        //TODO: use an enum for type
         public string $type, 
         public string $expression, 
         public array $branches = []
