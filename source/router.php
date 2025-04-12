@@ -79,6 +79,8 @@ class Router {
     }
 
     private function fetch_controller_post(string $class, string $method) : string|AbstractController {
-        return $this->container->get($class)->$method(...$this->request->only($this->container->get_method_params($class, $method)));
+        $method_param_names = $this->container->get_method_params($class, $method);
+        $only_method_params_from_request = $this->request->only($method_param_names);
+        return $this->container->get($class)->$method(...$only_method_params_from_request);
     }
 }
