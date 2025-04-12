@@ -40,15 +40,19 @@ class RequestException extends Exception {
 }
 
 class ContainerException extends Exception {
-    public static function UnknownClass(string $class) : self {
+    public static function ClassNotFound(string $class) : self {
         return new self('Could not find class: ' . $class, 3);
     }
 
-    public static function UnknownParameter(string $parameter) : self {
+    public static function MethodNotFound(string $method) : self {
+        return new self('Could not find method: ' . $method, 3);
+    }
+
+    public static function ParameterNotFound(string $parameter) : self {
         return new self('Could not find parameter: ' . $parameter, 3);
     }
 
-    public static function InstanceFailed(string $instance) : self {
+    public static function InstanceNotFound(string $instance) : self {
         return new self('Instance does not exist: ' . $instance, 3);
     }
 

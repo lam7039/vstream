@@ -2,7 +2,6 @@
 
 namespace source;
 
-use Exception;
 use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -15,7 +14,7 @@ class Container {
     public function __construct(private array $instances = []) {
         foreach ($this->instances as $key => $instance) {
             if (!class_exists($instance)) {
-                throw ContainerException::InstanceFailed($instance);
+                throw ContainerException::InstanceNotFound($instance);
             }
 
             if (isset($this->instances[$instance])) {
@@ -34,20 +33,20 @@ class Container {
         $this->instances[$identifier] = $concrete;
     }
 
-    public function get(string $identifier, array $parameters = []) {
+    public function get(string $identifier, array $parameters = []) : object {
         if (!$this->has($identifier)) {
-            throw ContainerException::UnknownClass($identifier);
+            throw ContainerException::ClassNotFound($identifier);
         }
         return $this->resolve($this->instances[$identifier], $parameters);
     }
 
-    public function has(string $id) {
+    public function has(string $id) : bool {
         return isset($this->instances[$id]);
     }
 
     private function reflected_parameters(string $class, string $method) : array {
         if (!method_exists($class, $method)) {
-            return [];
+            throw ContainerException::MethodNotFound($method);
         }
         $reflected_method = new ReflectionMethod($class, $method);
         return $reflected_method->getParameters();
@@ -109,7 +108,7 @@ class Container {
         if (!$namedType->isBuiltin()) {
             return $this->get($namedType->getName(), $parameters);
         }
-        throw ContainerException::UnknownParameter($parameterName);
+        throw ContainerException::ParameterNotFound($parameterName);
     }
 
     private function resolve_union_type(ReflectionUnionType $unionType, string $parameterName, array $parameters) : mixed {
