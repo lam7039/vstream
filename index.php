@@ -3,21 +3,21 @@
 use source\Container;
 use source\Framework;
 
-const DEBUG = true;
-
 if (DEBUG) {
     $start = microtime(true);
     set_include_path(__DIR__);
 }
 
-require('core/init.php');
+require_once('core/init.php');
 
 $container = new Container([
     source\Request::class,
     source\Template::class
 ]);
 
-require('routing.php');
+//Middleware
+
+require_once('routing.php');
 
 new Framework(
     $container,
@@ -31,3 +31,5 @@ if (DEBUG) {
     //TODO: make toolbar for displaying this type of stuff
     echo microtime(true) - $start;
 }
+
+//TODO: investigate webgl/webgpu

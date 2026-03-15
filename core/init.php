@@ -27,12 +27,12 @@ function require_files(string $directory, array $load_first = []) : void {
     $path = getcwd() . "/$directory";
     if ($load_first) {
         foreach ($load_first as $file) {
-            require "$path/$file";
+            require_once "$path/$file";
         }
     }
     $files = directory_files($path, $load_first);
     foreach ($files as $file) {
-        require "$path/$file";
+        require_once "$path/$file";
     }
 }
 
@@ -105,6 +105,7 @@ function output(mixed $param) : void {
             $message = $class . $type . $function;
         }
 
+        //TODO: explode at project name (set limit)
         $route = explode('/', $file);
         $file = array_pop($route);
 
