@@ -24,6 +24,7 @@ class Log {
         $stacktrace = debug_backtrace()[2];
         $timestamp = date('Y-m-d H:i:s', time());
         if (!$file) {
+            //TODO: explode at project name (set limit)
             $file = explode('\\', $stacktrace['file']);
             $file = array_pop($file);
         }

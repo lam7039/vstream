@@ -1,42 +1,41 @@
-class ajax {
-    xhr = null;
+import { ajax_get, ajax_post } from "./ajax";
 
+class Router {
     constructor() {
-        this.xhr = new XMLHttpRequest;
+        this.routes = [];
     }
 
-    request = (path, object = {}, header = null) => {
-        this.xhr.open('GET', path, true);
-        if (header) {
-            this.xhr.setRequestHeader('Content-Type', header);
-        }
-        this.xhr.onreadystatechange = () => {
-            if (this.xhr.readyState !== 4 || this.xhr.status !== 200) {
-                return;
+    create = (path, handler) => {
+        this.routes.push({ path, handler });
+    };
+
+    resolve = (url) => {
+        for (const route of this.routes) {
+            if (url === route.path) {
+                return route;
             }
         }
+        return null;
+    };
 
-        this.xhr.send();
-    }
-
-    get = (path, object = {}) => {
-        this.request(path, object);
-    }
-
-    post = (path, object = {}) => {
-        this.request(path, object, 'application/x-www-form-urlencoded');
+    navigate = (url) => {
+        const current = resolve(url).handler;
+        //TODO: request php templating
     }
 }
 
-class router {
+const router = new Router;
 
-    get = (path) => {
-
-
-
-        document.getElementsByClassName('content')[0].innerHTML = '';
-
-    }
+export function route_add(path, handler) {
+    router.create(path, handler);
 }
 
-export default router;
+export function route_get(path) {
+    router.resolve(path);
+}
+
+export function navigate(url) {
+    router.navigate(url);
+}
+
+export default Router;
